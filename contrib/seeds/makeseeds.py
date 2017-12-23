@@ -10,16 +10,12 @@ NSEEDS=512
 
 MAX_SEEDS_PER_ASN=2
 
-MIN_BLOCKS = 337600
+MIN_BLOCKS = 615801
 
 # These are hosts that have been observed to be behaving strangely (e.g.
 # aggressively connecting to every node).
 SUSPICIOUS_HOSTS = {
-    "130.211.129.106", "178.63.107.226",
-    "83.81.130.26", "88.198.17.7", "148.251.238.178", "176.9.46.6",
-    "54.173.72.127", "54.174.10.182", "54.183.64.54", "54.194.231.211",
-    "54.66.214.167", "54.66.220.137", "54.67.33.14", "54.77.251.214",
-    "54.94.195.96", "54.94.200.247"
+    ""
 }
 
 import re
@@ -30,7 +26,7 @@ import collections
 PATTERN_IPV4 = re.compile(r"^((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})):(\d+)$")
 PATTERN_IPV6 = re.compile(r"^\[([0-9a-z:]+)\]:(\d+)$")
 PATTERN_ONION = re.compile(r"^([abcdefghijklmnopqrstuvwxyz234567]{16}\.onion):(\d+)$")
-PATTERN_AGENT = re.compile(r"^(/Satoshi:0.13.(1|2|99)/|/Satoshi:0.14.(0|1|2|99)/)$")
+PATTERN_AGENT = re.compile(r"^(/PIVXCore:2.2.(0|1|99)/)$")
 
 def parseline(line):
     sline = line.split()
@@ -79,7 +75,10 @@ def parseline(line):
     # Extract protocol version.
     version = int(sline[10])
     # Extract user agent.
-    agent = sline[11][1:-1]
+    if len(sline) > 11:
+        agent = sline[11][1:] + sline[12][:-1]
+    else:
+        agent = sline[11][1:-1]
     # Extract service flags.
     service = int(sline[9], 16)
     # Extract blocks.
@@ -152,7 +151,7 @@ def main():
     # Require at least 50% 30-day uptime.
     ips = [ip for ip in ips if ip['uptime'] > 50]
     # Require a known and recent user agent.
-    ips = [ip for ip in ips if PATTERN_AGENT.match(ip['agent'])]
+    ips = [ip for ip in ips if PATTERN_AGENT.match(re.sub(' ', '-', ip['agent']))]
     # Sort by availability (and use last success as tie breaker)
     ips.sort(key=lambda x: (x['uptime'], x['lastsuccess'], x['ip']), reverse=True)
     # Filter out hosts with multiple bitcoin ports, these are likely abusive
