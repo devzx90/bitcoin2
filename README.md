@@ -3,7 +3,7 @@ Bitcoin 2 integration/staging tree
 
 [![Build Status](https://travis-ci.org/bitcoin/bitcoin.svg?branch=master)](https://travis-ci.org/bitcoin/bitcoin)
 
-$url
+www.bitc2.org
 
 What is Bitcoin 2?
 ----------------
@@ -11,18 +11,25 @@ What is Bitcoin 2?
 Bitcoin 2 is an experimental digital currency that enables instant payments to
 anyone, anywhere in the world. Bitcoin 2 uses peer-to-peer technology to operate
 with no central authority: managing transactions and issuing money are carried
-out collectively by the network. Bitcoin 2 is the name of open source
+out collectively by the network. Bitcoin 2 Core is the name of open source
 software which enables the use of this currency.
 
-For more information, as well as an immediately useable, binary version of
-the Bitcoin 2 software, see $url, or read the
-[original whitepaper](https://bitcoincore.org/bitcoin.pdf).
+For more information, as well as a binary version of
+the Bitcoin 2 Core software, see www.bitc2.org
+
+## Not yet ready for release
+
+A lot of the source code for Bitcoin 2 is not yet ready for release and not all of the files required to build the software are yet in Github. It will all be available as soon as Bitcoin 2 Core wallets are released, on the day that the Bitcoin 2 network goes live.
 
 License
 -------
 
 Bitcoin 2 is released under the terms of the MIT license. See [COPYING](COPYING) for more
 information or see https://opensource.org/licenses/MIT.
+
+
+
+
 
 Development Process
 -------------------
