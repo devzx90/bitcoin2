@@ -19,7 +19,7 @@ the Bitcoin 2 Core software, see www.bitc2.org
 
 ## Not yet ready for release
 
-A lot of the source code for Bitcoin 2 is not yet ready for release and not all of the files required to build the software are yet in Github. It will all be available as soon as Bitcoin 2 Core wallets are released, on the day that the Bitcoin 2 network goes live.
+A lot of the source code for Bitcoin 2 is not yet ready for release and not all of the files required to build the software are yet in Github. It will all be available along with built Bitcoin 2 Core wallets right before the Bitcoin 2 network goes live.
 
 License
 -------
@@ -27,32 +27,14 @@ License
 Bitcoin 2 is released under the terms of the MIT license. See [COPYING](COPYING) for more
 information or see https://opensource.org/licenses/MIT.
 
-
-
-
-
 Development Process
 -------------------
 
 The `master` branch is regularly built and tested, but is not guaranteed to be
 completely stable. [Tags](https://github.com/bitcoin/bitcoin/tags) are created
-regularly to indicate new official, stable release versions of Bitcoin Core.
+regularly to indicate new official, stable release versions of Bitcoin 2 Core.
 
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
-
-The developer [mailing list](https://lists.linuxfoundation.org/mailman/listinfo/bitcoin-dev)
-should be used to discuss complicated or controversial changes before working
-on a patch set.
-
-Developer IRC can be found on Freenode at #bitcoin-core-dev.
-
-Testing
--------
-
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test on short notice. Please be patient and help out by testing
-other people's pull requests, and remember this is a security-critical project where any mistake might cost people
-lots of money.
 
 ### Automated Testing
 
