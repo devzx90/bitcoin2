@@ -1,5 +1,5 @@
 ---
-name: "pivx-dmg-signer"
+name: "bitcoin2-dmg-signer"
 suites:
 - "trusty"
 architectures:
@@ -7,7 +7,7 @@ architectures:
 packages:
 - "faketime"
 remotes:
-- "url": "https://github.com/pivx-project/pivx-detached-sigs.git"
+- "url": "https://github.com/BITC2/gitian.sigs.git"
   "dir": "signature"
 files:
 - "pivx-osx-unsigned.tar.gz"
