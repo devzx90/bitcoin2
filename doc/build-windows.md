@@ -48,6 +48,7 @@ The steps below can be performed on Ubuntu (including in a VM) or WSL. The depen
 First, install the general dependencies:
 
 ```
+sudo apt update
 sudo apt install build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git
 
 ```
@@ -94,23 +95,26 @@ sudo update-alternatives --config x86_64-w64-mingw32-g++ # Set the default mingw
 
 Once the tool chain is installed the build steps are common:
 
-Note that for WSL the Bitcoin 2 Core source path MUST be somewhere in the default mount file system, for example /usr/src/bitcoin, AND not under /mnt/d/. If this is not the case the dependency autoconf scripts will fail. This means you cannot use a directory that located directly on the host Windows file system to perform the build.
+Note that for WSL the Bitcoin 2 Core source path MUST be somewhere in the default mount file system, for example /usr/src/bitcoin, AND not under /mnt/d/. If this is not the case the dependency autoconf scripts will fail. This means you cannot use a directory that is located directly on the host Windows file system to perform the build.
 
 The next three steps are an example of how to acquire the source in an appropriate way.
 
 ```
 cd /usr/src
-sudo git clone https://github.com/bitcoin/bitcoin.git
-sudo chmod -R a+rw bitcoin
+sudo git clone https://github.com/BITC2/bitcoin2.git
+sudo chmod -R a+rw bitcoin2
 
 ```
 
 Once the source code is ready the build steps are below.
 
 ```
+cd bitcoin2
 PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
 cd depends
 make HOST=x86_64-w64-mingw32
+# If the build fails like that, execute:
+# make HOST=x86_64-w64-mingw32 V=1 AUTOCONF=: AUTOHEADER=: AUTOMAKE=: ACLOCAL=:
 cd ..
 ./autogen.sh # not required when building from tarball
 CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/
@@ -141,13 +145,14 @@ The next three steps are an example of how to acquire the source in an appropria
 ```
 cd /usr/src
 sudo git clone https://github.com/BITC/bitcoin2.git
-sudo chmod -R a+rw bitcoin
+sudo chmod -R a+rw bitcoin2
 
 ```
 
 Then build using:
 
 ```
+cd bitcoin2
 PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
 cd depends
 make HOST=i686-w64-mingw32
