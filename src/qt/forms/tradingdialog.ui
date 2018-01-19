@@ -1568,7 +1568,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>:/images/bittrex</pixmap>
+      <pixmap>:/icons/bitcoin</pixmap>
      </property>
     </widget>
    </widget>
@@ -2712,7 +2712,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>:/images/bittrex</pixmap>
+      <pixmap>:/icons/bitcoin</pixmap>
      </property>
     </widget>
    </widget>
@@ -2928,7 +2928,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Bittrex PIV Deposit Address:</string>
+      <string>Bittrex Deposit Address:</string>
      </property>
     </widget>
     <widget class="QPushButton" name="GenDepositBTN">
@@ -3050,7 +3050,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>:/images/bittrex</pixmap>
+      <pixmap>:/icons/bitcoin</pixmap>
      </property>
     </widget>
     <widget class="QWidget" name="widgetConversion" native="true">
@@ -3237,7 +3237,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>:/images/bittrex</pixmap>
+      <pixmap>:/icons/bitcoin</pixmap>
      </property>
     </widget>
     <widget class="QPushButton" name="UpdateKeys">
