@@ -850,7 +850,7 @@ QWidget .QFrame#frame .QLabel#labelBalance { /* Available Balance */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:14px;
 font-weight:bold;
-color:#001961;
+color:#000000;
 margin-left:0px;
 }
 
