@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Bitcoin2
+Comment=Bitcoin2 P2P Cryptocurrency
+Comment[fr]=Bitcoin2, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Bitcoin2, eşten eşe kriptografik sanal para birimi
+Exec=bitcoin2-qt %u
+Terminal=false
+Type=Application
+Icon=bitcoin2128
+MimeType=x-scheme-handler/bitcoin2;
+Categories=Office;Finance;

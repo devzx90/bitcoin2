@@ -1,0 +1,26 @@
+[Unit]
+Description=Bitcoin2's distributed currency daemon
+After=network.target
+
+[Service]
+User=bitcoin2
+Group=bitcoin2
+
+Type=forking
+PIDFile=/var/lib/bitcoin2d/bitcoin2d.pid
+
+ExecStart=/usr/bin/bitcoin2d -daemon -pid=/var/lib/bitcoin2d/bitcoin2d.pid \
+          -conf=/etc/bitcoin2/bitcoin2.conf -datadir=/var/lib/bitcoin2d
+
+ExecStop=-/usr/bin/bitcoin2-cli -conf=/etc/bitcoin2/bitcoin2.conf \
+         -datadir=/var/lib/bitcoin2d stop
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
