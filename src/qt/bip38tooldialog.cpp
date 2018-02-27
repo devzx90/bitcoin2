@@ -151,7 +151,7 @@ void Bip38ToolDialog::on_encryptKeyButton_ENC_clicked()
         return;
     }
 
-    std::string encryptedKey = BIP38_Encrypt(addr.ToString(), qstrPassphrase.toStdString(), key.GetPrivKey_256());
+    std::string encryptedKey = BIP38_Encrypt(addr.ToString(), qstrPassphrase.toStdString(), key.GetPrivKey_256(), key.IsCompressed());
     ui->encryptedKeyOut_ENC->setText(QString::fromStdString(encryptedKey));
 }
 
@@ -171,6 +171,12 @@ void Bip38ToolDialog::on_clearButton_ENC_clicked()
 }
 
 CKey key;
+void Bip38ToolDialog::on_pasteButton_DEC_clicked()
+{
+    // Paste text from clipboard into recipient field
+    ui->encryptedKeyIn_DEC->setText(QApplication::clipboard()->text());
+}
+
 void Bip38ToolDialog::on_decryptKeyButton_DEC_clicked()
 {
     string strPassphrase = ui->passphraseIn_DEC->text().toStdString();
@@ -188,7 +194,7 @@ void Bip38ToolDialog::on_decryptKeyButton_DEC_clicked()
     CPubKey pubKey = key.GetPubKey();
     CBitcoinAddress address(pubKey.GetID());
 
-    ui->decryptedKeyOut_DEC->setText(QString::fromStdString(HexStr(privKey)));
+    ui->decryptedKeyOut_DEC->setText(QString::fromStdString(CBitcoinSecret(key).ToString()));
     ui->addressOut_DEC->setText(QString::fromStdString(address.ToString()));
 }
 

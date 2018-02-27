@@ -19,18 +19,18 @@ BitcoinUnits::BitcoinUnits(QObject* parent) : QAbstractListModel(parent),
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(PIV);
-    unitlist.append(mPIV);
-    unitlist.append(uPIV);
+    unitlist.append(BTC2);
+    unitlist.append(mBTC2);
+    unitlist.append(uBTC2);
     return unitlist;
 }
 
 bool BitcoinUnits::valid(int unit)
 {
     switch (unit) {
-    case PIV:
-    case mPIV:
-    case uPIV:
+    case BTC2:
+    case mBTC2:
+    case uBTC2:
         return true;
     default:
         return false;
@@ -40,12 +40,12 @@ bool BitcoinUnits::valid(int unit)
 QString BitcoinUnits::id(int unit)
 {
     switch (unit) {
-    case PIV:
-        return QString("pivx");
-    case mPIV:
-        return QString("mpivx");
-    case uPIV:
-        return QString::fromUtf8("upivx");
+    case BTC2:
+        return QString("bitcoin2");
+    case mBTC2:
+        return QString("mbitcoin2");
+    case uBTC2:
+        return QString::fromUtf8("ubitcoin2");
     default:
         return QString("???");
     }
@@ -55,23 +55,23 @@ QString BitcoinUnits::name(int unit)
 {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
-        case PIV:
-            return QString("PIV");
-        case mPIV:
-            return QString("mPIV");
-        case uPIV:
-            return QString::fromUtf8("μPIV");
+        case BTC2:
+            return QString("BTC2");
+        case mBTC2:
+            return QString("mBTC2");
+        case uBTC2:
+            return QString::fromUtf8("μBTC2");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
-        case PIV:
-            return QString("tPIV");
-        case mPIV:
-            return QString("mtPIV");
-        case uPIV:
-            return QString::fromUtf8("μtPIV");
+        case BTC2:
+            return QString("tBTC2");
+        case mBTC2:
+            return QString("mtBTC2");
+        case uBTC2:
+            return QString::fromUtf8("μtBTC2");
         default:
             return QString("???");
         }
@@ -82,23 +82,23 @@ QString BitcoinUnits::description(int unit)
 {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
-        case PIV:
-            return QString("PIV");
-        case mPIV:
-            return QString("Milli-PIV (1 / 1" THIN_SP_UTF8 "000)");
-        case uPIV:
-            return QString("Micro-PIV (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+        case BTC2:
+            return QString("BTC2");
+        case mBTC2:
+            return QString("Milli-BTC2 (1 / 1" THIN_SP_UTF8 "000)");
+        case uBTC2:
+            return QString("Micro-BTC2 (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
-        case PIV:
-            return QString("TestPIVs");
-        case mPIV:
-            return QString("Milli-TestPIV (1 / 1" THIN_SP_UTF8 "000)");
-        case uPIV:
-            return QString("Micro-TestPIV (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+        case BTC2:
+            return QString("TestBTC2s");
+        case mBTC2:
+            return QString("Milli-TestBTC2 (1 / 1" THIN_SP_UTF8 "000)");
+        case uBTC2:
+            return QString("Micro-TestBTC2 (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
@@ -108,11 +108,11 @@ QString BitcoinUnits::description(int unit)
 qint64 BitcoinUnits::factor(int unit)
 {
     switch (unit) {
-    case PIV:
+    case BTC2:
         return 100000000;
-    case mPIV:
+    case mBTC2:
         return 100000;
-    case uPIV:
+    case uBTC2:
         return 100;
     default:
         return 100000000;
@@ -122,11 +122,11 @@ qint64 BitcoinUnits::factor(int unit)
 int BitcoinUnits::decimals(int unit)
 {
     switch (unit) {
-    case PIV:
+    case BTC2:
         return 8;
-    case mPIV:
+    case mBTC2:
         return 5;
-    case uPIV:
+    case uBTC2:
         return 2;
     default:
         return 0;

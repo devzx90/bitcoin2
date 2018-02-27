@@ -59,29 +59,23 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent) : QDialog(parent),
     connect(ui->splitBlockCheckBox, SIGNAL(stateChanged(int)), this, SLOT(splitBlockChecked(int)));
     connect(ui->splitBlockLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(splitBlockLineEditChanged(const QString&)));
 
-    // PIVX specific
+    // Bitcoin2 specific
     QSettings settings;
     if (!settings.contains("bUseObfuScation"))
         settings.setValue("bUseObfuScation", false);
     if (!settings.contains("bUseSwiftTX"))
         settings.setValue("bUseSwiftTX", false);
 
-    bool useObfuScation = settings.value("bUseObfuScation").toBool();
     bool useSwiftTX = settings.value("bUseSwiftTX").toBool();
     if (fLiteMode) {
-        ui->checkUseObfuscation->setChecked(false);
-        ui->checkUseObfuscation->setVisible(false);
         ui->checkSwiftTX->setVisible(false);
         CoinControlDialog::coinControl->useObfuScation = false;
         CoinControlDialog::coinControl->useSwiftTX = false;
     } else {
-        ui->checkUseObfuscation->setChecked(useObfuScation);
         ui->checkSwiftTX->setChecked(useSwiftTX);
-        CoinControlDialog::coinControl->useObfuScation = useObfuScation;
         CoinControlDialog::coinControl->useSwiftTX = useSwiftTX;
     }
 
-    connect(ui->checkUseObfuscation, SIGNAL(stateChanged(int)), this, SLOT(updateDisplayUnit()));
     connect(ui->checkSwiftTX, SIGNAL(stateChanged(int)), this, SLOT(updateSwiftTX()));
 
     // Coin Control: clipboard actions
@@ -140,6 +134,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent) : QDialog(parent),
     ui->customFee->setValue(settings.value("nTransactionFee").toLongLong());
     ui->checkBoxMinimumFee->setChecked(settings.value("fPayOnlyMinFee").toBool());
     ui->checkBoxFreeTx->setChecked(settings.value("fSendFreeTransactions").toBool());
+    ui->checkzBTC2->hide();
     minimizeFeeSection(settings.value("fFeeSectionMinimized").toBool());
 }
 
@@ -164,9 +159,11 @@ void SendCoinsDialog::setModel(WalletModel* model)
             }
         }
 
-        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getAnonymizedBalance(),
-            model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
-        connect(model, SIGNAL(balanceChanged(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)), this, SLOT(setBalance(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)));
+        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
+                   model->getZerocoinBalance (), model->getUnconfirmedZerocoinBalance (), model->getImmatureZerocoinBalance (),
+                   model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
+        connect(model, SIGNAL(balanceChanged(CAmount, CAmount,  CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)), this, 
+                         SLOT(setBalance(CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount, CAmount)));
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
         updateDisplayUnit();
 
@@ -265,28 +262,14 @@ void SendCoinsDialog::on_sendButton_clicked()
     if (CoinControlDialog::coinControl->fSplitBlock)
         CoinControlDialog::coinControl->nSplitBlock = int(ui->splitBlockLineEdit->text().toInt());
 
-    QString strFunds = tr("using") + " <b>" + tr("anonymous funds") + "</b>";
+    QString strFunds = "";
     QString strFee = "";
-    recipients[0].inputType = ONLY_DENOMINATED;
-
-    if (ui->checkUseObfuscation->isChecked()) {
-        recipients[0].inputType = ONLY_DENOMINATED;
-        strFunds = tr("using") + " <b>" + tr("anonymous funds") + "</b>";
-        QString strNearestAmount(
-            BitcoinUnits::formatWithUnit(
-                model->getOptionsModel()->getDisplayUnit(), 0.1 * COIN));
-        strFee = QString(tr(
-            "(obfuscation requires this amount to be rounded up to the nearest %1).")
-                             .arg(strNearestAmount));
-    } else {
-        recipients[0].inputType = ALL_COINS;
-        strFunds = tr("using") + " <b>" + tr("any available funds (not recommended)") + "</b>";
-    }
+    recipients[0].inputType = ALL_COINS;
 
     if (ui->checkSwiftTX->isChecked()) {
         recipients[0].useSwiftTX = true;
         strFunds += " ";
-        strFunds += tr("and SwiftTX");
+        strFunds += tr("using SwiftX");
     } else {
         recipients[0].useSwiftTX = false;
     }
@@ -323,7 +306,7 @@ void SendCoinsDialog::on_sendButton_clicked()
             recipientElement = tr("%1 to %2").arg(amount, address);
         }
 
-        if (fSplitBlock) {
+        if (CoinControlDialog::coinControl->fSplitBlock) {
             recipientElement.append(tr(" split into %1 outputs using the UTXO splitter.").arg(CoinControlDialog::coinControl->nSplitBlock));
         }
 
@@ -560,25 +543,22 @@ bool SendCoinsDialog::handlePaymentRequest(const SendCoinsRecipient& rv)
     return true;
 }
 
-void SendCoinsDialog::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& anonymizedBalance, const CAmount& watchBalance, const CAmount& watchUnconfirmedBalance, const CAmount& watchImmatureBalance)
+void SendCoinsDialog::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, 
+                                 const CAmount& zerocoinBalance, const CAmount& unconfirmedZerocoinBalance, const CAmount& immatureZerocoinBalance,
+                                 const CAmount& watchBalance, const CAmount& watchUnconfirmedBalance, const CAmount& watchImmatureBalance)
 {
     Q_UNUSED(unconfirmedBalance);
     Q_UNUSED(immatureBalance);
-    Q_UNUSED(anonymizedBalance);
+    Q_UNUSED(zerocoinBalance);
+    Q_UNUSED(unconfirmedZerocoinBalance);
+    Q_UNUSED(immatureZerocoinBalance);
     Q_UNUSED(watchBalance);
     Q_UNUSED(watchUnconfirmedBalance);
     Q_UNUSED(watchImmatureBalance);
 
     if (model && model->getOptionsModel()) {
         uint64_t bal = 0;
-        QSettings settings;
-        settings.setValue("bUseObfuScation", ui->checkUseObfuscation->isChecked());
-        if (ui->checkUseObfuscation->isChecked()) {
-            bal = anonymizedBalance;
-        } else {
-            bal = balance;
-        }
-
+        bal = balance;
         ui->labelBalance->setText(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), bal));
     }
 }
@@ -588,9 +568,9 @@ void SendCoinsDialog::updateDisplayUnit()
     TRY_LOCK(cs_main, lockMain);
     if (!lockMain) return;
 
-    setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), model->getAnonymizedBalance(),
-        model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
-    CoinControlDialog::coinControl->useObfuScation = ui->checkUseObfuscation->isChecked();
+    setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(), 
+               model->getZerocoinBalance (), model->getUnconfirmedZerocoinBalance (), model->getImmatureZerocoinBalance (),
+               model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
     coinControlUpdateLabels();
     ui->customFee->setDisplayUnit(model->getOptionsModel()->getDisplayUnit());
     updateMinFeeLabel();
@@ -903,7 +883,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
             ui->labelCoinControlChangeLabel->setText("");
         } else if (!addr.IsValid()) // Invalid address
         {
-            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid PIVX address"));
+            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Bitcoin2 address"));
         } else // Valid address
         {
             CPubKey pubkey;
@@ -942,8 +922,6 @@ void SendCoinsDialog::coinControlUpdateLabels()
         if (entry)
             CoinControlDialog::payAmounts.append(entry->getValue().amount);
     }
-
-    ui->checkUseObfuscation->setChecked(CoinControlDialog::coinControl->useObfuScation);
 
     if (CoinControlDialog::coinControl->HasSelected()) {
         // actual coin control calculation

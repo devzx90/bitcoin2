@@ -3,7 +3,7 @@
  *
  * @brief      Denomination info for the Zerocoin library.
  *
- * @copyright  Copyright 2017 PIVX Developers
+ * @copyright  Copyright 2017 PIVX Developers. Copyright 2018 Bitcoin 2 Developers
  * @license    This project is released under the MIT license.
  **/
 
@@ -16,23 +16,23 @@
 
 namespace libzerocoin {
 
-enum  CoinDenomination {
-    ZQ_ERROR = 0,
-    ZQ_ONE = 1,
-    ZQ_FIVE = 5,
-    ZQ_TEN = 10,
-    ZQ_FIFTY = 50,
-    ZQ_ONE_HUNDRED = 100,
-    ZQ_FIVE_HUNDRED = 500,
-    ZQ_ONE_THOUSAND = 1000,
-    ZQ_FIVE_THOUSAND = 5000
+enum  CoinDenomination { // In cents
+	ZQ_ERROR = 0,
+	ZQ_FIVECENTS = 5,
+	ZQ_TWENTYCENTS = 20,
+	ZQ_ONE = 100,
+	ZQ_FIVE = 500,
+	ZQ_TWENTY = 2000,
+	ZQ_ONE_HUNDRED = 10000,
+	ZQ_FIVE_HUNDRED = 50000,
+	ZQ_TWO_THOUSAND = 200000
 };
 
 // Order is with the Smallest Denomination first and is important for a particular routine that this order is maintained
-const std::vector<CoinDenomination> zerocoinDenomList = {ZQ_ONE, ZQ_FIVE, ZQ_TEN, ZQ_FIFTY, ZQ_ONE_HUNDRED, ZQ_FIVE_HUNDRED, ZQ_ONE_THOUSAND, ZQ_FIVE_THOUSAND};
+const std::vector<CoinDenomination> zerocoinDenomList = {ZQ_FIVECENTS, ZQ_TWENTYCENTS, ZQ_ONE, ZQ_FIVE, ZQ_TWENTY, ZQ_ONE_HUNDRED, ZQ_FIVE_HUNDRED, ZQ_TWO_THOUSAND};
 // These are the max number you'd need at any one Denomination before moving to the higher denomination. Last number is 4, since it's the max number of
 // possible spends at the moment    /
-const std::vector<int> maxCoinsAtDenom   = {4, 1, 4, 1, 4, 1, 4, 4};
+const std::vector<int> maxCoinsAtDenom   = {3, 4, 4, 3, 4, 4, 3, 4};
 
 int64_t ZerocoinDenominationToInt(const CoinDenomination& denomination);
 int64_t ZerocoinDenominationToAmount(const CoinDenomination& denomination);

@@ -5,7 +5,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/pivx-config.h"
+#include "config/bitcoin2-config.h"
 #endif
 
 #include "util.h"
@@ -18,6 +18,8 @@
 #include <QCoreApplication>
 #include <QObject>
 #include <QTest>
+
+#include <openssl/ssl.h>
 
 #if defined(QT_STATICPLUGIN) && QT_VERSION < 0x050000
 #include <QtPlugin>
@@ -36,7 +38,9 @@ int main(int argc, char *argv[])
     // Don't remove this, it's needed to access
     // QCoreApplication:: in the tests
     QCoreApplication app(argc, argv);
-    app.setApplicationName("Pivx-Qt-test");
+    app.setApplicationName("Bitcoin2-Qt-test");
+
+    SSL_library_init();
 
     URITests test1;
     if (QTest::qExec(&test1) != 0)

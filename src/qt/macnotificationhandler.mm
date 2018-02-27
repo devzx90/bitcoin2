@@ -14,7 +14,7 @@
 - (NSString *)__bundleIdentifier
 {
     if (self == [NSBundle mainBundle]) {
-        return @"io.pivx.Pivx-Qt";
+        return @"io.bitcoin2.Bitcoin2-Qt";
     } else {
         return [self __bundleIdentifier];
     }
@@ -46,20 +46,6 @@ void MacNotificationHandler::showNotification(const QString &title, const QStrin
         [textMac release];
         [userNotification release];
     }
-}
-
-// sendAppleScript just take a QString and executes it as apple script
-void MacNotificationHandler::sendAppleScript(const QString &script)
-{
-    QByteArray utf8 = script.toUtf8();
-    char* cString = (char *)utf8.constData();
-    NSString *scriptApple = [[NSString alloc] initWithUTF8String:cString];
-
-    NSAppleScript *as = [[NSAppleScript alloc] initWithSource:scriptApple];
-    NSDictionary *err = nil;
-    [as executeAndReturnError:&err];
-    [as release];
-    [scriptApple release];
 }
 
 bool MacNotificationHandler::hasUserNotificationCenterSupport(void)
