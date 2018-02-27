@@ -1735,7 +1735,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
     if (nZeromintPercentage < 10) nZeromintPercentage = 10;
 
     nPreferredDenom  = GetArg("-preferredDenom", 0);
-    if (nPreferredDenom != 0 && IntToZerocoinDenomination(nPreferredDenom) == libzerocoin::CoinDenomination::ZQ_ERROR){
+    if (nPreferredDenom != 0 && libzerocoin::CoinDenomination::IntToZerocoinDenomination(nPreferredDenom) == libzerocoin::CoinDenomination::ZQ_ERROR){
         LogPrintf("-preferredDenom: invalid denomination parameter %d. Default value used\n", nPreferredDenom);
         nPreferredDenom = 0;
     }
