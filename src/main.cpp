@@ -2594,7 +2594,7 @@ void ThreadScriptCheck()
     scriptcheckqueue.Thread();
 }
 
-void RecalculateZBTC2Minted()
+/*void RecalculateZBTC2Minted()
 {
     CBlockIndex *pindex = chainActive[Params().Zerocoin_StartHeight()];
     int nHeightEnd = chainActive.Height();
@@ -2659,29 +2659,28 @@ void RecalculateZBTC2Spent()
 
 bool RecalculateBTC2Supply(int nHeightStart)
 {
-    if (nHeightStart > chainActive.Height())
-        return false;
+    if (nHeightStart > chainActive.Height()) return false;
 
     CBlockIndex* pindex = chainActive[nHeightStart];
     CAmount nSupplyPrev = pindex->pprev->nMoneySupply;
-    if (nHeightStart == Params().Zerocoin_StartHeight())
-        nSupplyPrev = CAmount(5449796547496199);
 
-    while (true) {
-        if (pindex->nHeight % 1000 == 0)
-            LogPrintf("%s : block %d...\n", __func__, pindex->nHeight);
+    while (true)
+	{
+        //if (pindex->nHeight % 1000 == 0) LogPrintf("%s : block %d...\n", __func__, pindex->nHeight);
 
         CBlock block;
         assert(ReadBlockFromDisk(block, pindex));
 
         CAmount nValueIn = 0;
         CAmount nValueOut = 0;
-        for (const CTransaction tx : block.vtx) {
-            for (unsigned int i = 0; i < tx.vin.size(); i++) {
-                if (tx.IsCoinBase())
-                    break;
+        for (const CTransaction tx : block.vtx)
+		{
+            for (unsigned int i = 0; i < tx.vin.size(); i++)
+			{
+                if (tx.IsCoinBase()) continue; // PIVX had: break;
 
-                if (tx.vin[i].scriptSig.IsZerocoinSpend()) {
+                if (tx.vin[i].scriptSig.IsZerocoinSpend())
+				{
                     nValueIn += tx.vin[i].nSequence * COIN;
                     continue;
                 }
@@ -2693,9 +2692,9 @@ bool RecalculateBTC2Supply(int nHeightStart)
                 nValueIn += txPrev.vout[prevout.n].nValue;
             }
 
-            for (unsigned int i = 0; i < tx.vout.size(); i++) {
-                if (i == 0 && tx.IsCoinStake())
-                    continue;
+            for (unsigned int i = 0; i < tx.vout.size(); i++)
+			{
+                if (i == 0 && tx.IsCoinStake()) continue;
 
                 nValueOut += tx.vout[i].nValue;
             }
@@ -2705,28 +2704,13 @@ bool RecalculateBTC2Supply(int nHeightStart)
         pindex->nMoneySupply = nSupplyPrev + nValueOut - nValueIn;
         nSupplyPrev = pindex->nMoneySupply;
 
-        // Add fraudulent funds to the supply and remove any recovered funds.
-        if (pindex->nHeight == Params().Zerocoin_Block_RecalculateAccumulators()) {
-            PopulateInvalidOutPointMap();
-            LogPrintf("%s : Original money supply=%s\n", __func__, FormatMoney(pindex->nMoneySupply));
-
-            pindex->nMoneySupply += nFilteredThroughBittrex;
-            LogPrintf("%s : Adding bittrex filtered funds to supply + %s : supply=%s\n", __func__, FormatMoney(nFilteredThroughBittrex), FormatMoney(pindex->nMoneySupply));
-
-            CAmount nLocked = GetInvalidUTXOValue();
-            pindex->nMoneySupply -= nLocked;
-            LogPrintf("%s : Removing locked from supply - %s : supply=%s\n", __func__, FormatMoney(nLocked), FormatMoney(pindex->nMoneySupply));
-        }
-
         assert(pblocktree->WriteBlockIndex(CDiskBlockIndex(pindex)));
 
-        if (pindex->nHeight < chainActive.Height())
-            pindex = chainActive.Next(pindex);
-        else
-            break;
+        if (pindex->nHeight < chainActive.Height())  pindex = chainActive.Next(pindex);
+        else break;
     }
     return true;
-}
+}*/
 
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError)
 {
