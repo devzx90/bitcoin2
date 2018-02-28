@@ -270,10 +270,9 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                     setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
                 //populate accumulator checksum map in memory
-                if(pindexNew->nAccumulatorCheckpoint != 0 && pindexNew->nAccumulatorCheckpoint != nPreviousCheckpoint) {
-                    //Don't load any invalid checkpoints
-                    if (!InvalidCheckpointRange(pindexNew->nHeight))
-                        LoadAccumulatorValuesFromDB(pindexNew->nAccumulatorCheckpoint);
+                if(pindexNew->nAccumulatorCheckpoint != 0 && pindexNew->nAccumulatorCheckpoint != nPreviousCheckpoint)
+				{
+                    LoadAccumulatorValuesFromDB(pindexNew->nAccumulatorCheckpoint);
 
                     nPreviousCheckpoint = pindexNew->nAccumulatorCheckpoint;
                 }

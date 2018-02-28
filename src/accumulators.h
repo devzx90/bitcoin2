@@ -23,7 +23,6 @@ bool LoadAccumulatorValuesFromDB(const uint256 nCheckpoint);
 bool EraseAccumulatorValues(const uint256& nCheckpointErase, const uint256& nCheckpointPrevious);
 uint32_t ParseChecksum(uint256 nChecksum, libzerocoin::CoinDenomination denomination);
 uint32_t GetChecksum(const CBigNum &bnValue);
-bool InvalidCheckpointRange(int nHeight);
 bool ValidateAccumulatorCheckpoint(const CBlock& block, CBlockIndex* pindex, AccumulatorMap& mapAccumulators);
 
 #endif //Bitcoin2_ACCUMULATORS_H
