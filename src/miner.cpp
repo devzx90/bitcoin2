@@ -129,7 +129,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 	pblocktemplate->vTxFees.push_back(-1);   // updated at end
 	pblocktemplate->vTxSigOps.push_back(-1); // updated at end		
 
-	// NOTE:: Bitcoin2 had coinstake call here, they burn transaction fees.
+	// NOTE: PIVX had coinstake call here, they burn transaction fees.
 
     // Largest block you're willing to create:
     unsigned int nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
@@ -446,7 +446,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 			if (!fStakeFound) return NULL;
 
 			pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
-			pblocktemplate->vTxFees[0] = -nFees; // bitcoin2 didn't have this line for PoS
+			pblocktemplate->vTxFees[0] = -nFees; // PIVX didn't have this line for PoS
 		}
 
         // Fill in header
