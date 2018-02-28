@@ -1008,7 +1008,7 @@ void FindMints(vector<CZerocoinMint> vMintsToFind, vector<CZerocoinMint>& vMints
                 continue;
 
             list<CZerocoinMint> vMints;
-            if(!BlockToZerocoinMintList(block, vMints, true))
+            if(!BlockToZerocoinMintList(block, vMints))
                 continue;
 
             // search the blocks mints to see if it contains the mint that is requesting meta data updates
