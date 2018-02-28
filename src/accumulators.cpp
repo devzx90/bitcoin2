@@ -315,14 +315,14 @@ bool GenerateAccumulatorWitness(const PublicCoin &coin, Accumulator& accumulator
     //the height to start accumulating coins to add to witness
     int nAccStartHeight = nHeightMintAdded - (nHeightMintAdded % 10);
 
-    //If the checkpoint is from the recalculated checkpoint period, then adjust it
-    int nHeight_LastGoodCheckpoint = Params().Zerocoin_Block_LastGoodCheckpoint();
+    //PIVX: If the checkpoint is from the recalculated checkpoint period, then adjust it
+    /*int nHeight_LastGoodCheckpoint = Params().Zerocoin_Block_LastGoodCheckpoint();
     int nHeight_Recalculate = Params().Zerocoin_Block_RecalculateAccumulators();
     if (pindex->nHeight < nHeight_Recalculate - 10 && pindex->nHeight > nHeight_LastGoodCheckpoint) {
         //The checkpoint before the mint will be the last good checkpoint
         nCheckpointBeforeMint = chainActive[nHeight_LastGoodCheckpoint]->nAccumulatorCheckpoint;
         nAccStartHeight = nHeight_LastGoodCheckpoint - 10;
-    }
+    }*/
 
     //Get the accumulator that is right before the cluster of blocks containing our mint was added to the accumulator
     CBigNum bnAccValue = 0;
