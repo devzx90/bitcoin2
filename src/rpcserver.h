@@ -40,7 +40,7 @@ public:
     std::string strMethod;
     UniValue params;
 
-    JSONRequest() { id = NullUniValue; }
+    JSONRequest() { id = NULL; }
     void parse(const UniValue& valRequest);
 };
 
