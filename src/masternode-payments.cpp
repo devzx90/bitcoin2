@@ -157,7 +157,7 @@ void DumpMasternodePayments()
     CMasternodePaymentDB::ReadResult readResult = paymentdb.Read(tempPayments, true);
     // there was an error and it was not an error on file opening => do not proceed
     if (readResult == CMasternodePaymentDB::FileError)
-        LogPrint("masternode","Missing budgets file - mnpayments.dat, will try to recreate\n");
+        LogPrint("masternode","Missing file - mnpayments.dat, will try to recreate\n");
     else if (readResult != CMasternodePaymentDB::Ok) {
         LogPrint("masternode","Error reading mnpayments.dat: ");
         if (readResult == CMasternodePaymentDB::IncorrectFormat)
@@ -175,7 +175,7 @@ void DumpMasternodePayments()
 
 bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 {
-    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
+    if (!masternodeSync.IsSynced()) { //there is no data to use to check anything -- find the longest chain
         LogPrint("mnpayments", "Client not synced, skipping block payee checks\n");
         return true;
     }

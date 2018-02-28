@@ -3910,7 +3910,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         LogPrintf("CheckBlock() : skipping transaction locking checks\n");
     }
 
-    // masternode payments / budgets
+    // masternode payments
     if (block.IsProofOfStake())
 	{
       CBlockIndex* pindexPrev = chainActive.Tip();
@@ -3925,7 +3925,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
           }
   
           // Bitcoin2
-          // It is entierly possible that we don't have enough data and this could fail
+          // It is entirely possible that we don't have enough data and this could fail
           // (i.e. the block could indeed be valid). Store the block for later consideration
           // but issue an initial reject message.
           // The case also exists that the sending peer could not have enough data to see
@@ -3933,7 +3933,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
           if (nHeight != 0 && !IsInitialBlockDownload()) {
               if (!IsBlockPayeeValid(block, nHeight)) {
                   mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
-                  return state.DoS(0, error("CheckBlock() : Couldn't find masternode/budget payment"),
+                  return state.DoS(0, error("CheckBlock() : Couldn't find masternode payment"),
                           REJECT_INVALID, "bad-cb-payee");
               }
           } else {

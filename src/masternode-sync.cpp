@@ -8,7 +8,7 @@
 #include "activemasternode.h"
 #include "masternode-sync.h"
 #include "masternode-payments.h"
-#include "masternode-budget.h"
+//#include "masternode-budget.h"
 #include "masternode.h"
 #include "masternodeman.h"
 #include "spork.h"
@@ -108,7 +108,7 @@ void CMasternodeSync::AddedMasternodeWinner(uint256 hash)
         mapSeenSyncMNW.insert(make_pair(hash, 1));
     }
 }
-
+/*
 void CMasternodeSync::AddedBudgetItem(uint256 hash)
 {
     if (budget.mapSeenMasternodeBudgetProposals.count(hash) || budget.mapSeenMasternodeBudgetVotes.count(hash) ||
@@ -131,7 +131,7 @@ bool CMasternodeSync::IsBudgetPropEmpty()
 bool CMasternodeSync::IsBudgetFinEmpty()
 {
     return sumBudgetItemFin == 0 && countBudgetItemFin > 0;
-}
+}*/
 
 void CMasternodeSync::GetNextAsset()
 {
@@ -170,8 +170,8 @@ std::string CMasternodeSync::GetSyncStatus()
         return _("Synchronizing masternodes...");
     case MASTERNODE_SYNC_MNW:
         return _("Synchronizing masternode winners...");
-    case MASTERNODE_SYNC_BUDGET:
-        return _("Synchronizing budgets...");
+    //case MASTERNODE_SYNC_BUDGET:
+       // return _("Synchronizing budgets...");
     case MASTERNODE_SYNC_FAILED:
         return _("Synchronization failed");
     case MASTERNODE_SYNC_FINISHED:
@@ -201,7 +201,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
             sumMasternodeWinner += nCount;
             countMasternodeWinner++;
             break;
-        case (MASTERNODE_SYNC_BUDGET_PROP):
+        /*case (MASTERNODE_SYNC_BUDGET_PROP):
             if (RequestedMasternodeAssets != MASTERNODE_SYNC_BUDGET) return;
             sumBudgetItemProp += nCount;
             countBudgetItemProp++;
@@ -210,7 +210,7 @@ void CMasternodeSync::ProcessMessage(CNode* pfrom, std::string& strCommand, CDat
             if (RequestedMasternodeAssets != MASTERNODE_SYNC_BUDGET) return;
             sumBudgetItemFin += nCount;
             countBudgetItemFin++;
-            break;
+            break;*/
         }
 
         LogPrint("masternode", "CMasternodeSync:ProcessMessage - ssc - got inventory count %d %d\n", nItemID, nCount);
@@ -366,9 +366,16 @@ void CMasternodeSync::Process()
 
         if (pnode->nVersion >= ActiveProtocol()) {
             if (RequestedMasternodeAssets == MASTERNODE_SYNC_BUDGET) {
+
+				// No budget, so just finish syncing
+				GetNextAsset();
+				activeMasternode.ManageStatus();
+				return;
+
+				// PIVX:
                 
                 // We'll start rejecting votes if we accidentally get set as synced too soon
-                if (lastBudgetItem > 0 && lastBudgetItem < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { 
+                /*if (lastBudgetItem > 0 && lastBudgetItem < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { 
                     
                     // Hasn't received a new item in the last five seconds, so we'll move to the
                     GetNextAsset();
@@ -397,7 +404,7 @@ void CMasternodeSync::Process()
                 pnode->PushMessage("mnvs", n); //sync masternode votes
                 RequestedMasternodeAttempt++;
 
-                return;
+                return;*/
             }
         }
     }

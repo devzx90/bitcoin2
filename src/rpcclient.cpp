@@ -100,7 +100,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"setban", 2},
         {"setban", 3},
         {"spork", 1},
-        {"mnbudget", 3},
+       /* {"mnbudget", 3},
         {"mnbudget", 4},
         {"mnbudget", 6},
         {"mnbudget", 8},
@@ -110,11 +110,11 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"submitbudget", 2},
         {"submitbudget", 3},
         {"submitbudget", 5},
-        {"submitbudget", 7},
+        {"submitbudget", 7},*/
         // disabled until removal of the legacy 'masternode' command
         //{"startmasternode", 1},
-        {"mnvoteraw", 1},
-        {"mnvoteraw", 4},
+       // {"mnvoteraw", 1},
+        //{"mnvoteraw", 4},
         {"reservebalance", 0},
         {"reservebalance", 1},
         {"setstakesplitthreshold", 0},
