@@ -2928,9 +2928,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
     pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev/* + nFees*/; // PIVX has + nFees here
 
-//    LogPrintf("XX69----------> ConnectBlock(): nValueOut: %s, nValueIn: %s, nFees: %s, nMint: %s zBTC2Spent: %s\n",
-//              FormatMoney(nValueOut), FormatMoney(nValueIn),
-//              FormatMoney(nFees), FormatMoney(pindex->nMint), FormatMoney(nAmountZerocoinSpent));
+    /*LogPrintf("XX69----------> ConnectBlock(): nValueOut: %s, nValueIn: %s, nFees: %s, nMint: %s zBTC2Spent: %s\n",
+             FormatMoney(nValueOut), FormatMoney(nValueIn),
+              FormatMoney(nFees), FormatMoney(pindex->nMint), FormatMoney(nAmountZerocoinSpent));*/
 
     int64_t nTime1 = GetTimeMicros();
     nTimeConnect += nTime1 - nTimeStart;
@@ -2939,6 +2939,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // Redistributed fees to miner.
     CAmount nExpectedMint = GetBlockValue(pindex->nHeight);//pindex->pprev->nHeight);
     nExpectedMint += nFees;
+
+	if (pindex->nMint > nExpectedMint) // Check if block reward is higher than it should be.
+	{
+		return state.DoS(100,
+			error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
+				FormatMoney(pindex->nMint), FormatMoney(nExpectedMint)),
+			REJECT_INVALID, "bad-cb-amount");
+	}
 
     //Check that the block does not overmint
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
@@ -3909,7 +3917,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     }
 
     // masternode payments / budgets
-    	if (block.IsProofOfStake())
+    if (block.IsProofOfStake())
 	{
       CBlockIndex* pindexPrev = chainActive.Tip();
       int nHeight = 0;
