@@ -14,7 +14,7 @@
 #include "rpcserver.h"
 #include "utilmoneystr.h"
 
-#include <univalue.h>
+#include "univalue/univalue.h"
 
 #include <boost/tokenizer.hpp>
 #include <fstream>

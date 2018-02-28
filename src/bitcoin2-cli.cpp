@@ -20,7 +20,7 @@
 #include <event2/buffer.h>
 #include <event2/keyvalq_struct.h>
 
-#include <univalue.h>
+#include "univalue/univalue.h"
 
 #define _(x) std::string(x) /* Keep the _() around in case gettext or such will be used later to translate non-UI */
 

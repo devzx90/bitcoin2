@@ -16,7 +16,7 @@
 #include "utilmoneystr.h"
 
 #include <stdint.h>
-#include <univalue.h>
+#include "univalue/univalue.h"
 
 using namespace std;
 
