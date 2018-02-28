@@ -1114,30 +1114,15 @@ bool TxOutToPublicCoin(const CTxOut txout, PublicCoin& pubCoin, CValidationState
     return true;
 }
 
-bool BlockToPubcoinList(const CBlock& block, list<PublicCoin>& listPubcoins, bool fFilterInvalid)
+bool BlockToPubcoinList(const CBlock& block, list<PublicCoin>& listPubcoins)
 {
     for (const CTransaction tx : block.vtx) {
         if(!tx.IsZerocoinMint())
             continue;
 
-        // Filter out mints that have used invalid outpoints
-        if (fFilterInvalid) {
-            bool fValid = true;
-            for (const CTxIn in : tx.vin) {
-                if (!ValidOutPoint(in.prevout, INT_MAX)) {
-                    fValid = false;
-                    break;
-                }
-            }
-            if (!fValid)
-                continue;
-        }
-
         uint256 txHash = tx.GetHash();
-        for (unsigned int i = 0; i < tx.vout.size(); i++) {
-            //Filter out mints that use invalid outpoints - edge case: invalid spend with minted change
-            if (fFilterInvalid && !ValidOutPoint(COutPoint(txHash, i), INT_MAX))
-                break;
+        for (unsigned int i = 0; i < tx.vout.size(); i++)
+		{
 
             const CTxOut txOut = tx.vout[i];
             if(!txOut.scriptPubKey.IsZerocoinMint())
@@ -1156,30 +1141,16 @@ bool BlockToPubcoinList(const CBlock& block, list<PublicCoin>& listPubcoins, boo
 }
 
 //return a list of zerocoin mints contained in a specific block
-bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints, bool fFilterInvalid)
+bool BlockToZerocoinMintList(const CBlock& block, std::list<CZerocoinMint>& vMints)
 {
-    for (const CTransaction tx : block.vtx) {
+    for (const CTransaction tx : block.vtx)
+	{
         if(!tx.IsZerocoinMint())
             continue;
 
-        // Filter out mints that have used invalid outpoints
-        if (fFilterInvalid) {
-            bool fValid = true;
-            for (const CTxIn in : tx.vin) {
-                if (!ValidOutPoint(in.prevout, INT_MAX)) {
-                    fValid = false;
-                    break;
-                }
-            }
-            if (!fValid)
-                continue;
-        }
-
         uint256 txHash = tx.GetHash();
-        for (unsigned int i = 0; i < tx.vout.size(); i++) {
-            //Filter out mints that use invalid outpoints - edge case: invalid spend with minted change
-            if (fFilterInvalid && !ValidOutPoint(COutPoint(txHash, i), INT_MAX))
-                break;
+        for (unsigned int i = 0; i < tx.vout.size(); i++)
+		{
 
             const CTxOut txOut = tx.vout[i];
             if(!txOut.scriptPubKey.IsZerocoinMint())
@@ -1225,22 +1196,17 @@ bool BlockToMintValueVector(const CBlock& block, const CoinDenomination denom, v
 }
 
 //return a list of zerocoin spends contained in a specific block, list may have many denominations
-std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block, bool fFilterInvalid)
+std::list<libzerocoin::CoinDenomination> ZerocoinSpendListFromBlock(const CBlock& block)
 {
     std::list<libzerocoin::CoinDenomination> vSpends;
-    for (const CTransaction tx : block.vtx) {
-        if (!tx.IsZerocoinSpend())
-            continue;
+    for (const CTransaction tx : block.vtx)
+	{
+        if (!tx.IsZerocoinSpend()) continue;
 
-        for (const CTxIn txin : tx.vin) {
+        for (const CTxIn txin : tx.vin)
+		{
             if (!txin.scriptSig.IsZerocoinSpend())
                 continue;
-
-            if (fFilterInvalid) {
-                CoinSpend spend = TxInToZerocoinSpend(txin);
-                if (mapInvalidSerials.count(spend.getCoinSerialNumber()))
-                    continue;
-            }
 
             libzerocoin::CoinDenomination c = libzerocoin::IntToZerocoinDenomination(txin.nSequence);
             vSpends.push_back(c);
@@ -1277,13 +1243,6 @@ CoinSpend TxInToZerocoinSpend(const CTxIn& txin)
 //Check a zerocoinspend considering external context such as blockchain data, height, etc.
 bool ContextualCheckCoinSpend(const CoinSpend& spend, CBlockIndex* pindex, const uint256& txid)
 {
-    // Make sure that the serial number is in valid range
-    if (pindex->nHeight >= Params().Zerocoin_Block_EnforceSerialRange()) {
-        if (!spend.HasValidSerial(Params().Zerocoin_Params()))
-            return error("%s : txid=%s in block %d contains invalid serial %s\n", __func__, txid.GetHex(),
-                         pindex->nHeight, spend.getCoinSerialNumber());
-    }
-
     //Is the serial already in the blockchain?
     int nHeightTxSpend = 0;
     if (IsSerialInBlockchain(spend.getCoinSerialNumber(), nHeightTxSpend)) {
@@ -1385,7 +1344,7 @@ bool CheckZerocoinSpend(const CTransaction tx, bool fVerifySignature, CValidatio
     return fValidated;
 }
 
-bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fRejectBadUTXO, CValidationState& state)
+bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationState& state)
 {
     // Basic checks that don't depend on any context
     if (tx.vin.empty())
@@ -1545,7 +1504,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     if (GetAdjustedTime() > GetSporkValue(SPORK_16_ZEROCOIN_MAINTENANCE_MODE) && tx.ContainsZerocoins())
         return state.DoS(10, error("AcceptToMemoryPool : Zerocoin transactions are temporarily disabled for maintenance"), REJECT_INVALID, "bad-tx");
 
-    if (!CheckTransaction(tx, chainActive.Height() >= Params().Zerocoin_StartHeight(), true, state))
+    if (!CheckTransaction(tx, chainActive.Height() >= Params().Zerocoin_StartHeight(), state))
         return state.DoS(100, error("AcceptToMemoryPool: : CheckTransaction failed"), REJECT_INVALID, "bad-tx");
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -1775,7 +1734,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
         *pfMissingInputs = false;
 
 
-    if (!CheckTransaction(tx, chainActive.Height() >= Params().Zerocoin_StartHeight(), true, state))
+    if (!CheckTransaction(tx, chainActive.Height() >= Params().Zerocoin_StartHeight(), state))
         return error("AcceptableInputs: : CheckTransaction failed");
 
     // Coinbase is only valid in a block, not as a loose transaction
@@ -2770,9 +2729,8 @@ bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError
 bool UpdateZBTC2Supply(const CBlock& block, CBlockIndex* pindex)
 {
     std::list<CZerocoinMint> listMints;
-    bool fFilterInvalid = pindex->nHeight >= Params().Zerocoin_Block_RecalculateAccumulators();
-    BlockToZerocoinMintList(block, listMints, fFilterInvalid);
-    std::list<libzerocoin::CoinDenomination> listSpends = ZerocoinSpendListFromBlock(block, fFilterInvalid);
+    BlockToZerocoinMintList(block, listMints);
+    std::list<libzerocoin::CoinDenomination> listSpends = ZerocoinSpendListFromBlock(block);
 
     // Initialize zerocoin supply to the supply from previous block
     if (pindex->pprev && pindex->pprev->GetBlockHeader().nVersion > 3) {
@@ -2910,7 +2868,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 if (!txIn.scriptSig.IsZerocoinSpend())
                     continue;
                 CoinSpend spend = TxInToZerocoinSpend(txIn);
-                nValueIn += spend.getDenomination() * COIN;
+                nValueIn += spend.getDenomination() * CENT;
 
                 //Perform checks on the spend that are based on blockchain context
                 if (!ContextualCheckCoinSpend(spend, pindex, txid))
@@ -3987,7 +3945,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     bool fZerocoinActive = block.GetBlockTime() > Params().Zerocoin_StartTime();
     vector<CBigNum> vBlockSerials;
     for (const CTransaction& tx : block.vtx) {
-        if (!CheckTransaction(tx, fZerocoinActive, chainActive.Height() + 1 >= Params().Zerocoin_Block_EnforceSerialRange(), state))
+        if (!CheckTransaction(tx, fZerocoinActive, state))
             return error("CheckBlock() : CheckTransaction failed");
 
         // double check that there are no double spent zBTC2 spends in this block

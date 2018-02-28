@@ -4373,7 +4373,7 @@ bool CWallet::CreateZerocoinMintTransaction(const CAmount nValue, CMutableTransa
         nValueRemaining = nValue - nMintingValue - (isZCSpendChange ? nFeeRet : 0);
 
         // if this is change of a zerocoinspend, then we can't mint all change, at least something must be given as a fee
-        if (isZCSpendChange && nValueRemaining <= 1 * COIN)
+        if (isZCSpendChange && nValueRemaining < Params().Zerocoin_MintFee()) // TODO: Adjust the min nValueRemaining
             break;
 
         libzerocoin::CoinDenomination denomination = libzerocoin::AmountToClosestDenomination(nValueRemaining, nValueRemaining);

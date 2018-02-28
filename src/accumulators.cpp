@@ -1,4 +1,5 @@
 // Copyright (c) 2017 The PIVX developers
+// Copyright (c) 2018 The Bitcoin 2 developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -177,29 +178,9 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
         }
     }
 
-    //Whether this should filter out invalid/fraudulent outpoints
-    bool fFilterInvalid = nHeight >= Params().Zerocoin_Block_RecalculateAccumulators();
-
     //Accumulate all coins over the last ten blocks that havent been accumulated (height - 20 through height - 11)
     int nTotalMintsFound = 0;
     CBlockIndex *pindex = chainActive[nHeight - 20];
-
-    //On a specific block, a recalculation of the accumulators will be forced
-    if (nHeight == Params().Zerocoin_Block_RecalculateAccumulators()) {
-        pindex = chainActive[Params().Zerocoin_Block_LastGoodCheckpoint() - 10];
-        mapAccumulators.Reset();
-        if (!mapAccumulators.Load(chainActive[Params().Zerocoin_Block_LastGoodCheckpoint()]->nAccumulatorCheckpoint)) {
-            LogPrintf("%s: failed to reset to previous checkpoint when recalculating accumulators\n", __func__);
-            return false;
-        }
-        LogPrintf("*** %s recalculating checkpoint\n", __func__);
-
-        // Erase the checkpoints from the period of time that bad mints were being made
-        if (!EraseCheckpoints(Params().Zerocoin_Block_LastGoodCheckpoint() + 1, nHeight)) {
-            LogPrintf("%s : failed to erase Checkpoints while recalculating checkpoints\n", __func__);
-            return false;
-        }
-    }
 
     while (pindex->nHeight < nHeight - 10) {
         // checking whether we should stop this process due to a shutdown request
@@ -220,7 +201,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
         }
 
         std::list<PublicCoin> listPubcoins;
-        if (!BlockToPubcoinList(block, listPubcoins, fFilterInvalid)) {
+        if (!BlockToPubcoinList(block, listPubcoins)) {
             return error("%s: failed to get zerocoin mintlist from block %d\n", __func__, pindex->nHeight);
         }
 
@@ -256,14 +237,12 @@ bool ValidateAccumulatorCheckpoint(const CBlock& block, CBlockIndex* pindex, Acc
     if (!fVerifyingBlocks && pindex->nHeight >= Params().Zerocoin_StartHeight() && pindex->nHeight % 10 == 0) {
         uint256 nCheckpointCalculated = 0;
 
-        // if IDB, invalid outpoints must be calculated or else acc checkpoint will be incorrect
-        if (pindex->nHeight == Params().Zerocoin_Block_RecalculateAccumulators())
-            PopulateInvalidOutPointMap();
-
-        if (!CalculateAccumulatorCheckpoint(pindex->nHeight, nCheckpointCalculated, mapAccumulators)) {
+        if (!CalculateAccumulatorCheckpoint(pindex->nHeight, nCheckpointCalculated, mapAccumulators))
+		{
             //Calculate list of checkpoints that may be missing due to deletion on block 809000, and rewinding back before 809000
-            int nStop = Params().Zerocoin_Block_RecalculateAccumulators() + 20;
-            if (pindex->nHeight < nStop && pindex->nHeight > Params().Zerocoin_Block_LastGoodCheckpoint()) {
+            /*int nStop = Params().Zerocoin_Block_RecalculateAccumulators() + 20;
+            if (pindex->nHeight < nStop && pindex->nHeight > Params().Zerocoin_Block_LastGoodCheckpoint())
+			{
                 LogPrintf("%s : Checkpoint not found for block %d, recalculating accumulators\n", __func__, pindex->nHeight);
                 CBlockIndex* pindexCheckpoint = chainActive[Params().Zerocoin_Block_LastGoodCheckpoint()];
                 list<uint256> listCheckpoints;
@@ -279,9 +258,11 @@ bool ValidateAccumulatorCheckpoint(const CBlock& block, CBlockIndex* pindex, Acc
                 string strError;
                 if (!ReindexAccumulators(listCheckpoints, strError) || !CalculateAccumulatorCheckpoint(pindex->nHeight, nCheckpointCalculated, mapAccumulators))
                     return error("%s : failed to recalculate accumulator checkpoint", __func__);
-            } else {
+            } 
+			else
+			{*/
                 return error("%s : failed to calculate accumulator checkpoint", __func__);
-            }
+            //}
         }
 
         if (nCheckpointCalculated != block.nAccumulatorCheckpoint) {
