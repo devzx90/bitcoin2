@@ -18,7 +18,7 @@
 
 #include <boost/function.hpp>
 
-#include "univalue/univalue.h"
+#include <univalue.h>
 
 class CRPCCommand;
 
@@ -40,7 +40,7 @@ public:
     std::string strMethod;
     UniValue params;
 
-    JSONRequest() { id = NULL; }
+    JSONRequest() { id = NullUniValue; }
     void parse(const UniValue& valRequest);
 };
 

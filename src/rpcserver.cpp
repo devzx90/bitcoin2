@@ -26,7 +26,7 @@
 #include <boost/thread.hpp>
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper()
 
-#include "univalue/univalue.h"
+#include <univalue.h>
 
 using namespace RPCServer;
 using namespace std;
