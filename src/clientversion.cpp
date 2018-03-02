@@ -90,7 +90,7 @@ std::string FormatFullVersion()
 {
 	if (CLIENT_VERSION_REVISION == 0 && CLIENT_VERSION_BUILD == 0)
 	{
-		ostringstream convert;
+		std::ostringstream convert;
 		convert << "v." << CLIENT_VERSION_MAJOR << '.' << CLIENT_VERSION_MINOR;
 		return convert.str();
 	}
