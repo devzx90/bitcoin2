@@ -1598,10 +1598,10 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                 }
 
                 //Check for invalid/fraudulent inputs
-                if (!ValidOutPoint(txin.prevout, chainActive.Height())) {
+               /* if (!ValidOutPoint(txin.prevout, chainActive.Height())) {
                     return state.Invalid(error("%s : tried to spend invalid input %s in tx %s", __func__, txin.prevout.ToString(),
                                                 tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
-                }
+                }*/
             }
 
             // are the actual inputs available?
@@ -1795,7 +1795,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
                 return false;
 
             // do all inputs exist?
-            // Note that this does not check for the presence of actual outputs (see the next check for that),
+            // Note that this does not check for the presence of actual inputs (see the next check for that),
             // only helps filling in pfMissingInputs (to determine missing vs spent).
             for (const CTxIn txin : tx.vin) {
                 if (!view.HaveCoins(txin.prevout.hash)) {
@@ -1805,10 +1805,10 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
                 }
 
                 // check for invalid/fraudulent inputs
-                if (!ValidOutPoint(txin.prevout, chainActive.Height())) {
+               /* if (!ValidOutPoint(txin.prevout, chainActive.Height())) {
                     return state.Invalid(error("%s : tried to spend invalid input %s in tx %s", __func__, txin.prevout.ToString(),
                                                 tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
-                }
+                }*/
             }
 
             // are the actual inputs available?
@@ -2850,7 +2850,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock() : zerocoin transactions are currently in maintenance mode"));
         }
 
-        if (tx.IsZerocoinSpend()) {
+        if (tx.IsZerocoinSpend())
+		{
             int nHeightTx = 0;
             uint256 txid = tx.GetHash();
             vSpendsInBlock.emplace_back(txid);
@@ -2864,31 +2865,30 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
             //Check for double spending of serial #'s
             set<CBigNum> setSerials;
-            for (const CTxIn& txIn : tx.vin) {
-                if (!txIn.scriptSig.IsZerocoinSpend())
-                    continue;
+            for (const CTxIn& txIn : tx.vin)
+			{
+                if (!txIn.scriptSig.IsZerocoinSpend()) continue;
                 CoinSpend spend = TxInToZerocoinSpend(txIn);
                 nValueIn += spend.getDenomination() * CENT;
 
                 //Perform checks on the spend that are based on blockchain context
-                if (!ContextualCheckCoinSpend(spend, pindex, txid))
-                    return state.DoS(100, error("%s: Coinspend is not valid in block %s", __func__, block.GetHash().GetHex()));
+                if (!ContextualCheckCoinSpend(spend, pindex, txid)) return state.DoS(100, error("%s: Coinspend is not valid in block %s", __func__, block.GetHash().GetHex()));
 
                 //queue for db write after the 'justcheck' section has concluded
                 vSpends.emplace_back(make_pair(spend, tx.GetHash()));
             }
-        } else if (!tx.IsCoinBase()) {
-            if (!view.HaveInputs(tx))
-                return state.DoS(100, error("ConnectBlock() : inputs missing/spent"),
-                    REJECT_INVALID, "bad-txns-inputs-missingorspent");
+		}
+		else if (!tx.IsCoinBase())
+		{
+			if (!view.HaveInputs(tx)) return state.DoS(100, error("ConnectBlock() : inputs missing/spent"), REJECT_INVALID, "bad-txns-inputs-missingorspent");
 
             // Check that the inputs are not marked as invalid/fraudulent
-            for (CTxIn in : tx.vin) {
+            /*for (CTxIn in : tx.vin) {
                 if (!ValidOutPoint(in.prevout, pindex->nHeight)) {
                     return state.DoS(100, error("%s : tried to spend invalid input %s in tx %s", __func__, in.prevout.ToString(),
                                   tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
                 }
-            }
+            }*/
 
             // Add in sigops done by pay-to-script-hash inputs;
             // this is to prevent a "rogue miner" from creating
@@ -2909,7 +2909,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         nValueOut += tx.GetValueOut();
 
         CTxUndo undoDummy;
-        if (i > 0) {
+        if (i > 0)
+		{
             blockundo.vtxundo.push_back(CTxUndo());
         }
         UpdateCoins(tx, state, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
