@@ -849,7 +849,7 @@ UniValue reconsiderblock(const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
-UniValue getinvalid (const UniValue& params, bool fHelp)
+/*UniValue getinvalid (const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -972,7 +972,7 @@ UniValue getinvalid (const UniValue& params, bool fHelp)
 
     ret.push_back(obj);
     return ret;
-}
+}*/
 
 UniValue findserial(const UniValue& params, bool fHelp)
 {

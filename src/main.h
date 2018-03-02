@@ -157,8 +157,8 @@ extern int64_t nReserveBalance;
 
 extern std::map<uint256, int64_t> mapRejectedBlocks;
 extern std::map<unsigned int, unsigned int> mapHashedBlocks;
-extern std::map<COutPoint, COutPoint> mapInvalidOutPoints;
-extern std::map<CBigNum, CAmount> mapInvalidSerials;
+//extern std::map<COutPoint, COutPoint> mapInvalidOutPoints;
+//extern std::map<CBigNum, CAmount> mapInvalidSerials;
 extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 extern std::map<uint256, int64_t> mapZerocoinspends; //txid, time received
 
