@@ -418,10 +418,12 @@ padding-bottom:2px;
 
 QHeaderView::down-arrow {
     image: url(':/images/downArrow_small_white');
+	margin-right: 4px;
 }
 
 QHeaderView::up-arrow {
     image: url(':/images/upArrow_small_white');
+	margin-right: 4px;
 }
 
 QHeaderView::section:last {
