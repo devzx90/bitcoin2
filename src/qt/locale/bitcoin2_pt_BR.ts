@@ -586,8 +586,8 @@
         <translation>Ferramentas de abas</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Send coins to a Bitcoin2 address</source>
@@ -606,12 +606,12 @@
         <translation>Procurar masternodes</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
-        <translation>&amp;Sobre o Bitcoin2 Core</translation>
+        <source>&amp;About Bitcoin 2 Core</source>
+        <translation>&amp;Sobre o Bitcoin 2 Core</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
-        <translation>Mostra informação sobre o Bitcoin2 Core</translation>
+        <source>Show information about Bitcoin 2 Core</source>
+        <translation>Mostra informação sobre o Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Modify configuration options for Bitcoin2</source>
@@ -666,11 +666,11 @@
         <translation>Janela de exploração de blocos</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
-        <translation>Mostra a ajuda da Bitcoin2 Core para receber uma lista com possíveis opções de linha de comando Bitcoin2</translation>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <translation>Mostra a ajuda da Bitcoin 2 Core para receber uma lista com possíveis opções de linha de comando Bitcoin2</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
+        <source>Bitcoin 2 Core client</source>
         <translation>Cliente Core Bitcoin2</translation>
     </message>
     <message>
@@ -1133,16 +1133,16 @@ MultiSend: %1</translation>
         <translation>versão</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>(%1-bit)</source>
         <translation>(%1-bit)</translation>
     </message>
     <message>
-        <source>About Bitcoin2 Core</source>
-        <translation>Sobre o Bitcoin2 Core</translation>
+        <source>About Bitcoin 2 Core</source>
+        <translation>Sobre o Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1176,16 +1176,16 @@ MultiSend: %1</translation>
         <translation>Bem-vindo</translation>
     </message>
     <message>
-        <source>Welcome to Bitcoin2 Core.</source>
-        <translation>Bem-vindo ao Bitcoin2 Core.</translation>
+        <source>Welcome to Bitcoin 2 Core.</source>
+        <translation>Bem-vindo ao Bitcoin 2 Core.</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where Bitcoin2 Core will store its data.</source>
-        <translation>Como essa é a primeira vez que o programa é utilizado, você pode escolher onde Bitcoin2 Core vai armazenar os seus dados.</translation>
+        <source>As this is the first time the program is launched, you can choose where Bitcoin 2 Core will store its data.</source>
+        <translation>Como essa é a primeira vez que o programa é utilizado, você pode escolher onde Bitcoin 2 Core vai armazenar os seus dados.</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>Bitcoin2 Core vai baixar e armazenar uma cópia da blockchain Bitcoin2. Pelo menos %1GB de informação será armazenado neste diretório e irá aumentar com o tempo. A carteira também será armazenada neste diretório.</translation>
+        <source>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <translation>Bitcoin 2 Core vai baixar e armazenar uma cópia da blockchain Bitcoin2. Pelo menos %1GB de informação será armazenado neste diretório e irá aumentar com o tempo. A carteira também será armazenada neste diretório.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -1196,8 +1196,8 @@ MultiSend: %1</translation>
         <translation>Usar um diretório personalizado de dados:</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
@@ -2719,8 +2719,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>Bitcoin2 Core is shutting down...</source>
-        <translation>Bitcoin2 Core está desligando...</translation>
+        <source>Bitcoin 2 Core is shutting down...</source>
+        <translation>Bitcoin 2 Core está desligando...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
@@ -2861,8 +2861,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -2877,8 +2877,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Os desenvolvedores do Dash Core</translation>
     </message>
     <message>
-        <source>The Bitcoin2 Core developers</source>
-        <translation>Os desenvolvedores do Bitcoin2 Core</translation>
+        <source>The Bitcoin 2 Core developers</source>
+        <translation>Os desenvolvedores do Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>[testnet]</source>
@@ -3478,7 +3478,7 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Aviso: -paytxfee está definido como muito alto! Está e a taxa de transação que você irá pagar se enviar uma transação.</translation>
     </message>
     <message>
-        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin2 Core will not work properly.</source>
+        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin 2 Core will not work properly.</source>
         <translation>Aviso: Favor verificar se o horário e data de seu computador estão corretos! Se o seu relógio estiver errado o Core Bitcoin2 não vai funcionar corretamente.</translation>
     </message>
     <message>
@@ -3559,7 +3559,7 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
     </message>
     <message>
         <source>Copyright (C) 2015-%i The PIVX Core Developers</source>
-        <translation>Todos os direitos reservados (C) 2015-%i aos Desenvolvedores do Bitcoin2 Core</translation>
+        <translation>Todos os direitos reservados (C) 2015-%i aos Desenvolvedores do Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Corrupted block database detected</source>
@@ -3610,8 +3610,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Erro no carregamento da wallet.dat: Carteira corrompida</translation>
     </message>
     <message>
-        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin2 Core</source>
-        <translation>Erro ao carregar wallet.dat: A Carteira requer uma nova versão da Bitcoin2 Core</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin 2 Core</source>
+        <translation>Erro ao carregar wallet.dat: A Carteira requer uma nova versão da Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Error opening block database</source>
@@ -4090,8 +4090,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Carteira está travada.</translation>
     </message>
     <message>
-        <source>Wallet needed to be rewritten: restart Bitcoin2 Core to complete</source>
-        <translation>A carteira precisa ser reescrita: reinicia o Bitcoin2 Core para completar</translation>
+        <source>Wallet needed to be rewritten: restart Bitcoin 2 Core to complete</source>
+        <translation>A carteira precisa ser reescrita: reinicia o Bitcoin 2 Core para completar</translation>
     </message>
     <message>
         <source>Wallet options:</source>

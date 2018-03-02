@@ -35,7 +35,7 @@ QT_TRANSLATE_NOOP("bitcoin2-core", ""
 QT_TRANSLATE_NOOP("bitcoin2-core", ""
 "Calculated accumulator checkpoint is not what is recorded by block index"),
 QT_TRANSLATE_NOOP("bitcoin2-core", ""
-"Cannot obtain a lock on data directory %s. Bitcoin2 Core is probably already "
+"Cannot obtain a lock on data directory %s. Bitcoin 2 Core is probably already "
 "running."),
 QT_TRANSLATE_NOOP("bitcoin2-core", ""
 "Change automatic finalized budget voting behavior. mode=auto: Vote for only "
@@ -182,7 +182,7 @@ QT_TRANSLATE_NOOP("bitcoin2-core", ""
 "It is also recommended to set alertnotify so you are notified of problems;\n"
 "for example: alertnotify=echo %%s | mail -s \"Bitcoin2 Alert\" admin@foo.com\n"),
 QT_TRANSLATE_NOOP("bitcoin2-core", ""
-"Unable to bind to %s on this computer. Bitcoin2 Core is probably already running."),
+"Unable to bind to %s on this computer. Bitcoin 2 Core is probably already running."),
 QT_TRANSLATE_NOOP("bitcoin2-core", ""
 "Unable to locate enough Obfuscation denominated funds for this transaction."),
 QT_TRANSLATE_NOOP("bitcoin2-core", ""
@@ -202,7 +202,7 @@ QT_TRANSLATE_NOOP("bitcoin2-core", ""
 "pay if you send a transaction."),
 QT_TRANSLATE_NOOP("bitcoin2-core", ""
 "Warning: Please check that your computer's date and time are correct! If "
-"your clock is wrong Bitcoin2 Core will not work properly."),
+"your clock is wrong Bitcoin 2 Core will not work properly."),
 QT_TRANSLATE_NOOP("bitcoin2-core", ""
 "Warning: The network does not appear to fully agree! Some miners appear to "
 "be experiencing issues."),
@@ -288,7 +288,7 @@ QT_TRANSLATE_NOOP("bitcoin2-core", "Error initializing wallet database environme
 QT_TRANSLATE_NOOP("bitcoin2-core", "Error loading block database"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Error loading wallet.dat"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Error loading wallet.dat: Wallet corrupted"),
-QT_TRANSLATE_NOOP("bitcoin2-core", "Error loading wallet.dat: Wallet requires newer version of Bitcoin2 Core"),
+QT_TRANSLATE_NOOP("bitcoin2-core", "Error loading wallet.dat: Wallet requires newer version of Bitcoin 2 Core"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Error opening block database"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Error reading from database, shutting down."),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Error recovering public key."),
@@ -319,7 +319,7 @@ QT_TRANSLATE_NOOP("bitcoin2-core", "Incompatible mode."),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Incompatible version."),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Incorrect or no genesis block found. Wrong datadir for network?"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Information"),
-QT_TRANSLATE_NOOP("bitcoin2-core", "Initialization sanity check failed. Bitcoin2 Core is shutting down."),
+QT_TRANSLATE_NOOP("bitcoin2-core", "Initialization sanity check failed. Bitcoin 2 Core is shutting down."),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Input is not valid."),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Insufficient funds"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Insufficient funds."),
@@ -473,7 +473,7 @@ QT_TRANSLATE_NOOP("bitcoin2-core", "Verifying blocks..."),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Verifying wallet..."),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Wallet %s resides outside data directory %s"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Wallet is locked."),
-QT_TRANSLATE_NOOP("bitcoin2-core", "Wallet needed to be rewritten: restart Bitcoin2 Core to complete"),
+QT_TRANSLATE_NOOP("bitcoin2-core", "Wallet needed to be rewritten: restart Bitcoin 2 Core to complete"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Wallet options:"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Wallet window title"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Warning"),

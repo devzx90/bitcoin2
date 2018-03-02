@@ -27,13 +27,13 @@ When a wallet SwiftTX transaction is successfully locked a shell command provide
 
 Details pertaining to an observed "Transaction Lock" can also be retrieved through RPC, it’s important however to understand the underlying mechanism.
 
-By default, the Bitcoin2 Core daemon will launch using the following constant:
+By default, the Bitcoin 2 Core daemon will launch using the following constant:
 
 ```
 static const int DEFAULT_SWIFTTX_DEPTH = 5;
 ```
 
-This value can be overridden by passing the following argument to the Bitcoin2 Core daemon:
+This value can be overridden by passing the following argument to the Bitcoin 2 Core daemon:
 
 ```
 -swifttxdepth=<n>

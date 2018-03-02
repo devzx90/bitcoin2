@@ -598,8 +598,8 @@
         <translation>Panel nástrojov Záložky</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Send coins to a Bitcoin2 address</source>
@@ -618,12 +618,12 @@
         <translation>Prezrieť masternody</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
-        <translation>O Bitcoin2 Core</translation>
+        <source>&amp;About Bitcoin 2 Core</source>
+        <translation>O Bitcoin 2 Core</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
-        <translation>Zobraziť informácie o Bitcoin2 Core</translation>
+        <source>Show information about Bitcoin 2 Core</source>
+        <translation>Zobraziť informácie o Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Modify configuration options for Bitcoin2</source>
@@ -678,12 +678,12 @@
         <translation>Okno blockchain prehliadača</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
-        <translation>Zobraziť pomocnú správu programu Bitcoin2 Core a získajte zoznam možností príkazového riadka Bitcoin2</translation>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <translation>Zobraziť pomocnú správu programu Bitcoin 2 Core a získajte zoznam možností príkazového riadka Bitcoin2</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
-        <translation>Bitcoin2 Core klient</translation>
+        <source>Bitcoin 2 Core client</source>
+        <translation>Bitcoin 2 Core klient</translation>
     </message>
     <message>
         <source>Synchronizing with network...</source>
@@ -908,15 +908,15 @@ MultiSend: %1</translation>
 <context>
     <name>HelpMessageDialog</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     </context>
 <context>
     <name>Intro</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Error</source>
@@ -1211,8 +1211,8 @@ MultiSend: %1</translation>
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     </context>
 <context>

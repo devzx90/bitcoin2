@@ -602,8 +602,8 @@
         <translation>Registerkartenleiste</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Send coins to a Bitcoin2 address</source>
@@ -630,12 +630,12 @@
         <translation>Masternodes durchsuchen</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
-        <translation>Über.Bitcoin2 Core</translation>
+        <source>&amp;About Bitcoin 2 Core</source>
+        <translation>Über.Bitcoin 2 Core</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
-        <translation>Zeigt Informationen über Bitcoin2 Core</translation>
+        <source>Show information about Bitcoin 2 Core</source>
+        <translation>Zeigt Informationen über Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Modify configuration options for Bitcoin2</source>
@@ -686,12 +686,12 @@
         <translation>Blockchain Betrachter Fenster</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
         <translation>Zeige die Bitcoin2-Core Hilfe, um mögliche Bitcoin2 Kommando-Zeilen-Optionen anzuzeigen</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
-        <translation>Bitcoin2 Core Client</translation>
+        <source>Bitcoin 2 Core client</source>
+        <translation>Bitcoin 2 Core Client</translation>
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin2 network</source>
@@ -1183,16 +1183,16 @@ Adresse: %4</translation>
         <translation>Version</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>(%1-bit)</source>
         <translation>(%1-Bit)</translation>
     </message>
     <message>
-        <source>About Bitcoin2 Core</source>
-        <translation>Über Bitcoin2 Core</translation>
+        <source>About Bitcoin 2 Core</source>
+        <translation>Über Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1238,16 +1238,16 @@ Adresse: %4</translation>
         <translation>Willkommen</translation>
     </message>
     <message>
-        <source>Welcome to Bitcoin2 Core.</source>
-        <translation>Willkommen zu Bitcoin2 Core.</translation>
+        <source>Welcome to Bitcoin 2 Core.</source>
+        <translation>Willkommen zu Bitcoin 2 Core.</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where Bitcoin2 Core will store its data.</source>
-        <translation>Da dies das erste Mal ist, dass Sie Bitcoin2 Core starten, legen Sie jetzt bitte fest, an welchem Ort die Daten gespeichert werden sollen.</translation>
+        <source>As this is the first time the program is launched, you can choose where Bitcoin 2 Core will store its data.</source>
+        <translation>Da dies das erste Mal ist, dass Sie Bitcoin 2 Core starten, legen Sie jetzt bitte fest, an welchem Ort die Daten gespeichert werden sollen.</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>Bitcoin2 Core wird die Blockchain laden und lokal speichern. Dafür sind mindestens %1GB freier Speicherplatz erforderlich. Der Speicherbedarf wird mit der Zeit anwachsen. Die Wallet wird ebenfalls in diesem Verzeichnis gespeichert.</translation>
+        <source>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <translation>Bitcoin 2 Core wird die Blockchain laden und lokal speichern. Dafür sind mindestens %1GB freier Speicherplatz erforderlich. Der Speicherbedarf wird mit der Zeit anwachsen. Die Wallet wird ebenfalls in diesem Verzeichnis gespeichert.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -1258,8 +1258,8 @@ Adresse: %4</translation>
         <translation>Ein benutzerdefiniertes Datenverzeichnis verwenden:</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
@@ -3476,8 +3476,8 @@ Bitte haben Sie Geduld...</translation>
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>Bitcoin2 Core is shutting down...</source>
-        <translation>Bitcoin2 Core wird beendet...</translation>
+        <source>Bitcoin 2 Core is shutting down...</source>
+        <translation>Bitcoin 2 Core wird beendet...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
@@ -3626,8 +3626,8 @@ Bitte haben Sie Geduld...</translation>
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -3642,8 +3642,8 @@ Bitte haben Sie Geduld...</translation>
         <translation>Die Dash Core Entwickler</translation>
     </message>
     <message>
-        <source>The Bitcoin2 Core developers</source>
-        <translation>Die Bitcoin2 Core Entwickler</translation>
+        <source>The Bitcoin 2 Core developers</source>
+        <translation>Die Bitcoin 2 Core Entwickler</translation>
     </message>
     <message>
         <source>[testnet]</source>
@@ -4323,8 +4323,8 @@ Bitte haben Sie Geduld...</translation>
         <translation>Der berechnete Akkumulator-Checkpoint ist nicht das, was vom Blockindex aufgezeichnet wurde</translation>
     </message>
     <message>
-        <source>Cannot obtain a lock on data directory %s. Bitcoin2 Core is probably already running.</source>
-        <translation>Kann keine Sperre für das Datenverzeichnis %s erhalten. Bitcoin2 Core läuft wahrscheinlich bereits.</translation>
+        <source>Cannot obtain a lock on data directory %s. Bitcoin 2 Core is probably already running.</source>
+        <translation>Kann keine Sperre für das Datenverzeichnis %s erhalten. Bitcoin 2 Core läuft wahrscheinlich bereits.</translation>
     </message>
     <message>
         <source>Create new files with system default permissions, instead of umask 077 (only effective with disabled wallet functionality)</source>
@@ -4491,8 +4491,8 @@ Bitte haben Sie Geduld...</translation>
         <translation>Hinweis</translation>
     </message>
     <message>
-        <source>Initialization sanity check failed. Bitcoin2 Core is shutting down.</source>
-        <translation>Initialisierung Sanity-Check fehlgeschlagen. Bitcoin2 Core schaltet ab.</translation>
+        <source>Initialization sanity check failed. Bitcoin 2 Core is shutting down.</source>
+        <translation>Initialisierung Sanity-Check fehlgeschlagen. Bitcoin 2 Core schaltet ab.</translation>
     </message>
     <message>
         <source>Input is not valid.</source>
@@ -4783,8 +4783,8 @@ Bitte haben Sie Geduld...</translation>
         <translation>Wallet gesperrt.</translation>
     </message>
     <message>
-        <source>Wallet needed to be rewritten: restart Bitcoin2 Core to complete</source>
-        <translation>Wallet musste neu geschrieben werden: Bitte Bitcoin2 Core neu starten</translation>
+        <source>Wallet needed to be rewritten: restart Bitcoin 2 Core to complete</source>
+        <translation>Wallet musste neu geschrieben werden: Bitte Bitcoin 2 Core neu starten</translation>
     </message>
     <message>
         <source>Wallet options:</source>

@@ -518,7 +518,7 @@
         <translation>&amp;Pomoc</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>&amp;Rdzeń Bitcoin2</translation>
     </message>
     <message>
@@ -538,11 +538,11 @@
         <translation>Przeglądaj masternodes</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
+        <source>&amp;About Bitcoin 2 Core</source>
         <translation>&amp;O rdzeniu bitcoina</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
+        <source>Show information about Bitcoin 2 Core</source>
         <translation>Pokaż informacje o rdzeniu bitcoina</translation>
     </message>
     <message>
@@ -594,11 +594,11 @@
         <translation>Okno eksplorera bloków</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
         <translation>Pokaż wiadomość pomocy rdzenia Bitcoin2, aby dostać listę możliwych opcji Bitcoin2 command-line</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
+        <source>Bitcoin 2 Core client</source>
         <translation>Rdzeń Bitcoin2 klient</translation>
     </message>
     <message>
@@ -912,7 +912,7 @@ MultiWysyłlka: %1</translation>
 <context>
     <name>HelpMessageDialog</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>&amp;Rdzeń Bitcoin2</translation>
     </message>
     </context>
@@ -927,7 +927,7 @@ MultiWysyłlka: %1</translation>
         <translation>Użyj niestandardowej ścieżki danych</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>&amp;Rdzeń Bitcoin2</translation>
     </message>
     <message>
@@ -1935,7 +1935,7 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations </trans
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>&amp;Rdzeń Bitcoin2</translation>
     </message>
     </context>

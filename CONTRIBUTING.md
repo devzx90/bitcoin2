@@ -1,7 +1,7 @@
-Contributing to Bitcoin2 Core
-============================
+Contributing to Bitcoin 2 Core
+==============================
 
-The Bitcoin2 Core project operates an open contributor model where anyone is
+The Bitcoin 2 Core project operates an open contributor model where anyone is
 welcome to contribute towards development in the form of peer review, testing
 and patches. This document explains the practical process and guidelines for
 contributing.
@@ -157,10 +157,10 @@ where possible keep them short, un-complex and easy to verify.
 "Decision Making" Process
 -------------------------
 
-The following applies to code changes to the Bitcoin2 Core project, and is not to be
-confused with overall Bitcoin2 Network Protocol consensus changes.
+The following applies to code changes to the Bitcoin 2 Core project, and is not to be
+confused with overall Bitcoin 2 Network Protocol consensus changes.
 
-Whether a pull request is merged into Bitcoin2 Core rests with the project merge
+Whether a pull request is merged into Bitcoin 2 Core rests with the project merge
 maintainers and ultimately the project lead.
 
 Maintainers will take into consideration if a patch is in line with the general
@@ -174,7 +174,7 @@ In general, all pull requests must:
   - be well peer reviewed;
   - follow code style guidelines;
 
-Patches that change Bitcoin2 consensus rules are considerably more involved than
+Patches that change Bitcoin 2 consensus rules are considerably more involved than
 normal because they affect the entire ecosystem and so must be preceded by
 extensive discussions and clear detailing. While each case will be different,
 one should be prepared to expend more time and effort than for other kinds of
@@ -254,7 +254,7 @@ about:
 Release Policy
 --------------
 
-The project leader is the release manager for each Bitcoin2 Core release.
+The project leader is the release manager for each Bitcoin 2 Core release.
 
 Copyright
 ---------

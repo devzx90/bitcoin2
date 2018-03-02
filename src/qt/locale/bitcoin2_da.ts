@@ -598,7 +598,7 @@
         <translation>Værktøjslinier</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 kerne</translation>
     </message>
     <message>
@@ -618,11 +618,11 @@
         <translation>Vis masternoder</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
+        <source>&amp;About Bitcoin 2 Core</source>
         <translation>&amp;Om Bitcoin2 kerne</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
+        <source>Show information about Bitcoin 2 Core</source>
         <translation>Vis information om Bitcoin2 kerne</translation>
     </message>
     <message>
@@ -678,11 +678,11 @@
         <translation>Blockexplorer vindue</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
         <translation>Vis hjelpetekster fra Bitcoin2 kernen for at få en liste med mulige Bitcoin2 kommandolinie-startparametre</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
+        <source>Bitcoin 2 Core client</source>
         <translation>Bitcoin2 kerneklient</translation>
     </message>
     <message>
@@ -1148,7 +1148,7 @@ Adresse: %4
         <translation>version</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 kerne</translation>
     </message>
     <message>
@@ -1156,7 +1156,7 @@ Adresse: %4
         <translation>(%1-bit)</translation>
     </message>
     <message>
-        <source>About Bitcoin2 Core</source>
+        <source>About Bitcoin 2 Core</source>
         <translation>om Bitcoin2 kerne</translation>
     </message>
     <message>
@@ -1203,15 +1203,15 @@ Adresse: %4
         <translation>Velkommen</translation>
     </message>
     <message>
-        <source>Welcome to Bitcoin2 Core.</source>
+        <source>Welcome to Bitcoin 2 Core.</source>
         <translation>Velkommen til Bitcoin2 kerne</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where Bitcoin2 Core will store its data.</source>
+        <source>As this is the first time the program is launched, you can choose where Bitcoin 2 Core will store its data.</source>
         <translation>Da det er første gang programmet startes, kan De vælge hvor Bitcoin2 kernen skal lagre sine data</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <source>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
         <translation>Bitcoin2 kernen vil nu hente og gemme en kopi af Bitcoin2 blockchain. Der skal være mindst %1GB ledigt på lagermediet, og behovet vil stige efterhånden som tiden går. Selve tegnebogen vil også blive gemt her.</translation>
     </message>
     <message>
@@ -1223,7 +1223,7 @@ Adresse: %4
         <translation>Anvend en mappe valgt af brugeren</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 kerne</translation>
     </message>
     <message>
@@ -3023,7 +3023,7 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>Bitcoin2 Core is shutting down...</source>
+        <source>Bitcoin 2 Core is shutting down...</source>
         <translation>Bitcoin2 kernen lukker ned</translation>
     </message>
     <message>
@@ -3173,7 +3173,7 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 kerne</translation>
     </message>
     <message>
@@ -3189,7 +3189,7 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>DASH "core" udviklerne</translation>
     </message>
     <message>
-        <source>The Bitcoin2 Core developers</source>
+        <source>The Bitcoin 2 Core developers</source>
         <translation>Bitcoin2 "core" udviklerne</translation>
     </message>
     <message>
@@ -3798,7 +3798,7 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Forbind til den opgivne adresse og lyt efter JSON-.RPC forbindelser. Brug [host]:port notation for IPv6. Der kan indsættes flere linier (standard: Forbind til alle interfaces)</translation>
     </message>
     <message>
-        <source>Cannot obtain a lock on data directory %s. Bitcoin2 Core is probably already running.</source>
+        <source>Cannot obtain a lock on data directory %s. Bitcoin 2 Core is probably already running.</source>
         <translation>Kan ikke låse datamappen %s. Bitcoin2 core kører sandsynligvis allerede.</translation>
     </message>
     <message>
@@ -3987,7 +3987,7 @@ For eksempel: alertnotify=Echo %% | mail - s "Bitcoin2 ALARM!" e-mail@administra
 </translation>
     </message>
     <message>
-        <source>Unable to bind to %s on this computer. Bitcoin2 Core is probably already running.</source>
+        <source>Unable to bind to %s on this computer. Bitcoin 2 Core is probably already running.</source>
         <translation>Det var ikke muligt at forbinde %s på denne computer. Bitcoin2 kører sandsynligvis allerede.</translation>
     </message>
     <message>
@@ -4015,7 +4015,7 @@ For eksempel: alertnotify=Echo %% | mail - s "Bitcoin2 ALARM!" e-mail@administra
         <translation>Advarsel! -paytxfee er sat meget højt. Det er dette gebyr De kommer til at betale for transaktionen, hvis De gennemfører. </translation>
     </message>
     <message>
-        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin2 Core will not work properly.</source>
+        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin 2 Core will not work properly.</source>
         <translation>Advarsel! Kontroller at computerens dato og tid er korrekt indstillet. Hvis tiden ikke er rigtig, vil Bitcoin2 core ikke fungere ordentligt.</translation>
     </message>
     <message>
@@ -4235,7 +4235,7 @@ For eksempel: alertnotify=Echo %% | mail - s "Bitcoin2 ALARM!" e-mail@administra
         <translation>Fejl ved indlæsning af wallet.dat: Tegnebogen er beskadiget</translation>
     </message>
     <message>
-        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin2 Core</source>
+        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin 2 Core</source>
         <translation>Fejl ved indlæsning af wallet.dat: Tegnebogen kræver en nyere version af Bitcoin2 core</translation>
     </message>
     <message>
@@ -4347,7 +4347,7 @@ For eksempel: alertnotify=Echo %% | mail - s "Bitcoin2 ALARM!" e-mail@administra
         <translation>Info:</translation>
     </message>
     <message>
-        <source>Initialization sanity check failed. Bitcoin2 Core is shutting down.</source>
+        <source>Initialization sanity check failed. Bitcoin 2 Core is shutting down.</source>
         <translation>Initiering af sanitetskontrollen fejlede. Bitcoin2 core lukker ned. </translation>
     </message>
     <message>
@@ -4911,7 +4911,7 @@ For eksempel: alertnotify=Echo %% | mail - s "Bitcoin2 ALARM!" e-mail@administra
         <translation>Tegnebogen er låst</translation>
     </message>
     <message>
-        <source>Wallet needed to be rewritten: restart Bitcoin2 Core to complete</source>
+        <source>Wallet needed to be rewritten: restart Bitcoin 2 Core to complete</source>
         <translation>Tegnebogen måtte genskrives. Genstart Bitcoin2 core for at gøre færdig</translation>
     </message>
     <message>

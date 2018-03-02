@@ -393,7 +393,7 @@ std::string AddressToString(const CBitcoinAddress& Address)
     AddressScript.SetDestination(Address.Get());
 
     CAmount Sum = 0;
-    bool fAddrIndex = false;
+    bool fAddrIndex = false; // TODO: Determine if transaction indexing is enabled.
 
     if (!fAddrIndex)
         return ""; // it will take too long to find transactions by address
@@ -422,6 +422,7 @@ std::string AddressToString(const CBitcoinAddress& Address)
 
     std::string Content;
     Content += "<h1>" + _("Transactions to/from") + "&nbsp;<span>" + Address.ToString() + "</span></h1>";
+	Content += "<h2>Under construction</h2>"; // TODO: Remove this line once this page actually shows the transactions from/to the address.
     Content += TxContent;
     return Content;
 }
@@ -474,7 +475,7 @@ void BlockExplorer::showEvent(QShowEvent*)
 
         if (!GetBoolArg("-txindex", true)) {
             QString Warning = tr("Not all transactions will be shown. To view all transactions you need to set txindex=1 in the configuration file (bitcoin2.conf).");
-            QMessageBox::warning(this, "Bitcoin2 Core Blockchain Explorer", Warning, QMessageBox::Ok);
+            QMessageBox::warning(this, "Bitcoin 2 Core Blockchain Explorer", Warning, QMessageBox::Ok);
         }
     }
 }

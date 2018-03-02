@@ -1272,8 +1272,8 @@
         <translation>Carteira esta bloqueada.</translation>
     </message>
     <message>
-        <source>Wallet needed to be rewritten: restart Bitcoin2 Core to complete</source>
-        <translation>Carteira precisa ser reescrita: reinicie o Bitcoin2 Core para completar.</translation>
+        <source>Wallet needed to be rewritten: restart Bitcoin 2 Core to complete</source>
+        <translation>Carteira precisa ser reescrita: reinicie o Bitcoin 2 Core para completar.</translation>
     </message>
     <message>
         <source>Wallet options:</source>

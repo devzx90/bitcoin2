@@ -16,7 +16,7 @@ BITCOIND_USER=${BITCOIND_USER:-bitcoin2}
 BITCOIND_GROUP=${BITCOIND_GROUP:-bitcoin2}
 BITCOIND_BIN=${BITCOIND_BIN:-/usr/bin/bitcoin2d}
 
-name="Bitcoin2 Core Daemon"
+name="Bitcoin 2 Core Daemon"
 description="Bitcoin2 crypto-currency p2p network daemon"
 
 command="/usr/bin/bitcoin2d"

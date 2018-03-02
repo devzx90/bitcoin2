@@ -602,8 +602,8 @@
         <translation>Tabs toolbar</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Send coins to a Bitcoin2 address</source>
@@ -622,12 +622,12 @@
         <translation>Browse masternodes</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
-        <translation>&amp;About Bitcoin2 Core</translation>
+        <source>&amp;About Bitcoin 2 Core</source>
+        <translation>&amp;About Bitcoin 2 Core</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
-        <translation>Show information about Bitcoin2 Core</translation>
+        <source>Show information about Bitcoin 2 Core</source>
+        <translation>Show information about Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Modify configuration options for Bitcoin2</source>
@@ -682,12 +682,12 @@
         <translation>Block explorer window</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
-        <translation>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</translation>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <translation>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
-        <translation>Bitcoin2 Core client</translation>
+        <source>Bitcoin 2 Core client</source>
+        <translation>Bitcoin 2 Core client</translation>
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin2 network</source>
@@ -1184,16 +1184,16 @@ Address: %4
         <translation>version</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>(%1-bit)</source>
         <translation>(%1-bit)</translation>
     </message>
     <message>
-        <source>About Bitcoin2 Core</source>
-        <translation>About Bitcoin2 Core</translation>
+        <source>About Bitcoin 2 Core</source>
+        <translation>About Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1239,16 +1239,16 @@ Address: %4
         <translation>Welcome</translation>
     </message>
     <message>
-        <source>Welcome to Bitcoin2 Core.</source>
-        <translation>Welcome to Bitcoin2 Core.</translation>
+        <source>Welcome to Bitcoin 2 Core.</source>
+        <translation>Welcome to Bitcoin 2 Core.</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where Bitcoin2 Core will store its data.</source>
-        <translation>As this is the first time the program is launched, you can choose where Bitcoin2 Core will store its data.</translation>
+        <source>As this is the first time the program is launched, you can choose where Bitcoin 2 Core will store its data.</source>
+        <translation>As this is the first time the program is launched, you can choose where Bitcoin 2 Core will store its data.</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>Bitcoin2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</translation>
+        <source>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <translation>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -1259,8 +1259,8 @@ Address: %4
         <translation>Use a custom data directory:</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
@@ -3126,8 +3126,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>Bitcoin2 Core is shutting down...</source>
-        <translation>Bitcoin2 Core is shutting down...</translation>
+        <source>Bitcoin 2 Core is shutting down...</source>
+        <translation>Bitcoin 2 Core is shutting down...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
@@ -3276,8 +3276,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -3292,8 +3292,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>The Dash Core developers</translation>
     </message>
     <message>
-        <source>The Bitcoin2 Core developers</source>
-        <translation>The Bitcoin2 Core developers</translation>
+        <source>The Bitcoin 2 Core developers</source>
+        <translation>The Bitcoin 2 Core developers</translation>
     </message>
     <message>
         <source>[testnet]</source>
@@ -3910,8 +3910,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Bind to given address to listen for JSON-RPC connections. Use [host]:port notation for IPv6. This option can be specified multiple times (default: bind to all interfaces)</translation>
     </message>
     <message>
-        <source>Cannot obtain a lock on data directory %s. Bitcoin2 Core is probably already running.</source>
-        <translation>Cannot obtain a lock on data directory %s. Bitcoin2 Core is probably already running.</translation>
+        <source>Cannot obtain a lock on data directory %s. Bitcoin 2 Core is probably already running.</source>
+        <translation>Cannot obtain a lock on data directory %s. Bitcoin 2 Core is probably already running.</translation>
     </message>
     <message>
         <source>Change automatic finalized budget voting behavior. mode=auto: Vote for only exact finalized budget match to my generated budget. (string, default: auto)</source>
@@ -4106,8 +4106,8 @@ for example: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
 </translation>
     </message>
     <message>
-        <source>Unable to bind to %s on this computer. Bitcoin2 Core is probably already running.</source>
-        <translation>Unable to bind to %s on this computer. Bitcoin2 Core is probably already running.</translation>
+        <source>Unable to bind to %s on this computer. Bitcoin 2 Core is probably already running.</source>
+        <translation>Unable to bind to %s on this computer. Bitcoin 2 Core is probably already running.</translation>
     </message>
     <message>
         <source>Unable to locate enough Obfuscation denominated funds for this transaction.</source>
@@ -4134,8 +4134,8 @@ for example: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
         <translation>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</translation>
     </message>
     <message>
-        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin2 Core will not work properly.</source>
-        <translation>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin2 Core will not work properly.</translation>
+        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin 2 Core will not work properly.</source>
+        <translation>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin 2 Core will not work properly.</translation>
     </message>
     <message>
         <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
@@ -4354,8 +4354,8 @@ for example: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
         <translation>Error loading wallet.dat: Wallet corrupted</translation>
     </message>
     <message>
-        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin2 Core</source>
-        <translation>Error loading wallet.dat: Wallet requires newer version of Bitcoin2 Core</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin 2 Core</source>
+        <translation>Error loading wallet.dat: Wallet requires newer version of Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Error opening block database</source>
@@ -4466,8 +4466,8 @@ for example: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
         <translation>Information</translation>
     </message>
     <message>
-        <source>Initialization sanity check failed. Bitcoin2 Core is shutting down.</source>
-        <translation>Initialization sanity check failed. Bitcoin2 Core is shutting down.</translation>
+        <source>Initialization sanity check failed. Bitcoin 2 Core is shutting down.</source>
+        <translation>Initialization sanity check failed. Bitcoin 2 Core is shutting down.</translation>
     </message>
     <message>
         <source>Input is not valid.</source>
@@ -5086,8 +5086,8 @@ for example: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
         <translation>Wallet is locked.</translation>
     </message>
     <message>
-        <source>Wallet needed to be rewritten: restart Bitcoin2 Core to complete</source>
-        <translation>Wallet needed to be rewritten: restart Bitcoin2 Core to complete</translation>
+        <source>Wallet needed to be rewritten: restart Bitcoin 2 Core to complete</source>
+        <translation>Wallet needed to be rewritten: restart Bitcoin 2 Core to complete</translation>
     </message>
     <message>
         <source>Wallet options:</source>

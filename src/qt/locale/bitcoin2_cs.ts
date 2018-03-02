@@ -598,8 +598,8 @@
         <translation>Nástrojová lišta záložek</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Send coins to a Bitcoin2 address</source>
@@ -618,12 +618,12 @@
         <translation>Procházet masternody</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
-        <translation>&amp;O Bitcoin2 Core</translation>
+        <source>&amp;About Bitcoin 2 Core</source>
+        <translation>&amp;O Bitcoin 2 Core</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
-        <translation>Zobraz informace o Bitcoin2 Core</translation>
+        <source>Show information about Bitcoin 2 Core</source>
+        <translation>Zobraz informace o Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Modify configuration options for Bitcoin2</source>
@@ -678,12 +678,12 @@
         <translation>Okno blokového průzkumníka</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
-        <translation>Zobrazit Bitcoin2 Core pomocnou zpráv pro získání seznamu možných parametrů Bitcoin2 pro příkazy do příkazové řádky</translation>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <translation>Zobrazit Bitcoin 2 Core pomocnou zpráv pro získání seznamu možných parametrů Bitcoin2 pro příkazy do příkazové řádky</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
-        <translation>Bitcoin2 Core klient</translation>
+        <source>Bitcoin 2 Core client</source>
+        <translation>Bitcoin 2 Core klient</translation>
     </message>
     <message>
         <source>Synchronizing with network...</source>
@@ -1112,12 +1112,12 @@ MultiSend: %1</translation>
         <translation>verze</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
-        <source>About Bitcoin2 Core</source>
-        <translation>O Bitcoin2 Core</translation>
+        <source>About Bitcoin 2 Core</source>
+        <translation>O Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1151,16 +1151,16 @@ MultiSend: %1</translation>
         <translation>Vítejte</translation>
     </message>
     <message>
-        <source>Welcome to Bitcoin2 Core.</source>
-        <translation>Vítejte v Bitcoin2 Core.</translation>
+        <source>Welcome to Bitcoin 2 Core.</source>
+        <translation>Vítejte v Bitcoin 2 Core.</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where Bitcoin2 Core will store its data.</source>
-        <translation>Při prvním spuštění programu si můžete vybrat, kam bude Bitcoin2 Core ukládat svá data.</translation>
+        <source>As this is the first time the program is launched, you can choose where Bitcoin 2 Core will store its data.</source>
+        <translation>Při prvním spuštění programu si můžete vybrat, kam bude Bitcoin 2 Core ukládat svá data.</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>Bitcoin2 Core stáhne a uloží kopii Bitcoin2 blockchainu. Nejméně %1GB dat bude do této složky uloženo a v průběhu času bude ukládat další data. Peněženka bude v této složce uložena také.</translation>
+        <source>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <translation>Bitcoin 2 Core stáhne a uloží kopii Bitcoin2 blockchainu. Nejméně %1GB dat bude do této složky uloženo a v průběhu času bude ukládat další data. Peněženka bude v této složce uložena také.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -1171,8 +1171,8 @@ MultiSend: %1</translation>
         <translation>Použít vlastní složku pro data</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
@@ -2265,8 +2265,8 @@ Prosím zkontrolujte adresu a zkuste to znovu.</translation>
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     </context>
 <context>

@@ -1,7 +1,7 @@
 Translations
 ============
 
-The Bitcoin2 Core project has been designed to support multiple localisations. This makes adding new phrases, and completely new languages easily achievable. For managing all application translations, Bitcoin2 Core makes use of the Transifex online translation management tool.
+The Bitcoin 2 Core project has been designed to support multiple localisations. This makes adding new phrases, and completely new languages easily achievable. For managing all application translations, Bitcoin 2 Core makes use of the Transifex online translation management tool.
 
 ### Helping to translate (using Transifex)
 Transifex is setup to monitor the GitHub repo for updates, and when code containing new translations is found, Transifex will process any changes. It may take several hours after a pull-request has been merged, to appear in the Transifex web interface.
@@ -106,6 +106,5 @@ To create a new language template, you will need to edit the languages manifest 
 **Note:** that the language translation file **must end in `.qm`** (the compiled extension), and not `.ts`.
 
 ### Questions and general assistance
-The Bitcoin2 Core translation maintainers include *Fuzzbawls and s3v3nh4cks*. You can find them, and others, in the [Bitcoin2 Slack](https://bitcoin2.slack.com).
 
 Announcements will be posted during application pre-releases to notify translators to check for updates.

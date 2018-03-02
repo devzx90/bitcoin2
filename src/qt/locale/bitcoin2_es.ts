@@ -602,7 +602,7 @@
         <translation>Herramienta de pestañas</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Núcleo Bitcoin2</translation>
     </message>
     <message>
@@ -630,11 +630,11 @@
         <translation>Explorar nodos maestros</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
+        <source>&amp;About Bitcoin 2 Core</source>
         <translation>&amp;Sobre el núcleo de Bitcoin2</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
+        <source>Show information about Bitcoin 2 Core</source>
         <translation>Mostrar información sobre el núcleo de Bitcoin2</translation>
     </message>
     <message>
@@ -690,12 +690,12 @@
         <translation>Ventana del explorador de bloques</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
-        <translation>Mostrar la ayuda de Bitcoin2 Core para obtener una lista de posibles opciones en línea de comandos</translation>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <translation>Mostrar la ayuda de Bitcoin 2 Core para obtener una lista de posibles opciones en línea de comandos</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
-        <translation>Cliente Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core client</source>
+        <translation>Cliente Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Synchronizing with network...</source>
@@ -1168,7 +1168,7 @@ MultiEnvío: %1</translation>
         <translation>versión</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Núcleo Bitcoin2</translation>
     </message>
     <message>
@@ -1176,8 +1176,8 @@ MultiEnvío: %1</translation>
         <translation>(%1-bit)</translation>
     </message>
     <message>
-        <source>About Bitcoin2 Core</source>
-        <translation>Acerca de Bitcoin2 Core</translation>
+        <source>About Bitcoin 2 Core</source>
+        <translation>Acerca de Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1223,16 +1223,16 @@ MultiEnvío: %1</translation>
         <translation>Bienvenido/a</translation>
     </message>
     <message>
-        <source>Welcome to Bitcoin2 Core.</source>
-        <translation>Bienvenido/a a Bitcoin2 Core.</translation>
+        <source>Welcome to Bitcoin 2 Core.</source>
+        <translation>Bienvenido/a a Bitcoin 2 Core.</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where Bitcoin2 Core will store its data.</source>
-        <translation>Al ser la primera vez que se inicia el programa, usted puede elegir dónde guardará Bitcoin2 Core sus datos.</translation>
+        <source>As this is the first time the program is launched, you can choose where Bitcoin 2 Core will store its data.</source>
+        <translation>Al ser la primera vez que se inicia el programa, usted puede elegir dónde guardará Bitcoin 2 Core sus datos.</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>Bitcoin2 Core descargará y guardará una copia de la cadena de bloques Bitcoin2. Por lo menos %1GB de datos serán guardados en esta carpeta, y crecerá con el tiempo. El monedero también se guardará en esta carpeta.</translation>
+        <source>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <translation>Bitcoin 2 Core descargará y guardará una copia de la cadena de bloques Bitcoin2. Por lo menos %1GB de datos serán guardados en esta carpeta, y crecerá con el tiempo. El monedero también se guardará en esta carpeta.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -1243,7 +1243,7 @@ MultiEnvío: %1</translation>
         <translation>Usar una carpeta de datos personalizada:</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Núcleo Bitcoin2</translation>
     </message>
     <message>
@@ -3063,7 +3063,7 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>Bitcoin2 Core is shutting down...</source>
+        <source>Bitcoin 2 Core is shutting down...</source>
         <translation>El programa Bitcoin2 se está cerrando...</translation>
     </message>
     <message>
@@ -3213,7 +3213,7 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Núcleo Bitcoin2</translation>
     </message>
     <message>
@@ -3229,8 +3229,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Los desarrolladores de Dash Core</translation>
     </message>
     <message>
-        <source>The Bitcoin2 Core developers</source>
-        <translation>Los desarrolladores de Bitcoin2 Core</translation>
+        <source>The Bitcoin 2 Core developers</source>
+        <translation>Los desarrolladores de Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>[testnet]</source>
@@ -3838,8 +3838,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Escuchar únicamente a la tarjeta de red indicada para conexiones JSON-RPC. Use la notación [host]:puerto para IPv6. Esta opción puede ser especificada varias veces (por defecto: escuchar en todas las tarjetas de red)</translation>
     </message>
     <message>
-        <source>Cannot obtain a lock on data directory %s. Bitcoin2 Core is probably already running.</source>
-        <translation>No se puede obtener un bloqueo sobre el directorio de datos %s. Bitcoin2 Core esta probablemente en ejecución.</translation>
+        <source>Cannot obtain a lock on data directory %s. Bitcoin 2 Core is probably already running.</source>
+        <translation>No se puede obtener un bloqueo sobre el directorio de datos %s. Bitcoin 2 Core esta probablemente en ejecución.</translation>
     </message>
     <message>
         <source>Change automatic finalized budget voting behavior. mode=auto: Vote for only exact finalized budget match to my generated budget. (string, default: auto)</source>
@@ -4026,8 +4026,8 @@ por ejemplo: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
 </translation>
     </message>
     <message>
-        <source>Unable to bind to %s on this computer. Bitcoin2 Core is probably already running.</source>
-        <translation>Imposible conectar a %s en esta computadora. Es probable que Bitcoin2 Core ya este corriendo.</translation>
+        <source>Unable to bind to %s on this computer. Bitcoin 2 Core is probably already running.</source>
+        <translation>Imposible conectar a %s en esta computadora. Es probable que Bitcoin 2 Core ya este corriendo.</translation>
     </message>
     <message>
         <source>Unable to locate enough Obfuscation denominated funds for this transaction.</source>
@@ -4054,8 +4054,8 @@ por ejemplo: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
         <translation>Advertencia: -paytxfee esta muy alta! Esta es la comisión de transacción que pagarás si envías una transacción.</translation>
     </message>
     <message>
-        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin2 Core will not work properly.</source>
-        <translation>Advertencia: Por favor verifique que la fecha y hora de su computadora sean correctas! Si su reloj esta fuera de hora Bitcoin2 Core no funcionará adecuadamente.</translation>
+        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin 2 Core will not work properly.</source>
+        <translation>Advertencia: Por favor verifique que la fecha y hora de su computadora sean correctas! Si su reloj esta fuera de hora Bitcoin 2 Core no funcionará adecuadamente.</translation>
     </message>
     <message>
         <source>Warning: The network does not appear to fully agree! Some miners appear to be experiencing issues.</source>
@@ -4274,7 +4274,7 @@ por ejemplo: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
         <translation>Error al cargar wallet.dat: Billetera dañada</translation>
     </message>
     <message>
-        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin2 Core</source>
+        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin 2 Core</source>
         <translation>Error al cargar wallet.dat: La Billetera requiere una nueva versión del Núcleo Bitcoin2</translation>
     </message>
     <message>
@@ -4386,8 +4386,8 @@ por ejemplo: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
         <translation>Información</translation>
     </message>
     <message>
-        <source>Initialization sanity check failed. Bitcoin2 Core is shutting down.</source>
-        <translation>La prueba de salud de inicialización ha fallado. Bitcoin2 Core se cerrará.</translation>
+        <source>Initialization sanity check failed. Bitcoin 2 Core is shutting down.</source>
+        <translation>La prueba de salud de inicialización ha fallado. Bitcoin 2 Core se cerrará.</translation>
     </message>
     <message>
         <source>Input is not valid.</source>
@@ -4994,8 +4994,8 @@ por ejemplo: alertnotify=echo %%s | mail -s "Bitcoin2 Alert" admin@foo.com
         <translation>Monedero bloqueado.</translation>
     </message>
     <message>
-        <source>Wallet needed to be rewritten: restart Bitcoin2 Core to complete</source>
-        <translation>Monedero necesita ser reescrito: reinicie Bitcoin2 Core para completar</translation>
+        <source>Wallet needed to be rewritten: restart Bitcoin 2 Core to complete</source>
+        <translation>Monedero necesita ser reescrito: reinicie Bitcoin 2 Core para completar</translation>
     </message>
     <message>
         <source>Wallet options:</source>

@@ -583,7 +583,7 @@ Ange en lösenfras i den mellersta boxen. Tryck kryptera för att beräkna den k
         <translation>flik vertygsrad</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Kärna</translation>
     </message>
     <message>
@@ -603,11 +603,11 @@ Ange en lösenfras i den mellersta boxen. Tryck kryptera för att beräkna den k
         <translation>Utforska masternoder</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
+        <source>&amp;About Bitcoin 2 Core</source>
         <translation>Om Bitcoin2 Kärnan</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
+        <source>Show information about Bitcoin 2 Core</source>
         <translation>Visa information om Bitcoin2 Kärnan</translation>
     </message>
     <message>
@@ -631,7 +631,7 @@ Ange en lösenfras i den mellersta boxen. Tryck kryptera för att beräkna den k
         <translation>Kryptera och avkryptera privata nycklar genom användning av lösenfras</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
+        <source>Bitcoin 2 Core client</source>
         <translation>Bitcoin2 kärn klient</translation>
     </message>
     <message>
@@ -837,14 +837,14 @@ Ange en lösenfras i den mellersta boxen. Tryck kryptera för att beräkna den k
 <context>
     <name>HelpMessageDialog</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Kärna</translation>
     </message>
     </context>
 <context>
     <name>Intro</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Kärna</translation>
     </message>
     <message>
@@ -1232,7 +1232,7 @@ Ange en lösenfras i den mellersta boxen. Tryck kryptera för att beräkna den k
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Kärna</translation>
     </message>
     </context>

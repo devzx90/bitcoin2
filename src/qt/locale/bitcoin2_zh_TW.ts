@@ -582,8 +582,8 @@
         <translation>Tabs 工具列</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Send coins to a Bitcoin2 address</source>
@@ -602,12 +602,12 @@
         <translation>瀏覽 Masternodes</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
-        <translation>&amp;關於 Bitcoin2 Core</translation>
+        <source>&amp;About Bitcoin 2 Core</source>
+        <translation>&amp;關於 Bitcoin 2 Core</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
-        <translation>顯示 Bitcoin2 Core 相關資訊</translation>
+        <source>Show information about Bitcoin 2 Core</source>
+        <translation>顯示 Bitcoin 2 Core 相關資訊</translation>
     </message>
     <message>
         <source>Modify configuration options for Bitcoin2</source>
@@ -662,12 +662,12 @@
         <translation>區塊鏈瀏覽視窗</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
-        <translation>顯示 Bitcoin2 Core 幫助訊息以取得 Bitcoin2 命令列表選項</translation>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <translation>顯示 Bitcoin 2 Core 幫助訊息以取得 Bitcoin2 命令列表選項</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
-        <translation>Bitcoin2 Core 客戶端</translation>
+        <source>Bitcoin 2 Core client</source>
+        <translation>Bitcoin 2 Core 客戶端</translation>
     </message>
     </context>
 <context>
@@ -696,15 +696,15 @@
 <context>
     <name>HelpMessageDialog</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     </context>
 <context>
     <name>Intro</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     </context>
 <context>
@@ -907,8 +907,8 @@
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     </context>
 <context>

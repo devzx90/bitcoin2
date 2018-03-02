@@ -97,7 +97,7 @@ NOTE: Offline builds must use the --url flag to ensure Gitian fetches only from 
 
 The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
-### Build and sign Bitcoin2 Core for Linux, Windows, and OS X:
+### Build and sign Bitcoin 2 Core for Linux, Windows, and OS X:
 
     pushd ./gitian-builder
     ./bin/gbuild --memory 3000 --commit bitcoin2=v${VERSION} ../bitcoin2/contrib/gitian-descriptors/gitian-linux.yml

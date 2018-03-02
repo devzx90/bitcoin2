@@ -47,10 +47,10 @@ static bool AppInitRawTx(int argc, char* argv[])
 
     if (argc < 2 || mapArgs.count("-?") || mapArgs.count("-help")) {
         // First part of help message is specific to this utility
-        std::string strUsage = _("Bitcoin2 Core bitcoin2-tx utility version") + " " + FormatFullVersion() + "\n\n" +
+        std::string strUsage = _("Bitcoin 2 Core bitcoin2-tx utility version") + " " + FormatFullVersion() + "\n\n" +
                                _("Usage:") + "\n" +
-                               "  bitcoin2-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded bitcoin2 transaction") + "\n" +
-                               "  bitcoin2-tx [options] -create [commands]   " + _("Create hex-encoded bitcoin2 transaction") + "\n" +
+                               "  bitcoin2-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded bitcoin 2 transaction") + "\n" +
+                               "  bitcoin2-tx [options] -create [commands]   " + _("Create hex-encoded bitcoin 2 transaction") + "\n" +
                                "\n";
 
         fprintf(stdout, "%s", strUsage.c_str());

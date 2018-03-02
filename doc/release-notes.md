@@ -1,4 +1,4 @@
-Bitcoin2 Core version 2.3.0 is now available from:
+Bitcoin 2 Core version 2.3.0 is now available from:
 
   <https://github.com/bitcoin2-project/bitcoin2/releases>
 
@@ -12,7 +12,7 @@ Please report bugs using the issue tracker at github:
 Compatibility
 ==============
 
-Bitcoin2 Core is extensively tested on multiple operating systems using
+Bitcoin 2 Core is extensively tested on multiple operating systems using
 the Linux kernel, macOS 10.8+, and Windows Vista and later.
 
 Microsoft ended support for Windows XP on [April 8th, 2014](https://www.microsoft.com/en-us/WindowsForBusiness/end-of-xp-support),
@@ -20,7 +20,7 @@ No attempt is made to prevent installing or running the software on Windows XP, 
 can still do so at your own risk but be aware that there are known instabilities and issues.
 Please do not report issues about Windows XP to the issue tracker.
 
-Bitcoin2 Core should also work on most other Unix-like systems but is not
+Bitcoin 2 Core should also work on most other Unix-like systems but is not
 frequently tested on them.
 
 Notable Changes
@@ -127,7 +127,7 @@ Note that the GUI list of masternodes associated with a controller wallet remain
 SPV Client Support
 --------------
 
-Bitcoin2 Core now enables bloom filters by default to support SPV clients like mobile wallets. This feature can be disabled by using the `-peerbloomfilters` option on startup.
+Bitcoin 2 Core now enables bloom filters by default to support SPV clients like mobile wallets. This feature can be disabled by using the `-peerbloomfilters` option on startup.
 
 2.3.0 Change log
 =================

@@ -598,7 +598,7 @@
         <translation>标签工具栏</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 核心</translation>
     </message>
     <message>
@@ -618,11 +618,11 @@
         <translation>浏览主节点</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
+        <source>&amp;About Bitcoin 2 Core</source>
         <translation>&amp;关于Bitcoin2核心</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
+        <source>Show information about Bitcoin 2 Core</source>
         <translation>显示Bitcoin2核心的相关信息</translation>
     </message>
     <message>
@@ -678,11 +678,11 @@
         <translation>区块浏览窗口</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
-        <translation>显示Bitcoin2 Core帮助信息以获取可能的Bitcoin2命令行选项的列表</translation>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <translation>显示Bitcoin 2 Core帮助信息以获取可能的Bitcoin2命令行选项的列表</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
+        <source>Bitcoin 2 Core client</source>
         <translation>Bitcoin2核心客户端</translation>
     </message>
     <message>
@@ -812,14 +812,14 @@ Address: %4
 <context>
     <name>HelpMessageDialog</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 核心</translation>
     </message>
     </context>
 <context>
     <name>Intro</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 核心</translation>
     </message>
     <message>
@@ -1435,7 +1435,7 @@ Address: %4
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 核心</translation>
     </message>
     </context>
@@ -1524,8 +1524,8 @@ Address: %4
         <translation>在收到相关警报时执行命令，或者看到一个很长的分叉（cmd中的%s被消息替换）</translation>
     </message>
     <message>
-        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin2 Core will not work properly.</source>
-        <translation>注意：请检查您的电脑的日期和时间是否正确！ 如果您的时间设置不正确，Bitcoin2 Core将无法正常工作。</translation>
+        <source>Warning: Please check that your computer's date and time are correct! If your clock is wrong Bitcoin 2 Core will not work properly.</source>
+        <translation>注意：请检查您的电脑的日期和时间是否正确！ 如果您的时间设置不正确，Bitcoin 2 Core将无法正常工作。</translation>
     </message>
     <message>
         <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>

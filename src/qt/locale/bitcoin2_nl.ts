@@ -594,7 +594,7 @@
         <translation>Tabblad werkbalk</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Kern</translation>
     </message>
     <message>
@@ -614,11 +614,11 @@
         <translation>Bekijk masternodes</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
+        <source>&amp;About Bitcoin 2 Core</source>
         <translation>&amp;Over Bitcoin2 Kern</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
+        <source>Show information about Bitcoin 2 Core</source>
         <translation>Toon informatie over Bitcoin2 Kern</translation>
     </message>
     <message>
@@ -674,8 +674,8 @@
         <translation>Block verkenner venster</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
-        <translation>Bitcoin2 Core client</translation>
+        <source>Bitcoin 2 Core client</source>
+        <translation>Bitcoin 2 Core client</translation>
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Bitcoin2 network</source>
@@ -1072,7 +1072,7 @@ MultiSend: %1</translation>
         <translation>versie</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Kern</translation>
     </message>
     <message>
@@ -1080,8 +1080,8 @@ MultiSend: %1</translation>
         <translation>(%1-bit)</translation>
     </message>
     <message>
-        <source>About Bitcoin2 Core</source>
-        <translation>Over Bitcoin2 Core</translation>
+        <source>About Bitcoin 2 Core</source>
+        <translation>Over Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1111,15 +1111,15 @@ MultiSend: %1</translation>
         <translation>Welkom</translation>
     </message>
     <message>
-        <source>Welcome to Bitcoin2 Core.</source>
-        <translation>Welkom bij Bitcoin2 Core</translation>
+        <source>Welcome to Bitcoin 2 Core.</source>
+        <translation>Welkom bij Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
         <translation>Gebruik de standaard datafolder </translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Kern</translation>
     </message>
     <message>
@@ -2231,8 +2231,8 @@ MultiSend: %1</translation>
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>Bitcoin2 Core is shutting down...</source>
-        <translation>Bitcoin2 Core is aan het afsluiten...</translation>
+        <source>Bitcoin 2 Core is shutting down...</source>
+        <translation>Bitcoin 2 Core is aan het afsluiten...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
@@ -2361,7 +2361,7 @@ MultiSend: %1</translation>
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Kern</translation>
     </message>
     <message>
@@ -2377,8 +2377,8 @@ MultiSend: %1</translation>
         <translation>De Dash Core ontwikkelaars</translation>
     </message>
     <message>
-        <source>The Bitcoin2 Core developers</source>
-        <translation>De Bitcoin2 Core ontwikkelaars</translation>
+        <source>The Bitcoin 2 Core developers</source>
+        <translation>De Bitcoin 2 Core ontwikkelaars</translation>
     </message>
     <message>
         <source>[testnet]</source>

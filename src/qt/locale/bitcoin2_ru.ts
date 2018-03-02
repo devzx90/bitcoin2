@@ -594,8 +594,8 @@
         <translation>Панель вкладок</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Send coins to a Bitcoin2 address</source>
@@ -614,12 +614,12 @@
         <translation>Обзор мастернод</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
-        <translation>&amp;О Bitcoin2 Core</translation>
+        <source>&amp;About Bitcoin 2 Core</source>
+        <translation>&amp;О Bitcoin 2 Core</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
-        <translation>Показать информацию о Bitcoin2 Core</translation>
+        <source>Show information about Bitcoin 2 Core</source>
+        <translation>Показать информацию о Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Modify configuration options for Bitcoin2</source>
@@ -674,12 +674,12 @@
         <translation>Окно обзора блока</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
         <translation>Смотрите помощь к программе, чтобы получить документацию ко всем возможным опциям комманды Bitcoin2</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
-        <translation>Клиент Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core client</source>
+        <translation>Клиент Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Synchronizing with network...</source>
@@ -1144,16 +1144,16 @@ MultiSend: %1</translation>
         <translation>версия</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>(%1-bit)</source>
         <translation>(%1-бит)</translation>
     </message>
     <message>
-        <source>About Bitcoin2 Core</source>
-        <translation>О Bitcoin2 Core</translation>
+        <source>About Bitcoin 2 Core</source>
+        <translation>О Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Command-line options</source>
@@ -1199,16 +1199,16 @@ MultiSend: %1</translation>
         <translation>Добро пожаловать</translation>
     </message>
     <message>
-        <source>Welcome to Bitcoin2 Core.</source>
-        <translation>Добро пожаловать в Bitcoin2 Core.</translation>
+        <source>Welcome to Bitcoin 2 Core.</source>
+        <translation>Добро пожаловать в Bitcoin 2 Core.</translation>
     </message>
     <message>
-        <source>As this is the first time the program is launched, you can choose where Bitcoin2 Core will store its data.</source>
-        <translation>Поскольку это первый запуск программы, вы можете выбрать, где будут храниться данные Bitcoin2 Core.</translation>
+        <source>As this is the first time the program is launched, you can choose where Bitcoin 2 Core will store its data.</source>
+        <translation>Поскольку это первый запуск программы, вы можете выбрать, где будут храниться данные Bitcoin 2 Core.</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
-        <translation>Bitcoin2 Core загрузит и сохранит копию цепочки блоков Bitcoin2. Каталог будет занимать около %1GB и со временем размер будет увеличиваться. Кроме того, в этом каталоге будет храниться кошелек.</translation>
+        <source>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <translation>Bitcoin 2 Core загрузит и сохранит копию цепочки блоков Bitcoin2. Каталог будет занимать около %1GB и со временем размер будет увеличиваться. Кроме того, в этом каталоге будет храниться кошелек.</translation>
     </message>
     <message>
         <source>Use the default data directory</source>
@@ -1219,8 +1219,8 @@ MultiSend: %1</translation>
         <translation>Использовать другой каталог данных:</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Error: Specified data directory "%1" cannot be created.</source>
@@ -2704,8 +2704,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>Bitcoin2 Core is shutting down...</source>
-        <translation>Bitcoin2 Core выключается...</translation>
+        <source>Bitcoin 2 Core is shutting down...</source>
+        <translation>Bitcoin 2 Core выключается...</translation>
     </message>
     <message>
         <source>Do not shut down the computer until this window disappears.</source>
@@ -2794,8 +2794,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core</translation>
+        <source>Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>Version %1</source>
@@ -2810,8 +2810,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Разработчики Dash Core</translation>
     </message>
     <message>
-        <source>The Bitcoin2 Core developers</source>
-        <translation>Разработчики Bitcoin2 Core</translation>
+        <source>The Bitcoin 2 Core developers</source>
+        <translation>Разработчики Bitcoin 2 Core</translation>
     </message>
     <message>
         <source>[testnet]</source>

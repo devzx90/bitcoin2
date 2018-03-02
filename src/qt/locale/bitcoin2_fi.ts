@@ -591,7 +591,7 @@ Syötä salausavain laatikon keskelle. Paina salaa tuottaaksesi salatun yksityis
         <translation>&amp;Apua</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Ydin</translation>
     </message>
     <message>
@@ -611,11 +611,11 @@ Syötä salausavain laatikon keskelle. Paina salaa tuottaaksesi salatun yksityis
         <translation>Selaa masternodeja</translation>
     </message>
     <message>
-        <source>&amp;About Bitcoin2 Core</source>
-        <translation>Bitcoin2 Core &amp;ytimestä</translation>
+        <source>&amp;About Bitcoin 2 Core</source>
+        <translation>Bitcoin 2 Core &amp;ytimestä</translation>
     </message>
     <message>
-        <source>Show information about Bitcoin2 Core</source>
+        <source>Show information about Bitcoin 2 Core</source>
         <translation>Näytä tietoja Bitcoin2 Ytimestä</translation>
     </message>
     <message>
@@ -671,11 +671,11 @@ Syötä salausavain laatikon keskelle. Paina salaa tuottaaksesi salatun yksityis
         <translation>Lohkon tutkija näkymä</translation>
     </message>
     <message>
-        <source>Show the Bitcoin2 Core help message to get a list with possible Bitcoin2 command-line options</source>
+        <source>Show the Bitcoin 2 Core help message to get a list with possible Bitcoin2 command-line options</source>
         <translation>Näytä Bitcoin2 Ydin apuviesti saadaksesi lista mahdollisista Bitcoin2 komentolinja komennoista.</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core client</source>
+        <source>Bitcoin 2 Core client</source>
         <translation>Bitcoin2 Ydin asiakasohjelma</translation>
     </message>
     <message>
@@ -934,7 +934,7 @@ Syötä salausavain laatikon keskelle. Paina salaa tuottaaksesi salatun yksityis
 <context>
     <name>HelpMessageDialog</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Ydin</translation>
     </message>
     <message>
@@ -953,11 +953,11 @@ Syötä salausavain laatikon keskelle. Paina salaa tuottaaksesi salatun yksityis
         <translation>Tervetuloa</translation>
     </message>
     <message>
-        <source>Welcome to Bitcoin2 Core.</source>
+        <source>Welcome to Bitcoin 2 Core.</source>
         <translation>Tervetuloa Bitcoin2 Ytimeen.</translation>
     </message>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Ydin</translation>
     </message>
     <message>
@@ -2072,7 +2072,7 @@ Please check the address and try again.</source>
 <context>
     <name>ShutdownWindow</name>
     <message>
-        <source>Bitcoin2 Core is shutting down...</source>
+        <source>Bitcoin 2 Core is shutting down...</source>
         <translation>Bitcoin2 core sammuu...</translation>
     </message>
     <message>
@@ -2214,7 +2214,7 @@ Please check the address and try again.</source>
 <context>
     <name>SplashScreen</name>
     <message>
-        <source>Bitcoin2 Core</source>
+        <source>Bitcoin 2 Core</source>
         <translation>Bitcoin2 Ydin</translation>
     </message>
     <message>
@@ -2230,7 +2230,7 @@ Please check the address and try again.</source>
         <translation>Dash Core kehittäjät</translation>
     </message>
     <message>
-        <source>The Bitcoin2 Core developers</source>
+        <source>The Bitcoin 2 Core developers</source>
         <translation>Bitcoin2 core kehittäjät</translation>
     </message>
     <message>
@@ -2591,8 +2591,8 @@ Please check the address and try again.</source>
         <translation>Virhe ladattaessa wallet.dat tiedostoa: Lompakko korruptoitunut</translation>
     </message>
     <message>
-        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin2 Core</source>
-        <translation>Virhe ladattaessa wallet.dat tiedostoa: Lompakko vaatii uudemman version Bitcoin2 Coresta</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of Bitcoin 2 Core</source>
+        <translation>Virhe ladattaessa wallet.dat tiedostoa: Lompakko vaatii uudemman version Bitcoin 2 Coresta</translation>
     </message>
     <message>
         <source>Error reading from database, shutting down.</source>
