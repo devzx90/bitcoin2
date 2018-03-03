@@ -61,7 +61,7 @@ PrivacyDialog::PrivacyDialog(QWidget* parent) : QDialog(parent),
     ui->labelzDenom2Text->setText(tr("<b>0.20</b> coins:"));
     ui->labelzDenom3Text->setText(tr("<b>1</b> coins:"));
     ui->labelzDenom4Text->setText(tr("<b>5</b> coins:"));
-    ui->labelzDenom5Text->setText(tr("<b>20</b coins>:"));
+    ui->labelzDenom5Text->setText(tr("<b>20</b> coins:"));
     ui->labelzDenom6Text->setText(tr("<b>100</b> coins:"));
     ui->labelzDenom7Text->setText(tr("<b>500</b> coins:"));
     ui->labelzDenom8Text->setText(tr("<b>2000</b> coins:"));
@@ -74,7 +74,7 @@ PrivacyDialog::PrivacyDialog(QWidget* parent) : QDialog(parent),
     ui->labelZsupplyText5->setText(tr("<b>0.20</b> coins:"));
     ui->labelZsupplyText10->setText(tr("<b>1</b> coins:"));
     ui->labelZsupplyText50->setText(tr("<b>5</b> coins:"));
-    ui->labelZsupplyText100->setText(tr("<b>20</b coins>:"));
+    ui->labelZsupplyText100->setText(tr("<b>20</b> coins:"));
     ui->labelZsupplyText500->setText(tr("<b>100</b> coins:"));
     ui->labelZsupplyText1000->setText(tr("<b>500</b> coins:"));
     ui->labelZsupplyText5000->setText(tr("<b>2000</b> coins:"));
@@ -182,7 +182,7 @@ void PrivacyDialog::on_pushButtonMintzBTC2_clicked()
     }
 
     QString sAmount = ui->labelMintAmountValue->text();
-    CAmount nAmount = sAmount.toInt() * COIN;
+    CAmount nAmount = sAmount.toDouble() * COIN;
 
     // Minting amount must be > 0
     if(nAmount <= 0){
