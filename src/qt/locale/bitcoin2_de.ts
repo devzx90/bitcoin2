@@ -3986,7 +3986,7 @@ Bitte haben Sie Geduld...</translation>
         <translation>nur beobachtet</translation>
     </message>
     <message>
-        <source>zBTC2 Accumulator</source>
+        <source>zBTC2 Conversion</source>
         <translation>zBTC2 Speicher</translation>
     </message>
     <message>

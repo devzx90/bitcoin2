@@ -419,7 +419,7 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord* wtx, b
         return QString::fromStdString(wtx->address) + watchAddress;
     case TransactionRecord::ZerocoinMint:
     case TransactionRecord::ZerocoinSpend_Change_zBTC2:
-        return tr("zBTC2 Accumulator");
+        return tr("zBTC2 Conversion");
     case TransactionRecord::SendToSelf:
     default:
         return tr("(n/a)") + watchAddress;

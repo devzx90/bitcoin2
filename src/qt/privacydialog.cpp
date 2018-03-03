@@ -309,11 +309,6 @@ void PrivacyDialog::setZBTC2ControlLabels(int64_t nAmount, int nQuantity)
     ui->labelQuantitySelected_int->setText(QString::number(nQuantity));
 }
 
-static inline int64_t roundint64(double d)
-{
-    return (int64_t)(d > 0 ? d + 0.5 : d - 0.5);
-}
-
 void PrivacyDialog::sendzBTC2()
 {
     QSettings settings;
@@ -333,10 +328,10 @@ void PrivacyDialog::sendzBTC2()
 
     // Double is allowed now
     double dAmount = ui->zBTC2payAmount->text().toDouble();
-    CAmount nAmount = roundint64(dAmount* COIN);
+    CAmount nAmount = dAmount * COIN;
 
     // Check amount validity
-    if (!MoneyRange(nAmount) || nAmount <= 0.0) {
+    if (!MoneyRange(nAmount) || nAmount <= 0) {
         QMessageBox::warning(this, tr("Spend Zerocoin"), tr("Invalid Send Amount"), QMessageBox::Ok, QMessageBox::Ok);
         ui->zBTC2payAmount->setFocus();
         return;

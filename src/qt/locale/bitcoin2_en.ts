@@ -5563,7 +5563,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+22"/>
-        <source>zBTC2 Accumulator</source>
+        <source>zBTC2 Conversion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
