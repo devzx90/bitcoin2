@@ -125,7 +125,7 @@ width: 20px;
 
 QLabel#progressBarLabel {
 background-color:transparent;
-color: #433326;
+color: #26201b;
 padding-left:5px;
 padding-right:5px;
 }
@@ -193,24 +193,24 @@ background-color:#f2f2f2;
 }
 
 .QValidatedLineEdit:!focus {
-color:#f08b16;
+color:#24201d;
 background-color:#e7e7e7;
 }
 
 .QLineEdit:!focus {
-color:#f08b16;
+color:#24201d;
 background-color:#e7e7e7;
 }
 
 .QTextEdit:!focus {
-color:#f08b16;
+color:#24201d;
 background-color:#e7e7e7;
 }
 
 /* .QValidatedLineEdit:checked, .QLineEdit:checked */
 
 .QValidatedLineEdit:disabled, .QLineEdit:disabled, .QTextEdit:disabled {
-color: #f08b16;
+color: #24201d;
 background-color:#f2f2f2;
 }
 
@@ -345,7 +345,7 @@ background-color:#f2f2f2;
 }
 
 QAbstractSpinBox:!focus {
-color:#f08b16;
+color:#24201d;
 background-color:#e7e7e7;
 }
 
@@ -390,7 +390,7 @@ background-color:#f2f2f2;
 }
 
 QValueComboBox:!focus {
-color:#f08b16;
+color:#24201d;
 background-color:#e7e7e7;
 }
 
@@ -965,7 +965,7 @@ font-weight:normal;
 /* min-height:30px; */
 }
 
-QWidget .QFrame#frame_Balances .QLabel#label_5 { /* PIV Balances Label */
+QWidget .QFrame#frame_Balances .QLabel#label_5 { /* Balances Label */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 min-width:160px;
 background-color:transparent;
@@ -996,7 +996,7 @@ margin-left:16px;
 QWidget .QFrame#frame_Balances .QLabel#labelBalanceText { /* Available Balance Label */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 min-width:160px;
-color:#f08b16;
+color:#0c1347;
 margin-right:5px;
 padding-right:5px;
 font-weight:bold;
@@ -1007,7 +1007,7 @@ QWidget .QFrame#frame_Balances .QLabel#labelBalance { /* Available Balance */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
 font-weight:bold;
-color:#f08b16;
+color:#0c1347;
 margin-left:0px;
 }
 
@@ -1089,7 +1089,7 @@ font-size:12px;
 margin-left:16px;
 }
 
-QWidget .QFrame#frame_Balances .QLabel#labelLockedBalanceText { /* Available zPIV Label */
+QWidget .QFrame#frame_Balances .QLabel#labelLockedBalanceText {
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 min-width:160px;
 color:#f08b16;
@@ -1099,7 +1099,7 @@ font-weight:bold;
 font-size:12px;
 }
 
-QWidget .QFrame#frame_Balances .QLabel#labelLockedBalance { /* Available zPIV Balance */
+QWidget .QFrame#frame_Balances .QLabel#labelLockedBalance { 
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
 font-weight:bold;
@@ -1107,7 +1107,7 @@ color:#f08b16;
 margin-left:0px;
 }
 
-QWidget .QFrame#frame_Balances .QLabel#labelWatchLocked { /* Available zPIV Balance */
+QWidget .QFrame#frame_Balances .QLabel#labelWatchLocked {
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
 margin-left:16px;
@@ -1126,7 +1126,25 @@ margin-right:5px;
 padding-right:5px;
 }
 
-QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceText { /* Available zPIV Label */
+QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceText { /* Available zBTC2 Label */
+qproperty-alignment: 'AlignVCenter | AlignLeft';
+min-width:160px;
+color:#0c1347;
+margin-right:5px;
+padding-right:5px;
+font-weight:bold;
+font-size:12px;
+}
+
+QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalance { /* Available zBTC2 Balance */
+qproperty-alignment: 'AlignVCenter | AlignLeft';
+font-size:12px;
+font-weight:bold;
+color:#0c1347;
+margin-left:0px;
+}
+
+QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceUnconfirmedText { /* Unconfirmed zBTC2 Label */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 min-width:160px;
 color:#f08b16;
@@ -1136,7 +1154,7 @@ font-weight:bold;
 font-size:12px;
 }
 
-QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalance { /* Available zPIV Balance */
+QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceUnconfirmed { /* Unconfirmed zBTC2 Balance */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
 font-weight:bold;
@@ -1144,7 +1162,7 @@ color:#f08b16;
 margin-left:0px;
 }
 
-QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceUnconfirmedText { /* Unconfirmed zPIV Label */
+QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceMatureText { /* Mature zBTC2 Label */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 min-width:160px;
 color:#f08b16;
@@ -1154,7 +1172,7 @@ font-weight:bold;
 font-size:12px;
 }
 
-QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceUnconfirmed { /* Unconfirmed zPIV Balance */
+QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceMature { /* Mature zBTC2 Balance */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
 font-weight:bold;
@@ -1162,7 +1180,7 @@ color:#f08b16;
 margin-left:0px;
 }
 
-QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceMatureText { /* Mature zPIV Label */
+QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceImmatureText { /* Immature zBTC2 Label */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 min-width:160px;
 color:#f08b16;
@@ -1172,25 +1190,7 @@ font-weight:bold;
 font-size:12px;
 }
 
-QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceMature { /* Mature zPIV Balance */
-qproperty-alignment: 'AlignVCenter | AlignLeft';
-font-size:12px;
-font-weight:bold;
-color:#f08b16;
-margin-left:0px;
-}
-
-QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceImmatureText { /* Immature zPIV Label */
-qproperty-alignment: 'AlignVCenter | AlignLeft';
-min-width:160px;
-color:#f08b16;
-margin-right:5px;
-padding-right:5px;
-font-weight:bold;
-font-size:12px;
-}
-
-QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceImmature { /* Immature zPIV Balance */
+QWidget .QFrame#frame_ZerocoinBalances .QLabel#labelzBalanceImmature { /* Immature zBTC2 Balance */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
 font-weight:bold;
@@ -1209,7 +1209,7 @@ margin-right:5px;
 padding-right:5px;
 }
 
-QWidget .QFrame#frame_CombinedBalances .QLabel#labelBalanceTextz { /* Available PIV Label */
+QWidget .QFrame#frame_CombinedBalances .QLabel#labelBalanceTextz { /* Available BTC Label */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 min-width:160px;
 color:#f08b16;
@@ -1219,28 +1219,28 @@ font-weight:bold;
 font-size:12px;
 }
 
-QWidget .QFrame#frame_CombinedBalances .QLabel#labelBalancez { /* Available PIV Balance */
+QWidget .QFrame#frame_CombinedBalances .QLabel#labelBalancez { /* Available BTC Balance */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:26px;
 font-weight:normal;
 color:#f08b16;
 }
 
-QWidget .QFrame#frame_CombinedBalances .QLabel#labelzBalanceTextz { /* Available zPIV Label */
+QWidget .QFrame#frame_CombinedBalances .QLabel#labelzBalanceTextz { /* Available zBTC2 Label */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 min-width:160px;
-color:#f08b16;
+color:#0c1347;
 margin-right:5px;
 padding-right:5px;
 font-weight:bold;
 font-size:12px;
 }
 
-QWidget .QFrame#frame_CombinedBalances .QLabel#labelzBalancez { /* Available zPIV Balance */
+QWidget .QFrame#frame_CombinedBalances .QLabel#labelzBalancez { /* Available zBTC2 Balance */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
 font-weight:bold;
-color:#f08b16;
+color:#0c1347;
 margin-left:0px;
 }
 
@@ -1556,7 +1556,7 @@ QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::indicator { /* Coin
 
 }
 
-QDialog#ZPivControlDialog .QTreeWidget#treeWidget { /* zPIV Control Widget Container */
+QDialog#ZPivControlDialog .QTreeWidget#treeWidget { /* zBTC2 Control Widget Container */
 outline:0;
 background-color:#ffffff;
 border:1px solid #333;

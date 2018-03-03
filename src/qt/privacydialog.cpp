@@ -32,7 +32,7 @@ PrivacyDialog::PrivacyDialog(QWidget* parent) : QDialog(parent),
 
     // "Spending 999999 zBTC2 ought to be enough for anybody."
     ui->zBTC2payAmount->setValidator( new QDoubleValidator(0.0, 21000000.0, 20, this) );
-    ui->labelMintAmountValue->setValidator( new QIntValidator(0, 999999, this) );
+    ui->labelMintAmountValue->setValidator( new QDoubleValidator(0.0, 999999.0, 20, this) );
 
     // Default texts for (mini-) coincontrol
     ui->labelCoinControlQuantity->setText (tr("Coins automatically selected"));
@@ -57,27 +57,27 @@ PrivacyDialog::PrivacyDialog(QWidget* parent) : QDialog(parent),
     ui->labelCoinControlAmount->addAction(clipboardAmountAction);
 
     // Denomination labels
-    ui->labelzDenom1Text->setText(tr("Denom. with value <b>0.05</b>:"));
-    ui->labelzDenom2Text->setText(tr("Denom. with value <b>0.2</b>:"));
-    ui->labelzDenom3Text->setText(tr("Denom. with value <b>1</b>:"));
-    ui->labelzDenom4Text->setText(tr("Denom. with value <b>5</b>:"));
-    ui->labelzDenom5Text->setText(tr("Denom. with value <b>20</b>:"));
-    ui->labelzDenom6Text->setText(tr("Denom. with value <b>100</b>:"));
-    ui->labelzDenom7Text->setText(tr("Denom. with value <b>500</b>:"));
-    ui->labelzDenom8Text->setText(tr("Denom. with value <b>2000</b>:"));
+    ui->labelzDenom1Text->setText(tr("<b>0.05</b> coins:"));
+    ui->labelzDenom2Text->setText(tr("<b>0.20</b> coins:"));
+    ui->labelzDenom3Text->setText(tr("<b>1</b> coins:"));
+    ui->labelzDenom4Text->setText(tr("<b>5</b> coins:"));
+    ui->labelzDenom5Text->setText(tr("<b>20</b coins>:"));
+    ui->labelzDenom6Text->setText(tr("<b>100</b> coins:"));
+    ui->labelzDenom7Text->setText(tr("<b>500</b> coins:"));
+    ui->labelzDenom8Text->setText(tr("<b>2000</b> coins:"));
 
     // AutoMint status
     ui->label_AutoMintStatus->setText(tr("AutoMint Status:"));
 
     // Global Supply labels
-    ui->labelZsupplyText1->setText(tr("Denom. <b>0.05</b>:"));
-    ui->labelZsupplyText5->setText(tr("Denom. <b>0.2</b>:"));
-    ui->labelZsupplyText10->setText(tr("Denom. <b>1</b>:"));
-    ui->labelZsupplyText50->setText(tr("Denom. <b>5</b>:"));
-    ui->labelZsupplyText100->setText(tr("Denom. <b>20</b>:"));
-    ui->labelZsupplyText500->setText(tr("Denom. <b>100</b>:"));
-    ui->labelZsupplyText1000->setText(tr("Denom. <b>500</b>:"));
-    ui->labelZsupplyText5000->setText(tr("Denom. <b>2000</b>:"));
+    ui->labelZsupplyText1->setText(tr("<b>0.05</b> coins:"));
+    ui->labelZsupplyText5->setText(tr("<b>0.20</b> coins:"));
+    ui->labelZsupplyText10->setText(tr("<b>1</b> coins:"));
+    ui->labelZsupplyText50->setText(tr("<b>5</b> coins:"));
+    ui->labelZsupplyText100->setText(tr("<b>20</b coins>:"));
+    ui->labelZsupplyText500->setText(tr("<b>100</b> coins:"));
+    ui->labelZsupplyText1000->setText(tr("<b>500</b> coins:"));
+    ui->labelZsupplyText5000->setText(tr("<b>2000</b> coins:"));
     
     // Bitcoin2 settings
     QSettings settings;
@@ -626,8 +626,8 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
     for (const auto& denom : libzerocoin::zerocoinDenomList) {
         nCoins = libzerocoin::ZerocoinDenominationToInt(denom);
         nSumPerCoin = nCoins * mapDenomBalances.at(denom) * 0.01;
-        nUnconfirmed = mapUnconfirmed.at(denom) * 0.01;
-        nImmature = mapImmature.at(denom) * 0.01;
+        nUnconfirmed = mapUnconfirmed.at(denom);
+        nImmature = mapImmature.at(denom);
 
         strUnconfirmed = "";
         if (nUnconfirmed) {
@@ -640,7 +640,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
             strUnconfirmed = QString("( ") + strUnconfirmed + QString(") ");
         }
 
-        strDenomStats = strUnconfirmed + QString::number(mapDenomBalances.at(denom) * 0.01) + " x " +
+        strDenomStats = strUnconfirmed + QString::number(mapDenomBalances.at(denom)) + " x " +
                         QString::number(nCoins * 0.01) + " = <b>" +
                         QString::number(nSumPerCoin) + " zBTC2 </b>";
 
