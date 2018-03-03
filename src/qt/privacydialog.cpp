@@ -617,17 +617,17 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
         }
     }
 
-    int64_t nCoins = 0;
-    int64_t nSumPerCoin = 0;
-    int64_t nUnconfirmed = 0;
-    int64_t nImmature = 0;
+	double nCoins = 0;
+    double nSumPerCoin = 0;
+	double nUnconfirmed = 0;
+    double nImmature = 0;
     QString strDenomStats, strUnconfirmed = "";
 
     for (const auto& denom : libzerocoin::zerocoinDenomList) {
-        nCoins = libzerocoin::ZerocoinDenominationToInt(denom);
+        nCoins = libzerocoin::ZerocoinDenominationToInt(denom) * 0.01;
         nSumPerCoin = nCoins * mapDenomBalances.at(denom);
-        nUnconfirmed = mapUnconfirmed.at(denom);
-        nImmature = mapImmature.at(denom);
+        nUnconfirmed = mapUnconfirmed.at(denom) * 0.01;
+        nImmature = mapImmature.at(denom) * 0.01;
 
         strUnconfirmed = "";
         if (nUnconfirmed) {
@@ -640,7 +640,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
             strUnconfirmed = QString("( ") + strUnconfirmed + QString(") ");
         }
 
-        strDenomStats = strUnconfirmed + QString::number(mapDenomBalances.at(denom)) + " x " +
+        strDenomStats = strUnconfirmed + QString::number(mapDenomBalances.at(denom) * 0.01) + " x " +
                         QString::number(nCoins) + " = <b>" +
                         QString::number(nSumPerCoin) + " zBTC2 </b>";
 
@@ -701,8 +701,8 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
     ui->labelZsupplyAmount->setText(QString::number(chainActive.Tip()->GetZerocoinSupply()/COIN) + QString(" <b>zBTC2 </b> "));
     for (auto denom : libzerocoin::zerocoinDenomList) {
         int64_t nSupply = chainActive.Tip()->mapZerocoinSupply.at(denom);
-        QString strSupply = QString::number(nSupply) + " x " + QString::number(denom) + " = <b>" +
-                            QString::number(nSupply*denom) + " zBTC2 </b> ";
+        QString strSupply = QString::number(nSupply) + " x " + QString::number(denom * 0.01) + " = <b>" +
+                            QString::number(nSupply*denom * 0.01) + " zBTC2 </b> ";
         switch (denom) {
             case libzerocoin::CoinDenomination::ZQ_FIVECENTS:
                 ui->labelZsupplyAmount1->setText(strSupply);
