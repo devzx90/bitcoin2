@@ -617,15 +617,15 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
         }
     }
 
-	double nCoins = 0;
+	int64_t nCoins = 0;
     double nSumPerCoin = 0;
 	double nUnconfirmed = 0;
     double nImmature = 0;
     QString strDenomStats, strUnconfirmed = "";
 
     for (const auto& denom : libzerocoin::zerocoinDenomList) {
-        nCoins = libzerocoin::ZerocoinDenominationToInt(denom) * 0.01;
-        nSumPerCoin = nCoins * mapDenomBalances.at(denom);
+        nCoins = libzerocoin::ZerocoinDenominationToInt(denom);
+        nSumPerCoin = nCoins * mapDenomBalances.at(denom) * 0.01;
         nUnconfirmed = mapUnconfirmed.at(denom) * 0.01;
         nImmature = mapImmature.at(denom) * 0.01;
 
@@ -641,7 +641,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
         }
 
         strDenomStats = strUnconfirmed + QString::number(mapDenomBalances.at(denom) * 0.01) + " x " +
-                        QString::number(nCoins) + " = <b>" +
+                        QString::number(nCoins * 0.01) + " = <b>" +
                         QString::number(nSumPerCoin) + " zBTC2 </b>";
 
         switch (nCoins) {
