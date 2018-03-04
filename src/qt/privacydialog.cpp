@@ -184,9 +184,9 @@ void PrivacyDialog::on_pushButtonMintzBTC2_clicked()
     QString sAmount = ui->labelMintAmountValue->text();
     CAmount nAmount = sAmount.toDouble() * COIN;
 
-    // Minting amount must be > 0
-    if(nAmount <= 0){
-        ui->TEMintStatus->setPlainText(tr("Message: Enter an amount > 0."));
+    // Minting amount must be >= 0.05
+    if(nAmount < 5000000){
+        ui->TEMintStatus->setPlainText(tr("Message: Enter an amount >= 0.05"));
         return;
     }
 
@@ -212,14 +212,14 @@ void PrivacyDialog::on_pushButtonMintzBTC2_clicked()
                              QString::number(fDuration) + tr(" sec. Used denominations:\n");
 
     // Clear amount to avoid double spending when accidentally clicking twice
-    ui->labelMintAmountValue->setText ("0");
+    ui->labelMintAmountValue->setText("0");
 
     QString strStats = "";
     ui->TEMintStatus->setPlainText(strStatsHeader);
 
     for (CZerocoinMint mint : vMints) {
         boost::this_thread::sleep(boost::posix_time::milliseconds(100));
-        strStats = strStats + QString::number(mint.GetDenomination()) + " ";
+        strStats = strStats + QString::number(mint.GetDenomination() * 0.01) + " ";
         ui->TEMintStatus->setPlainText(strStatsHeader + strStats);
         ui->TEMintStatus->repaint ();
 
@@ -631,13 +631,13 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
 
         strUnconfirmed = "";
         if (nUnconfirmed) {
-            strUnconfirmed += QString::number(nUnconfirmed) + QString(" unconf. ");
+            strUnconfirmed += QString::number(nUnconfirmed) + QString(" unconf.");
         }
         if(nImmature) {
-            strUnconfirmed += QString::number(nImmature) + QString(" immature ");
+            strUnconfirmed += QString::number(nImmature) + QString(" immature");
         }
         if(nImmature || nUnconfirmed) {
-            strUnconfirmed = QString("( ") + strUnconfirmed + QString(") ");
+            strUnconfirmed = QString("(") + strUnconfirmed + QString(") ");
         }
 
         strDenomStats = strUnconfirmed + QString::number(mapDenomBalances.at(denom)) + " x " +

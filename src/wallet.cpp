@@ -4892,7 +4892,7 @@ void CWallet::ZBTC2BackupWallet()
 string CWallet::MintZerocoin(CAmount nValue, CWalletTx& wtxNew, vector<CZerocoinMint>& vMints, const CCoinControl* coinControl)
 {
     // Check amount
-    if (nValue <= 0)
+    if (nValue < 5000000)
         return _("Invalid amount");
 
     if (nValue + Params().Zerocoin_MintFee() > GetBalance())
