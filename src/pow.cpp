@@ -19,36 +19,55 @@
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
 {
+	// Bigger difficulty number means less work.
     const CBlockIndex* BlockLastSolved = pindexLast;
 
     if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || BlockLastSolved->nHeight <= Params().LAST_POW_BLOCK()) {
         return Params().ProofOfWorkLimit().GetCompact();
     }
 
-	unsigned int MaxDifficulty = 1073483640;
 	int64_t nTargetSpacing = 60;
 
-    int64_t nActualSpacing = 0;
-    if (pindexLast->nHeight != 0)
-        nActualSpacing = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
+	// Limit adjustment step
+	int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
+	if (nActualTimespan < 30) nActualTimespan = 30;
+	else if (nActualTimespan > 120) nActualTimespan = 120;
 
-    if (nActualSpacing < 0) nActualSpacing = 1;
+	// Retarget
+	const arith_uint256 bnPowLimit = UintToArith256(uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")); // Same as in Bitcoin. TODO: have this pre-converted instead of converting it every time
+	arith_uint256 bnNew;
+	bnNew.SetCompact(pindexLast->nBits);
+	bnNew *= nActualTimespan;
+	bnNew /= nTargetSpacing;
+
+	if (bnNew > bnPowLimit) bnNew = bnPowLimit;
+
+	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
+	return bnNew.GetCompact();
+
+
 
 	// Bitcoin 2: target change every block, with a maximum change of +100% or -50%.
+	/*int64_t nActualSpacing = 0;
+	if (pindexLast->nHeight != 0)
+		nActualSpacing = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
+
+	if (nActualSpacing < 0) nActualSpacing = 1;
+
     uint256 bnNew;
     bnNew.SetCompact(pindexLast->nBits);
 
 	if (pindexLast->nHeight == Params().LAST_POW_BLOCK() + 2 && nActualSpacing < nTargetSpacing) bnNew *= (nTargetSpacing / nActualSpacing); // Initial adjustment.
 	else
 	{
-		if (nActualSpacing <= nTargetSpacing / 2) bnNew *= 2;
-		else if (nActualSpacing >= nTargetSpacing * 2) bnNew /= 2;
+		if (nActualSpacing <= nTargetSpacing / 2) bnNew /= 2;
+		else if (nActualSpacing >= nTargetSpacing * 2) bnNew *= 2;
 		else
 		{
 			double factor = (double)nTargetSpacing / (double)nActualSpacing;
 			uint64_t intfactor = factor * 10000;
-			bnNew *= intfactor;
-			bnNew /= 10000;
+			bnNew *= 10000;
+			bnNew /= intfactor;
 		}
 	}
 
@@ -58,7 +77,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 		bnNew.SetCompact(MaxDifficulty);
 	}
 	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
-    return bnNew.GetCompact();
+    return bnNew.GetCompact();*/
 }
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits)
