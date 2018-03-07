@@ -556,30 +556,24 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
     if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
     {
-		LogPrintf("nMintableLastCheck = GetTime();\n");
         nMintableLastCheck = GetTime();
         fMintableCoins = pwallet->MintableCoins();
     }
 
     while (fGenerateBitcoins || fProofOfStake) {
         if (fProofOfStake) {
-			LogPrintf("if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {\n");
             if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
                 MilliSleep(5000);
                 continue;
             }
 
-			if(chainActive.Tip()->nTime < 1519096403) LogPrintf("oops chaintip time fucked\n");
-			if (nReserveBalance >= pwallet->GetBalance()) LogPrintf("oops nReserveBalance >= pwallet->GetBalance()\n");
-			if ((Params().MiningRequiresPeers() && vNodes.empty()) || (Params().MiningRequiresPeers() && !masternodeSync.IsSynced())) LogPrintf("oops miningrequires peers not helping\n");
-			LogPrintf(" while (chainActive.Tip()->nTime < 1519096403 ||\n");
 			while (chainActive.Tip()->nTime < 1519096403 || (Params().MiningRequiresPeers() && vNodes.empty()) || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || (Params().MiningRequiresPeers() && !masternodeSync.IsSynced())) {
                 nLastCoinStakeSearchInterval = 0;
                 MilliSleep(5000);
                 if (!fGenerateBitcoins && !fProofOfStake)
                     continue;
             }
-			LogPrintf(" if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks\n");
+
             if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
             {
                 if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes
@@ -593,21 +587,18 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         //
         // Create new block
         //
-		LogPrintf("unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();\n");
         unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
         CBlockIndex* pindexPrev = chainActive.Tip();
         if (!pindexPrev)
             continue;
 
-		LogPrintf("unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));\n");
         unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));
         if (!pblocktemplate.get())
             continue;
 
-		LogPrintf("CBlock* pblock = &pblocktemplate->block;\n");
         CBlock* pblock = &pblocktemplate->block;
         IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
-		LogPrintf("IncrementExtraNonce done\n");
+
         //Stake miner main
         if (fProofOfStake) {
             LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
