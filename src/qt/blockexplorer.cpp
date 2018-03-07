@@ -63,7 +63,7 @@ static std::string ScriptToString(const CScript& Script, bool Long = false, bool
         else
             return makeHRef(Address.ToString());
     } else
-        return Long ? "<pre>" + FormatScript(Script) + "</pre>" : _("Non-standard script");
+        return Long ? "<pre>" + FormatScript(Script) + "</pre>" : _("zBTC2");
 }
 
 static std::string TimeToString(uint64_t Time)
@@ -203,7 +203,6 @@ std::string BlockToString(CBlockIndex* pBlock)
 
     CAmount Fees = 0;
     CAmount OutVolume = 0;
-    CAmount Reward = 0;
 
     std::string TxLabels[] = {_("Hash"), _("From"), _("Amount"), _("To"), _("Amount")};
 
@@ -211,14 +210,12 @@ std::string BlockToString(CBlockIndex* pBlock)
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
         TxContent += TxToRow(tx);
-
+		if (tx.IsCoinBase() || tx.IsCoinStake()) continue;
         CAmount In = getTxIn(tx);
         CAmount Out = tx.GetValueOut();
-        if (tx.IsCoinBase())
-            Reward += Out;
-        else if (In < 0)
-            Fees = -Params().MaxMoneyOut();
-        else {
+        if (In < 0) Fees = -Params().MaxMoneyOut();
+        else
+		{
             Fees += In - Out;
             OutVolume += Out;
         }

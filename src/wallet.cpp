@@ -2967,13 +2967,20 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     }
     if (nCredit == 0 || nCredit > nBalance - nReserveBalance) return false;
 
-    // Calculate reward
+
+	//Masternode payment
+	bool MasternodePaid = FillBlockPayee(txNew, true);
+
+	// Calculate reward
     CAmount nReward;
     const CBlockIndex* pIndex0 = chainActive.Tip();
-	nReward = GetBlockValue(pIndex0->nHeight) + theTXFees;
+
+	if(MasternodePaid) nReward = GetBlockValue(pIndex0->nHeight) / 4 * 3 + theTXFees; // 75% of block value + txfees.
+	else nReward = GetBlockValue(pIndex0->nHeight) + theTXFees;
+
     nCredit += nReward;
 
-    CAmount nMinFee = 0;
+    /*CAmount nMinFee = 0; // PIVX deducted tx fee from coin stake tx. BTC2 not.
     while (true) {
         // Set output amount
         if (txNew.vout.size() == 3) {
@@ -2981,11 +2988,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             txNew.vout[2].nValue = nCredit - nMinFee - txNew.vout[1].nValue;
         } else
             txNew.vout[1].nValue = nCredit - nMinFee;
-
-        // Limit size
-        unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
-        if (nBytes >= DEFAULT_BLOCK_MAX_SIZE / 5)
-            return error("CreateCoinStake : exceeded coinstake size limit");
 
         CAmount nFeeNeeded = GetMinimumFee(nBytes, nTxConfirmTarget, mempool);
 
@@ -2998,10 +3000,18 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 LogPrintf("CreateCoinStake : fee for coinstake %s\n", FormatMoney(nMinFee).c_str());
             break;
         }
-    }
+    }*/
 
-    //Masternode payment
-    FillBlockPayee(txNew, nMinFee, true);
+	// Set output amount
+	if (txNew.vout.size() == 3) {
+		txNew.vout[1].nValue = (nCredit / 2 / CENT) * CENT;
+		txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
+	}
+	else txNew.vout[1].nValue = nCredit;
+
+	// Limit size
+	unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
+	if (nBytes >= DEFAULT_BLOCK_MAX_SIZE / 5) return error("CreateCoinStake : exceeded coinstake size limit");
 
     // Sign
     int nIn = 0;

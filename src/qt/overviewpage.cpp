@@ -210,8 +210,8 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
         nWatchOnlyLockedBalance = pwalletMain->GetLockedWatchOnlyBalance();
     }
     // BTC2 Balance
-    CAmount nTotalBalance = balance + unconfirmedBalance + immatureBalance;
-    CAmount btc2AvailableBalance = balance - nLockedBalance; // Had a bug in Bitcoin2.  Used to deduct immatureBalance. (it is not added to begin with so can't deduct it!)
+    CAmount nTotalBalance = balance + unconfirmedBalance;
+    CAmount btc2AvailableBalance = balance - nLockedBalance; // Had a bug in PIVX.  Used to deduct immatureBalance. (it is not added to begin with so can't deduct it!)
     CAmount nTotalWatchBalance = watchOnlyBalance + watchUnconfBalance + watchImmatureBalance;    
     CAmount nUnlockedBalance = nTotalBalance - nLockedBalance;
     // zBTC2 Balance

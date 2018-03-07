@@ -195,12 +195,12 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 }
 
 
-void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStake)
+bool FillBlockPayee(CMutableTransaction& txNew, bool fProofOfStake)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
-    if (!pindexPrev) return;
+    if (!pindexPrev) return false;
 
-    masternodePayments.FillBlockPayee(txNew, nFees, fProofOfStake);
+	return masternodePayments.FillBlockPayee(txNew, fProofOfStake);
 }
 
 std::string GetRequiredPaymentsString(int nBlockHeight)
@@ -208,10 +208,10 @@ std::string GetRequiredPaymentsString(int nBlockHeight)
     return masternodePayments.GetRequiredPaymentsString(nBlockHeight);
 }
 
-void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFees, bool fProofOfStake)
+bool CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, bool fProofOfStake)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
-    if (!pindexPrev) return;
+    if (!pindexPrev) return false;
 
     bool hasPayment = true;
     CScript payee;
@@ -258,6 +258,8 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
         LogPrint("masternode","Masternode payment of %s to %s\n", FormatMoney(masternodePayment).c_str(), address2.ToString().c_str());
     }
+
+	return hasPayment;
 }
 
 int CMasternodePayments::GetMinMasternodePaymentsProto()

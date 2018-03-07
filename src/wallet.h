@@ -285,9 +285,9 @@ public:
         fBackupMints = false;
 
         // Stake Settings
-        nHashDrift = 45;
+        nHashDrift = 25; // Attempt to hash up to 25 seconds into the future.
         nStakeSplitThreshold = 2000;
-        nHashInterval = 22;
+        nHashInterval = 22; // break between failed staking attempts
         nStakeSetUpdateTime = 300; // 5 minutes
 
         //MultiSend
