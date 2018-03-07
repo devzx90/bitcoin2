@@ -25,8 +25,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return Params().ProofOfWorkLimit().GetCompact();
     }
 
-	uint256 bnTargetLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); //  Equal to that of Bitcoin
-    int64_t nTargetSpacing = 60;
+	unsigned int MaxDifficulty = 4294000000;
+	int64_t nTargetSpacing = 60;
 
     int64_t nActualSpacing = 0;
     if (pindexLast->nHeight != 0)
@@ -43,24 +43,24 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	{
 		if (nActualSpacing <= nTargetSpacing / 2)
 		{
-			LogPrintf("difficulty multiplied by 2\n");
-			bnNew *= 2;
+			uint64_t newdifficulty = pindexLast->nBits * 2;
+			if(newdifficulty > MaxDifficulty) bnNew.SetCompact(MaxDifficulty);
+			else bnNew *= 2;
 		}
 		else if (nActualSpacing >= nTargetSpacing * 2) bnNew /= 2;
 		else
 		{
-			LogPrintf("gradual difficulty adjustment\n");
 			double factor = (double)nTargetSpacing / (double)nActualSpacing;
-			int64_t intfactor = factor * 10000;
+			uint64_t intfactor = factor * 10000;
 			bnNew *= intfactor;
 			bnNew /= 10000;
 		}
 	}
 
-	if (bnNew == 0 || bnNew > bnTargetLimit)
+	if (bnNew == 0 || bnNew.GetCompact() > MaxDifficulty)
 	{
-		LogPrintf("difficulty was set to TargetLimit\n");
-		bnNew = bnTargetLimit;
+		LogPrintf("difficulty was set to Maximum\n");
+		bnNew.SetCompact(MaxDifficulty);
 	}
 	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
     return bnNew.GetCompact();
