@@ -25,7 +25,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return Params().ProofOfWorkLimit().GetCompact();
     }
 
-	uint256 bnTargetLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000"); //  Equal to that of Dash
+	uint256 bnTargetLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); //  Equal to that of Bitcoin
     int64_t nTargetSpacing = 60;
 
     int64_t nActualSpacing = 0;
