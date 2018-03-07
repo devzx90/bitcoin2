@@ -42,10 +42,15 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	if (pindexLast->nHeight == Params().LAST_POW_BLOCK() + 2 && nActualSpacing < nTargetSpacing) bnNew *= (nTargetSpacing / nActualSpacing); // Initial adjustment.
 	else
 	{
-		if (nActualSpacing <= nTargetSpacing / 2) bnNew *= 2;
+		if (nActualSpacing <= nTargetSpacing / 2)
+		{
+			LogPrintf("difficulty multiplied by 2\n");
+			bnNew *= 2;
+		}
 		else if (nActualSpacing >= nTargetSpacing * 2) bnNew /= 2;
 		else
 		{
+			LogPrintf("gradual difficulty adjustment\n");
 			double factor = (double)nTargetSpacing / (double)nActualSpacing;
 			int64_t intfactor = factor * 10000;
 			bnNew *= intfactor;
@@ -53,8 +58,12 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 		}
 	}
 
-    if (bnNew == 0 || bnNew > bnTargetLimit) bnNew = bnTargetLimit;
-
+	if (bnNew == 0 || bnNew > bnTargetLimit)
+	{
+		LogPrintf("difficulty was set to TargetLimit\n");
+		bnNew = bnTargetLimit;
+	}
+	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
     return bnNew.GetCompact();
 }
 
