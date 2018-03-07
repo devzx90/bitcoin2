@@ -25,7 +25,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return Params().ProofOfWorkLimit().GetCompact();
     }
 
-	unsigned int MaxDifficulty = 4294000000;
+	unsigned int MaxDifficulty = 2147483640;
 	int64_t nTargetSpacing = 60;
 
     int64_t nActualSpacing = 0;
@@ -43,9 +43,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	{
 		if (nActualSpacing <= nTargetSpacing / 2)
 		{
-			uint64_t newdifficulty = pindexLast->nBits * 2;
+			unsigned int newdifficulty = pindexLast->nBits * 2;
 			if(newdifficulty > MaxDifficulty) bnNew.SetCompact(MaxDifficulty);
-			else bnNew *= 2;
+			else bnNew.SetCompact(newdifficulty);
 		}
 		else if (nActualSpacing >= nTargetSpacing * 2) bnNew /= 2;
 		else
