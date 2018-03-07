@@ -19,14 +19,13 @@
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
 {
-    /* current difficulty formula, bitcoin2 - DarkGravity v3, written by Evan Duffield - evan@dashpay.io */
     const CBlockIndex* BlockLastSolved = pindexLast;
 
     if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || BlockLastSolved->nHeight <= Params().LAST_POW_BLOCK()) {
         return Params().ProofOfWorkLimit().GetCompact();
     }
 
-	uint256 bnTargetLimit = (~uint256(0) >> 24); // uint256S("00000fffff000000000000000000000000000000000000000000000000000000"); //  DASH
+	uint256 bnTargetLimit = uint256S("00000fffff000000000000000000000000000000000000000000000000000000"); //  Equal to that of Dash
     int64_t nTargetSpacing = 60;
 
     int64_t nActualSpacing = 0;
