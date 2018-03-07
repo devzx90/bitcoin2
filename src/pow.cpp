@@ -33,8 +33,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	else if (nActualTimespan > 120) nActualTimespan = 120;
 
 	// Retarget
-	const arith_uint256 bnPowLimit = UintToArith256(uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff")); // Same as in Bitcoin. TODO: have this pre-converted instead of converting it every time
-	arith_uint256 bnNew;
+	const uint256 bnPowLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff") // Same as in Bitcoin
+	uint256 bnNew;
 	bnNew.SetCompact(pindexLast->nBits);
 	bnNew *= nActualTimespan;
 	bnNew /= nTargetSpacing;
