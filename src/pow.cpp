@@ -33,7 +33,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	else if (nActualTimespan > 120) nActualTimespan = 120;
 
 	// Retarget
-	const uint256 bnPowLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff") // Same as in Bitcoin
+	const uint256 bnPowLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // Same as in Bitcoin
 	uint256 bnNew;
 	bnNew.SetCompact(pindexLast->nBits);
 	bnNew *= nActualTimespan;
