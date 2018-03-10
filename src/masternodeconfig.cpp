@@ -61,15 +61,19 @@ bool CMasternodeConfig::read(std::string& strErr)
             }
         }
 
+		int aPort;
+		std::string aHost;
+		SplitHostPort(ip, aPort, aHost);
+
         if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            if (CService(ip, 49144).GetPort() != 49144) {
+            if (aPort != 49144) {
                 strErr = _("Invalid port detected in masternode.conf") + "\n" +
                          strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
                          _("(must be 49144 for mainnet)");
                 streamConfig.close();
                 return false;
             }
-        } else if (CService(ip).GetPort() == 49144) {
+        } else if (aPort == 49144) {
             strErr = _("Invalid port detected in masternode.conf") + "\n" +
                      strprintf(_("Line: %d"), linenumber) + "\n\"" + line + "\"" + "\n" +
                      _("(49144 could be used only on mainnet)");
