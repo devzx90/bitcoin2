@@ -162,7 +162,8 @@ std::string CMasternodeSync::GetSyncStatus()
        // return _("Synchronizing budgets...");
     case MASTERNODE_SYNC_FAILED:
         return _("Synchronization failed");
-    case MASTERNODE_SYNC_FINISHED:
+	case MASTERNODE_SYNC_FINISHED:
+	case MASTERNODE_SYNC_BUDGET:
         return _("Synchronization finished");
     }
     return "";
@@ -235,7 +236,7 @@ void CMasternodeSync::Process()
     }
 
     //try syncing again
-    if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED && lastFailure + (1 * 60) < GetTime()) {
+    if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED && lastFailure + 60 < GetTime()) {
         Reset();
     } else if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED) {
         return;
@@ -252,8 +253,10 @@ void CMasternodeSync::Process()
     TRY_LOCK(cs_vNodes, lockRecv);
     if (!lockRecv) return;
 
-    BOOST_FOREACH (CNode* pnode, vNodes) {
-        if (Params().NetworkID() == CBaseChainParams::REGTEST) {
+    BOOST_FOREACH (CNode* pnode, vNodes)
+	{
+        if (Params().NetworkID() == CBaseChainParams::REGTEST)
+		{
             if (RequestedMasternodeAttempt <= 2) {
                 pnode->PushMessage("getsporks"); //get current network sporks
             } else if (RequestedMasternodeAttempt < 4) {
@@ -261,8 +264,6 @@ void CMasternodeSync::Process()
             } else if (RequestedMasternodeAttempt < 6) {
                 int nMnCount = mnodeman.CountEnabled();
                 pnode->PushMessage("mnget", nMnCount); //sync payees
-                uint256 n = 0;
-                pnode->PushMessage("mnvs", n); //sync masternode votes
             } else {
                 RequestedMasternodeAssets = MASTERNODE_SYNC_FINISHED;
             }
@@ -276,7 +277,7 @@ void CMasternodeSync::Process()
             pnode->FulfilledRequest("getspork");
 
             pnode->PushMessage("getsporks"); //get current network sporks
-            if (RequestedMasternodeAttempt >= 2) GetNextAsset();
+            if (RequestedMasternodeAttempt > 0) GetNextAsset();
             RequestedMasternodeAttempt++;
 
             return;
