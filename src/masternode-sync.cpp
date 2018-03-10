@@ -242,7 +242,7 @@ void CMasternodeSync::Process()
         return;
     }
 
-    LogPrint("masternode", "CMasternodeSync::Process() - tick %d RequestedMasternodeAssets %d\n", tick, RequestedMasternodeAssets);
+    LogPrint("masternode", "CMasternodeSync::Process() - tick %d RequestedMasternodeAssets %d RequestedMasternodeAttempt %d\n", tick, RequestedMasternodeAssets, RequestedMasternodeAttempt);
 
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_INITIAL) GetNextAsset();
 
@@ -251,8 +251,11 @@ void CMasternodeSync::Process()
         !IsBlockchainSynced() && RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS) return;
 
     TRY_LOCK(cs_vNodes, lockRecv);
-    if (!lockRecv) return;
-
+	if (!lockRecv)
+	{
+		LogPrint("masternode", "ERROR: !lockRecv - unable to lock\n");
+		return;
+	}
     BOOST_FOREACH (CNode* pnode, vNodes)
 	{
         if (Params().NetworkID() == CBaseChainParams::REGTEST)
@@ -273,13 +276,12 @@ void CMasternodeSync::Process()
 
         //set to synced
         if (RequestedMasternodeAssets == MASTERNODE_SYNC_SPORKS) {
+			RequestedMasternodeAttempt++;
             if (pnode->HasFulfilledRequest("getspork")) continue;
             pnode->FulfilledRequest("getspork");
 
             pnode->PushMessage("getsporks"); //get current network sporks
             if (RequestedMasternodeAttempt > 0) GetNextAsset();
-            RequestedMasternodeAttempt++;
-
             return;
         }
 
