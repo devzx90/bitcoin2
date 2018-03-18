@@ -276,7 +276,7 @@ void CMasternodeSync::Process()
 
         //set to synced
         if (RequestedMasternodeAssets == MASTERNODE_SYNC_SPORKS) {
-			RequestedMasternodeAttempt++;
+			RequestedMasternodeAttempt++; // TODO: Once there's lots of peers, move this line to right before the next return; 
             if (pnode->HasFulfilledRequest("getspork")) continue;
             pnode->FulfilledRequest("getspork");
 
@@ -286,9 +286,11 @@ void CMasternodeSync::Process()
         }
 
         if (pnode->nVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {
-            if (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST) {
+            if (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST)
+			{
+				RequestedMasternodeAttempt++; // TODO: Once there's lots of peers, move this line to right before the next unconditional return; 
                 LogPrint("masternode", "CMasternodeSync::Process() - lastMasternodeList %lld (GetTime() - MASTERNODE_SYNC_TIMEOUT) %lld\n", lastMasternodeList, GetTime() - MASTERNODE_SYNC_TIMEOUT);
-                if (lastMasternodeList > 0 && lastMasternodeList < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
+                if (lastMasternodeList > 0 && lastMasternodeList < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last 10 seconds, so we'll move to the
                     GetNextAsset();
                     return;
                 }
@@ -314,11 +316,11 @@ void CMasternodeSync::Process()
                 if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
 
                 mnodeman.DsegUpdate(pnode);
-                RequestedMasternodeAttempt++;
                 return;
             }
 
             if (RequestedMasternodeAssets == MASTERNODE_SYNC_MNW) {
+				RequestedMasternodeAttempt++; // TODO: Once there's lots of peers, move this line to right before the next unconditional return; 
                 if (lastMasternodeWinner > 0 && lastMasternodeWinner < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
                     GetNextAsset();
                     return;
@@ -349,7 +351,6 @@ void CMasternodeSync::Process()
 
                 int nMnCount = mnodeman.CountEnabled();
                 pnode->PushMessage("mnget", nMnCount); //sync payees
-                RequestedMasternodeAttempt++;
 
                 return;
             }
@@ -358,7 +359,7 @@ void CMasternodeSync::Process()
         if (pnode->nVersion >= ActiveProtocol()) {
             if (RequestedMasternodeAssets == MASTERNODE_SYNC_BUDGET) {
 
-				// No budget, so just finish syncing
+				// No masternode budget, so just finish syncing
 				GetNextAsset();
 				activeMasternode.ManageStatus();
 				return;
