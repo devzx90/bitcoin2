@@ -430,7 +430,7 @@ void CMasternodeMan::DsegUpdate(CNode* pnode)
             }
         }
     }
-
+	LogPrint("masternode", "DsegUpdate - pushmessage\n");
     pnode->PushMessage("dseg", CTxIn());
     int64_t askAgain = GetTime() + MASTERNODES_DSEG_SECONDS;
     mWeAskedForMasternodeList[pnode->addr] = askAgain;
@@ -801,6 +801,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
         CTxIn vin;
         vRecv >> vin;
+		LogPrint("masternode", "dseg - peer asked me for the masternode list\n");
 
         if (vin == CTxIn()) { //only should ask for this once
             //local network
