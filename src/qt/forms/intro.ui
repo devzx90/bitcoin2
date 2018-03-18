@@ -56,7 +56,7 @@
    <item>
     <widget class="QLabel" name="sizeWarningLabel">
      <property name="text">
-      <string>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least %1GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</string>
+      <string>Bitcoin 2 Core will download and store a copy of the Bitcoin2 block chain. At least 1.3 GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -73,7 +73,7 @@
    <item>
     <widget class="QRadioButton" name="dataDirCustom">
      <property name="text">
-      <string>Use a custom data directory:</string>
+      <string>Use a custom data directory. (Do not use a no write-access directory like Program Files):</string>
      </property>
     </widget>
    </item>
