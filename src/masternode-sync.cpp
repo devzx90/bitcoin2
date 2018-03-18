@@ -290,7 +290,7 @@ void CMasternodeSync::Process()
             if (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST)
 			{
 				RequestedMasternodeAttempt++; // TODO: Once there's lots of peers, move this line to right before the next unconditional return; 
-                LogPrint("masternode", "CMasternodeSync::Process() - lastMasternodeList %lld (GetTime() - MASTERNODE_SYNC_TIMEOUT) %lld\n", lastMasternodeList, GetTime() - MASTERNODE_SYNC_TIMEOUT);
+                LogPrint("masternode", "CMasternodeSync::Process() - lastMasternodeList %lld (GetTime()) %lld\n", lastMasternodeList, GetTime());
                 if (lastMasternodeList > 0 && lastMasternodeList < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last 10 seconds, so we'll move to the
                     GetNextAsset();
                     return;
@@ -316,6 +316,7 @@ void CMasternodeSync::Process()
 
                 if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
 
+				LogPrint("masternode", "MASTERNODE_SYNC_LIST - mnodeman.DsegUpdate(pnode);\n", lastMasternodeList, GetTime());
                 mnodeman.DsegUpdate(pnode);
                 return;
             }
