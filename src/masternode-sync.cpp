@@ -296,8 +296,11 @@ void CMasternodeSync::Process()
                     return;
                 }
 
+				LogPrint("masternode", "if (pnode->HasFulfilledRequest(mnsync)) continue;\n");
                 if (pnode->HasFulfilledRequest("mnsync")) continue;
+				LogPrint("masternode", "pnode->FulfilledRequest(mnsync);\n");
                 pnode->FulfilledRequest("mnsync");
+				LogPrint("masternode", "done: pnode->FulfilledRequest(mnsync);\n");
 
                 // timeout
                 if (lastMasternodeList == 0 &&
@@ -316,7 +319,7 @@ void CMasternodeSync::Process()
 
                 if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
 
-				LogPrint("masternode", "MASTERNODE_SYNC_LIST - mnodeman.DsegUpdate(pnode);\n", lastMasternodeList, GetTime());
+				LogPrint("masternode", "MASTERNODE_SYNC_LIST - mnodeman.DsegUpdate(pnode);\n");
                 mnodeman.DsegUpdate(pnode);
                 return;
             }
