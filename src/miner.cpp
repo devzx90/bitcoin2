@@ -547,6 +547,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     RenameThread("BTC2-miner");
 
     // Each thread has its own key and counter
+	LogPrintf("debug", "CReserveKey reservekey(pwallet);\n");
     CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
 
@@ -554,12 +555,14 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     static bool fMintableCoins = false;
     static int nMintableLastCheck = 0;
 
+	LogPrintf("debug", "if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60))\n");
     if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
     {
         nMintableLastCheck = GetTime();
         fMintableCoins = pwallet->MintableCoins();
     }
 
+	LogPrintf("debug", "while (fGenerateBitcoins || fProofOfStake)\n");
     while (fGenerateBitcoins || fProofOfStake)
 	{
         if (fProofOfStake)
