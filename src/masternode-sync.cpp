@@ -256,6 +256,7 @@ void CMasternodeSync::Process()
 	}
 
     TRY_LOCK(cs_vNodes, lockRecv);
+	LogPrint("masternode", "Done: TRY_LOCK(cs_vNodes, lockRecv);\n");
 	if (!lockRecv)
 	{
 		LogPrint("masternode", "ERROR: !lockRecv - unable to lock\n");
@@ -263,6 +264,7 @@ void CMasternodeSync::Process()
 	}
     BOOST_FOREACH (CNode* pnode, vNodes)
 	{
+		LogPrint("masternode", " BOOST_FOREACH (CNode* pnode, vNodes)\n");
         if (Params().NetworkID() == CBaseChainParams::REGTEST)
 		{
             if (RequestedMasternodeAttempt <= 2) {
