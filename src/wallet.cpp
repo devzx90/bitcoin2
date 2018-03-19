@@ -2974,9 +2974,9 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 	// Calculate reward
     CAmount nReward;
     const CBlockIndex* pIndex0 = chainActive.Tip();
-
-	if(MasternodePaid) nReward = GetBlockValue(pIndex0->nHeight) / 4 * 3 + theTXFees; // 75% of block value + txfees.
-	else nReward = GetBlockValue(pIndex0->nHeight) + theTXFees;
+	LogPrintf("CreateCoinStake : pIndex0->nHeight=%d\n", pIndex0->nHeight);
+	if(MasternodePaid) nReward = GetBlockValue(pIndex0->nHeight + 1) / 4 * 3 + theTXFees; // 75% of block value + txfees.
+	else nReward = GetBlockValue(pIndex0->nHeight + 1) + theTXFees;
 
     nCredit += nReward;
 
@@ -3019,7 +3019,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         if (!SignSignature(*this, *pcoin, txNew, nIn++))
             return error("CreateCoinStake : failed to sign coinstake");
     }
-
+	LogPrintf("Successfully generated coinstake\n");
     // Successfully generated coinstake
     nLastStakeSetUpdate = 0; //this will trigger stake set to repopulate next round
     return true;
