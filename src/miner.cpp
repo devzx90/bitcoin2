@@ -560,8 +560,10 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         fMintableCoins = pwallet->MintableCoins();
     }
 
-    while (fGenerateBitcoins || fProofOfStake) {
-        if (fProofOfStake) {
+    while (fGenerateBitcoins || fProofOfStake)
+	{
+        if (fProofOfStake)
+		{
             if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
                 MilliSleep(5000);
                 continue;
@@ -570,12 +572,14 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 			while (chainActive.Tip()->nTime < 1519096403 || (Params().MiningRequiresPeers() && vNodes.empty()) || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || (Params().MiningRequiresPeers() && !masternodeSync.IsSynced())) {
                 nLastCoinStakeSearchInterval = 0;
                 MilliSleep(5000);
+				LogPrintf("debug", "Waiting for staking to activate.\n");
 				if (vNodes.empty()) LogPrintf("debug", "vNodes.empty()\n");
 				if (!masternodeSync.IsSynced()) LogPrintf("debug", "!masternodeSync.IsSynced()\n");
                 if (!fGenerateBitcoins && !fProofOfStake)
                     continue;
             }
 
+			LogPrintf("debug", "if (mapHashedBlocks.count(chainActive.Tip()->nHeight))\n");
             if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
             {
                 if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes
