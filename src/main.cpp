@@ -2899,15 +2899,19 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             // Add in sigops done by pay-to-script-hash inputs;
             // this is to prevent a "rogue miner" from creating
             // an incredibly-expensive-to-validate block.
+			LogPrintf(" nSigOps += GetP2SHSigOpCount(tx, view);\n");
             nSigOps += GetP2SHSigOpCount(tx, view);
             if (nSigOps > nMaxBlockSigOps)
                 return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
+			LogPrintf("if (!tx.IsCoinStake()) nFees += view.GetValueIn(tx) - tx.GetValueOut();\n");
             if (!tx.IsCoinStake()) nFees += view.GetValueIn(tx) - tx.GetValueOut();
+			LogPrintf("nValueIn += view.GetValueIn(tx);\n");
             nValueIn += view.GetValueIn(tx);
 
             std::vector<CScriptCheck> vChecks;
             unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_DERSIG;
+			LogPrintf("if (!CheckInputs(tx, state, view, fScriptChecks\n");
             if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : NULL))
                 return false;
             control.Add(vChecks);
