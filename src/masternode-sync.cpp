@@ -303,11 +303,8 @@ void CMasternodeSync::Process()
                     return;
                 }
 
-				LogPrint("masternode", "if (pnode->HasFulfilledRequest(mnsync)) continue;\n");
                 if (pnode->HasFulfilledRequest("mnsync")) continue;
-				LogPrint("masternode", "pnode->FulfilledRequest(mnsync);\n");
                 pnode->FulfilledRequest("mnsync");
-				LogPrint("masternode", "done: pnode->FulfilledRequest(mnsync);\n");
 
                 // timeout
                 if (lastMasternodeList == 0 &&
@@ -339,9 +336,8 @@ void CMasternodeSync::Process()
                     return;
                 }
 
-                if (pnode->HasFulfilledRequest("mnwsync")) continue;
-                pnode->FulfilledRequest("mnwsync");
-				LogPrint("masternode", "should pass! pnode->FulfilledRequest(mnwsync);\n");
+                //if (pnode->HasFulfilledRequest("mnwsync")) continue;
+                //pnode->FulfilledRequest("mnwsync");
 
                 // timeout
                 if (lastMasternodeWinner == 0 &&
