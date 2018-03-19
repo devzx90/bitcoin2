@@ -2784,6 +2784,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     if (hashPrevBlock != view.GetBestBlock())
         LogPrintf("%s: hashPrev=%s view=%s\n", __func__, hashPrevBlock.ToString().c_str(), view.GetBestBlock().ToString().c_str());
     assert(hashPrevBlock == view.GetBestBlock());
+	LogPrintf(" assert(hashPrevBlock == view.GetBestBlock()) done\n");
 
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)
