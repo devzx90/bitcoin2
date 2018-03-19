@@ -42,7 +42,7 @@ bool CMasternodeSync::IsBlockchainSynced()
     if (pindex == NULL) return false;
 
 
-    if (pindex->nTime + 60 * 60 < timenow && (pindex->nHeight != 1390 || timenow > 1522368000))
+    if (pindex->nTime + 60 * 60 < timenow && ((pindex->nHeight != 1390 && pindex->nHeight != 1391) || timenow > 1522368000))
         return false;
 
     return true;
