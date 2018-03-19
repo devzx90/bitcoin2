@@ -547,7 +547,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     RenameThread("BTC2-miner");
 
     // Each thread has its own key and counter
-	LogPrintf("debug", "CReserveKey reservekey(pwallet);\n");
+	LogPrintf("masternode", "CReserveKey reservekey(pwallet);\n");
     CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
 
@@ -555,14 +555,14 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     static bool fMintableCoins = false;
     static int nMintableLastCheck = 0;
 
-	LogPrintf("debug", "if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60))\n");
+	LogPrintf("masternode", "if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60))\n");
     if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
     {
         nMintableLastCheck = GetTime();
         fMintableCoins = pwallet->MintableCoins();
     }
 
-	LogPrintf("debug", "while (fGenerateBitcoins || fProofOfStake)\n");
+	LogPrintf("masternode", "while (fGenerateBitcoins || fProofOfStake)\n");
     while (fGenerateBitcoins || fProofOfStake)
 	{
         if (fProofOfStake)
@@ -575,14 +575,14 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 			while (chainActive.Tip()->nTime < 1519096403 || (Params().MiningRequiresPeers() && vNodes.empty()) || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || (Params().MiningRequiresPeers() && !masternodeSync.IsSynced())) {
                 nLastCoinStakeSearchInterval = 0;
                 MilliSleep(5000);
-				LogPrintf("debug", "Waiting for staking to activate.\n");
-				if (vNodes.empty()) LogPrintf("debug", "vNodes.empty()\n");
-				if (!masternodeSync.IsSynced()) LogPrintf("debug", "!masternodeSync.IsSynced()\n");
+				LogPrintf("masternode", "Waiting for staking to activate.\n");
+				if (vNodes.empty()) LogPrintf("masternode", "vNodes.empty()\n");
+				if (!masternodeSync.IsSynced()) LogPrintf("masternode", "!masternodeSync.IsSynced()\n");
                 if (!fGenerateBitcoins && !fProofOfStake)
                     continue;
             }
 
-			LogPrintf("debug", "if (mapHashedBlocks.count(chainActive.Tip()->nHeight))\n");
+			LogPrintf("masternode", "if (mapHashedBlocks.count(chainActive.Tip()->nHeight))\n");
             if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
             {
                 if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes
