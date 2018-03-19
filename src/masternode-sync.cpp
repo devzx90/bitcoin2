@@ -42,7 +42,7 @@ bool CMasternodeSync::IsBlockchainSynced()
     if (pindex == NULL) return false;
 
 
-    if (pindex->nTime + 60 * 60 < timenow && (pindex->nHeight != 1390 || timenow > 1521504000))
+    if (pindex->nTime + 60 * 60 < timenow && (pindex->nHeight != 1390 || timenow > 1522368000))
         return false;
 
     return true;
@@ -248,8 +248,12 @@ void CMasternodeSync::Process()
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_INITIAL) GetNextAsset();
 
     // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
-    if (Params().NetworkID() != CBaseChainParams::REGTEST &&
-        !IsBlockchainSynced() && RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS) return;
+	if (Params().NetworkID() != CBaseChainParams::REGTEST &&
+		!IsBlockchainSynced() && RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS)
+	{
+		LogPrint("masternode", "sporks synced but blockchain is not.. Waiting!\n");
+		return;
+	}
 
     TRY_LOCK(cs_vNodes, lockRecv);
 	if (!lockRecv)
