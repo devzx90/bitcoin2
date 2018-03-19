@@ -2922,12 +2922,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
 		LogPrintf("UpdateCoins(tx, stat\n");
         UpdateCoins(tx, state, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
-
+		LogPrintf("vPos.push_back(std::make_pair(tx.GetHash(), pos));\n");
         vPos.push_back(std::make_pair(tx.GetHash(), pos));
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
 
-	LogPrintf("//Track zBTC2 money \n");
+	LogPrintf("Track zBTC2 money \n");
     //Track zBTC2 money supply in the block index
     if (!UpdateZBTC2Supply(block, pindex))
         return state.DoS(100, error("%s: Failed to calculate new zBTC2 supply for block=%s height=%d", __func__,
