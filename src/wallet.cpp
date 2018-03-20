@@ -2980,8 +2980,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     nCredit += nReward;
 
-	// TODO: Somehow the masternode reward gets erased on some blocks. (whenever there's too few outputs or something?)
-
     /*CAmount nMinFee = 0; // PIVX deducted tx fee from coin stake tx. BTC2 not.
     while (true) {
         // Set output amount
