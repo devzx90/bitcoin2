@@ -41,7 +41,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 	if (bnNew > bnPowLimit) bnNew = bnPowLimit;
 
+	if (BlockLastSolved->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew.SetCompact(469827583U); // PoS Starting difficulty can't be too low.
 	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
+
 	return bnNew.GetCompact();
 }
 
