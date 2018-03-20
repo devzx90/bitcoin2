@@ -169,8 +169,6 @@ void DumpMasternodePayments()
     }
     LogPrint("masternode","Writting info to mnpayments.dat...\n");
     paymentdb.Write(masternodePayments);
-
-    LogPrint("masternode","Budget dump finished  %dms\n", GetTimeMillis() - nStart);
 }
 
 bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
@@ -242,14 +240,10 @@ bool CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, bool fProof
             txNew.vout.resize(i + 1);
             txNew.vout[i].scriptPubKey = payee;
             txNew.vout[i].nValue = masternodePayment;
-
-            //subtract mn payment from the stake reward
-            txNew.vout[i - 1].nValue -= masternodePayment;
         } else {
             txNew.vout.resize(2);
             txNew.vout[1].scriptPubKey = payee;
             txNew.vout[1].nValue = masternodePayment;
-            txNew.vout[0].nValue = blockValue - masternodePayment;
         }
 
         CTxDestination address1;

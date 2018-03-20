@@ -239,9 +239,9 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     nStakeModifierHeight = pindexFrom->nHeight;
     nStakeModifierTime = pindexFrom->GetBlockTime();
     int64_t nStakeModifierSelectionInterval = GetStakeModifierSelectionInterval();
-	LogPrintf("nStakeModifierSelectionInterval: %d\n", nStakeModifierSelectionInterval);
-	LogPrintf("nStakeModifierTime: %d\n", nStakeModifierTime);
-	LogPrintf("pindexFrom->GetBlockTime(): %d\n", pindexFrom->GetBlockTime());
+	//LogPrintf("nStakeModifierSelectionInterval: %d\n", nStakeModifierSelectionInterval);
+	//LogPrintf("nStakeModifierTime: %d\n", nStakeModifierTime);
+	//LogPrintf("pindexFrom->GetBlockTime(): %d\n", pindexFrom->GetBlockTime());
 	
 
     const CBlockIndex* pindex = pindexFrom;
@@ -258,7 +258,7 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
         pindex = pindexNext;
         pindexNext = chainActive[pindexNext->nHeight + 1];
         if (pindex->GeneratedStakeModifier()) {
-			LogPrintf("nStakeModifierTime: %d\n", nStakeModifierTime);
+			//LogPrintf("nStakeModifierTime: %d\n", nStakeModifierTime);
             nStakeModifierHeight = pindex->nHeight;
             nStakeModifierTime = pindex->GetBlockTime();
         }
