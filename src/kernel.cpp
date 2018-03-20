@@ -238,21 +238,24 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     nStakeModifierHeight = pindexFrom->nHeight;
     nStakeModifierTime = pindexFrom->GetBlockTime();
     int64_t nStakeModifierSelectionInterval = GetStakeModifierSelectionInterval();
+	LogPrintf("nStakeModifierSelectionInterval should not be higher than like 900: %d\n", nStakeModifierSelectionInterval);
+	LogPrintf("nStakeModifierTime: %d\n", nStakeModifierTime);
+	LogPrintf("pindexFrom->GetBlockTime(): %d\n", pindexFrom->GetBlockTime());
+
     const CBlockIndex* pindex = pindexFrom;
     CBlockIndex* pindexNext = chainActive[pindexFrom->nHeight + 1];
-	LogPrintf("GetKernelStakeModifier - nStakeModifierHeight=%d\n", nStakeModifierHeight);
 
     // loop to find the stake modifier later by a selection interval
     while (nStakeModifierTime < pindexFrom->GetBlockTime() + nStakeModifierSelectionInterval) {
         if (!pindexNext) {
             // Should never happen.
-			LogPrintf("GetKernelStakeModifier - Next one after this is NULL. nStakeModifierHeight=%d\n", nStakeModifierHeight);
             return error("Null pindexNext\n");
         }
 
         pindex = pindexNext;
         pindexNext = chainActive[pindexNext->nHeight + 1];
         if (pindex->GeneratedStakeModifier()) {
+			LogPrintf("nStakeModifierTime: %d\n", nStakeModifierTime);
             nStakeModifierHeight = pindex->nHeight;
             nStakeModifierTime = pindex->GetBlockTime();
         }

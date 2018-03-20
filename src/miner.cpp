@@ -544,11 +544,9 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
     LogPrintf("BTC2Miner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-	LogPrintf("SetThreadPriority(THREAD_PRIORITY_LOWEST);\n");
     RenameThread("BTC2-miner");
 
     // Each thread has its own key and counter
-	LogPrintf("CReserveKey reservekey(pwallet);\n");
     CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
 
@@ -556,14 +554,12 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     static bool fMintableCoins = false;
     static int nMintableLastCheck = 0;
 
-	LogPrintf("if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60))\n");
     if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
     {
         nMintableLastCheck = GetTime();
         fMintableCoins = pwallet->MintableCoins();
     }
 
-	LogPrintf("while (fGenerateBitcoins || fProofOfStake)\n");
     while (fGenerateBitcoins || fProofOfStake)
 	{
         if (fProofOfStake)
@@ -576,14 +572,12 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 			while (chainActive.Tip()->nTime < 1519096403 || (Params().MiningRequiresPeers() && vNodes.empty()) || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || (Params().MiningRequiresPeers() && !masternodeSync.IsSynced())) {
                 nLastCoinStakeSearchInterval = 0;
                 MilliSleep(5000);
-				LogPrintf("Waiting for staking to activate.\n");
 				if (vNodes.empty()) LogPrintf("vNodes.empty()\n");
 				if (!masternodeSync.IsSynced()) LogPrintf("!masternodeSync.IsSynced()\n");
                 if (!fGenerateBitcoins && !fProofOfStake)
                     continue;
             }
 
-			LogPrintf("if (mapHashedBlocks.count(chainActive.Tip()->nHeight))\n");
             if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
             {
                 if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes

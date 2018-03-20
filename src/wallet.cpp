@@ -4677,6 +4677,12 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
             CScript scriptZerocoinSpend;
             CScript scriptChange;
             CAmount nChange = nValueSelected - nValue;
+			if (nChange < 0)
+			{
+				receipt.SetStatus(_("Selected coins value is less than payment target"), nStatus);
+				return false;
+			}
+
             if (nChange && !address) {
                 receipt.SetStatus(_("Need address because change is not exact"), nStatus);
                 return false;
