@@ -56,7 +56,7 @@ static bool GetLastStakeModifier(const CBlockIndex* pindex, uint64_t& nStakeModi
 static int64_t GetStakeModifierSelectionIntervalSection(int nSection)
 {
     assert(nSection >= 0 && nSection < 64);
-    int64_t a = getIntervalVersion(fTestNet) * 63 / (63 + ((63 - nSection) * (MODIFIER_INTERVAL_RATIO - 1)));
+    int64_t a = (getIntervalVersion(fTestNet) * 63 / (63 + ((63 - nSection) * (MODIFIER_INTERVAL_RATIO - 1)))) / 2; // That / 2 is for BTC2.
     return a;
 }
 
@@ -67,6 +67,7 @@ static int64_t GetStakeModifierSelectionInterval()
     for (int nSection = 0; nSection < 64; nSection++) {
         nSelectionInterval += GetStakeModifierSelectionIntervalSection(nSection);
     }
+
     return nSelectionInterval;
 }
 
@@ -238,14 +239,16 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
     nStakeModifierHeight = pindexFrom->nHeight;
     nStakeModifierTime = pindexFrom->GetBlockTime();
     int64_t nStakeModifierSelectionInterval = GetStakeModifierSelectionInterval();
-	LogPrintf("nStakeModifierSelectionInterval should not be higher than like 900: %d\n", nStakeModifierSelectionInterval);
+	LogPrintf("nStakeModifierSelectionInterval: %d\n", nStakeModifierSelectionInterval);
 	LogPrintf("nStakeModifierTime: %d\n", nStakeModifierTime);
 	LogPrintf("pindexFrom->GetBlockTime(): %d\n", pindexFrom->GetBlockTime());
+	
 
     const CBlockIndex* pindex = pindexFrom;
     CBlockIndex* pindexNext = chainActive[pindexFrom->nHeight + 1];
 
     // loop to find the stake modifier later by a selection interval
+	// so nStakeModifierSelectionInterval must be small enough together with pindexFrom->GetBlockTime() to make nStakeModifierTime bigger than them.
     while (nStakeModifierTime < pindexFrom->GetBlockTime() + nStakeModifierSelectionInterval) {
         if (!pindexNext) {
             // Should never happen.

@@ -2904,7 +2904,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         uint256 hashProofOfStake = 0;
         COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
         nTxNewTime = GetAdjustedTime();
-		if(pindex->nHeight != 1390 && pindex->nHeight != 1389 && pindex->nHeight != 1391) LogPrintf("CreateCoinStake : passing block header of block: %d\n", pindex->nHeight);
+		LogPrintf("CreateCoinStake : passing block header of block: %d\n", pindex->nHeight);
         //iterates each utxo inside of CheckStakeKernelHash()
         if (CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, nHashDrift, false, hashProofOfStake, true)) {
             //Double check that this will pass time requirements
