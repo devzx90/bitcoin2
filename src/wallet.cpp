@@ -2953,7 +2953,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
             //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
             const CBlockIndex* pIndex0 = chainActive.Tip();
-            uint64_t nTotalSize = pcoin.first->vout[pcoin.second].nValue + GetBlockValue(pIndex0->nHeight);
+            uint64_t nTotalSize = pcoin.first->vout[pcoin.second].nValue + GetBlockValue(pIndex0->nHeight + 1) / 4 * 3;
 
             //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values asigned further down)
             if (nTotalSize / 2 > nStakeSplitThreshold * COIN) txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
@@ -2980,6 +2980,8 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     nCredit += nReward;
 
+	// TODO: Somehow the masternode reward gets erased on some blocks. (whenever there's too few outputs or something?)
+
     /*CAmount nMinFee = 0; // PIVX deducted tx fee from coin stake tx. BTC2 not.
     while (true) {
         // Set output amount
@@ -3003,7 +3005,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     }*/
 
 	// Set output amount
-	if (txNew.vout.size() == 3) {
+	if ((txNew.vout.size() == 3 || txNew.vout.size() == 4) && txNew.vout[1].nValue == 0 && txNew.vout[2].nValue == 0) { // Without the == 0 checks this could erase the masternode reward.
 		txNew.vout[1].nValue = nCredit / 2;
 		txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
 	}

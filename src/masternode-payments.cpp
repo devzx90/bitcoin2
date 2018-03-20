@@ -229,22 +229,17 @@ bool CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, bool fProof
     CAmount blockValue = GetBlockValue(pindexPrev->nHeight + 1);
     CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight + 1, blockValue);
 
-    if (hasPayment) {
-        if (fProofOfStake) {
-            /**For Proof Of Stake vout[0] must be null
-             * Stake reward can be split into many different outputs, so we must
-             * use vout.size() to align with several different cases.
-             * An additional output is appended as the masternode payment
-             */
-            unsigned int i = txNew.vout.size();
-            txNew.vout.resize(i + 1);
-            txNew.vout[i].scriptPubKey = payee;
-            txNew.vout[i].nValue = masternodePayment;
-        } else {
-            txNew.vout.resize(2);
-            txNew.vout[1].scriptPubKey = payee;
-            txNew.vout[1].nValue = masternodePayment;
-        }
+    if (hasPayment)
+	{
+        /**For Proof Of Stake vout[0] must be null
+            * Stake reward can be split into many different outputs, so we must
+            * use vout.size() to align with several different cases.
+            * An additional output is appended as the masternode payment
+            */
+        unsigned int i = txNew.vout.size();
+        txNew.vout.resize(i + 1);
+        txNew.vout[i].scriptPubKey = payee;
+        txNew.vout[i].nValue = masternodePayment;
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
