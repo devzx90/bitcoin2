@@ -4501,7 +4501,7 @@ Either mint higher denominations (so fewer inputs are needed) or reduce the amou
     </message>
     <message>
         <location line="+197"/>
-        <source>SwiftX</source>
+        <source>Swift TX</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6799,7 +6799,7 @@ for example: alertnotify=echo %%s | mail -s &quot;Bitcoin2 Alert&quot; admin@foo
     </message>
     <message>
         <location line="+98"/>
-        <source>SwiftX options:</source>
+        <source>Swift TX options:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6831,7 +6831,7 @@ for example: alertnotify=echo %%s | mail -s &quot;Bitcoin2 Alert&quot; admin@foo
     </message>
     <message>
         <location line="+6"/>
-        <source>Enable SwiftX, show confirmations for locked transactions (bool, default: %s)</source>
+        <source>Enable Swift TX, show confirmations for locked transactions (bool, default: %s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6861,7 +6861,7 @@ for example: alertnotify=echo %%s | mail -s &quot;Bitcoin2 Alert&quot; admin@foo
     </message>
     <message>
         <location line="+26"/>
-        <source>SwiftX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.</source>
+        <source>Swift TX requires inputs with at least 6 confirmations, you might need to wait a few minutes and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

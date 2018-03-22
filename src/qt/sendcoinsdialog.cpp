@@ -269,7 +269,7 @@ void SendCoinsDialog::on_sendButton_clicked()
     if (ui->checkSwiftTX->isChecked()) {
         recipients[0].useSwiftTX = true;
         strFunds += " ";
-        strFunds += tr("using SwiftX");
+        strFunds += tr("using Swift TX");
     } else {
         recipients[0].useSwiftTX = false;
     }

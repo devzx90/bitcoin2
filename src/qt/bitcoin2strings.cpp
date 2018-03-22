@@ -434,7 +434,7 @@ QT_TRANSLATE_NOOP("bitcoin2-core", "Stop running after importing blocks from dis
 QT_TRANSLATE_NOOP("bitcoin2-core", "Submitted following entries to masternode: %u / %d"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Submitted to masternode, waiting for more entries ( %u / %d ) %s"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Submitted to masternode, waiting in queue %s"),
-QT_TRANSLATE_NOOP("bitcoin2-core", "SwiftX options:"),
+QT_TRANSLATE_NOOP("bitcoin2-core", "Swift TX options:"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Synchronization failed"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Synchronization finished"),
 QT_TRANSLATE_NOOP("bitcoin2-core", "Synchronization pending..."),
