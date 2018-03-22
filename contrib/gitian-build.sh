@@ -8,9 +8,9 @@ verify=false
 build=false
 
 # Systems to build
-linux=true
+linux=false
 windows=true
-osx=true
+osx=false
 
 # Other Basic variables
 SIGNER=
@@ -214,13 +214,6 @@ then
     echo "Try $scriptName --help for more information"
     exit 1
 fi
-
-# Add a "v" if no -c
-if [[ $commit = false ]]
-then
-	COMMIT="v${VERSION}"
-fi
-echo ${COMMIT}
 
 # Setup build environment
 if [[ $setup = true ]]
