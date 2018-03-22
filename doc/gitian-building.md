@@ -60,15 +60,15 @@ In the VirtualBox GUI click "Create" and choose the following parameters in the 
 ![](gitian-building/create_vm_hard_drive.png)
 
 - Hard Drive: Create a virtual hard drive now
-    
+
 ![](gitian-building/create_vm_hard_drive_file_type.png)
 
 - Hard Drive file type: Use the default, VDI (VirtualBox Disk Image) 
 
 ![](gitian-building/create_vm_storage_physical_hard_drive.png)
-    
+​    
 - Storage on Physical hard drive: Dynamically Allocated 
-    
+
 ![](gitian-building/create_vm_file_location_size.png)
 
 - Disk size: at least 40GB; as low as 20GB *may* be possible, but better to err on the safe side 
@@ -151,7 +151,7 @@ and proceed, just press `Enter`. To select a different button, press `Tab`.
 
 - Disk setup
   - Partitioning method: Guided - Use the entire disk 
-  
+
 ![](gitian-building/debian_install_11_partition_disks.png)
 
   - Select disk to partition: SCSI1 (0,0,0) 
@@ -159,7 +159,7 @@ and proceed, just press `Enter`. To select a different button, press `Tab`.
 ![](gitian-building/debian_install_12_choose_disk.png)
 
   - Partitioning scheme: All files in one partition 
-  
+
 ![](gitian-building/debian_install_13_partition_scheme.png)
 
   - Finish partitioning and write changes to disk -> *Yes* (`Tab`, `Enter` to select the `Yes` button)
@@ -281,7 +281,7 @@ Clone the git repositories for bitcoin2 and gitian and then checkout the bitcoin
 
 ```bash
 git clone https://github.com/devrandom/gitian-builder.git
-git clone https://github.com/bitcoin2-crypto/bitcoin2.git
+git clone https://github.com/BITC2/bitcoin2.git
 cd bitcoin2
 git checkout v${VERSION}
 cd ..
