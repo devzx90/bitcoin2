@@ -41,8 +41,8 @@ bool CMasternodeSync::IsBlockchainSynced()
     CBlockIndex* pindex = chainActive.Tip();
     if (pindex == NULL) return false;
 
-	// If last block received 1+ hour ago then consider us not synced.
-    if (pindex->nTime + 60 * 60 * 100 /* TODO: Remove * 100 */ < timenow && ((pindex->nHeight != 1390 && pindex->nHeight != 1391) || timenow > 1522368000)) 
+	// If last block received 10+ hours ago then consider us not synced.
+    if (pindex->nTime + 60 * 600 < timenow && ((pindex->nHeight != 1390 && pindex->nHeight != 1391) || timenow > 1522368000)) 
         return false;
 
     return true;

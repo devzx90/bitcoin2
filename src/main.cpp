@@ -2778,13 +2778,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     if (!fAlreadyChecked && !CheckBlock(block, state, !fJustCheck, !fJustCheck))
         return false;
 
-	LogPrintf("// verify that the view's\n");
     // verify that the view's current state corresponds to the previous block
     uint256 hashPrevBlock = pindex->pprev == NULL ? uint256(0) : pindex->pprev->GetBlockHash();
-    if (hashPrevBlock != view.GetBestBlock())
-        LogPrintf("%s: hashPrev=%s view=%s\n", __func__, hashPrevBlock.ToString().c_str(), view.GetBestBlock().ToString().c_str());
+    if (hashPrevBlock != view.GetBestBlock()) LogPrintf("%s: hashPrev=%s view=%s\n", __func__, hashPrevBlock.ToString().c_str(), view.GetBestBlock().ToString().c_str());
     assert(hashPrevBlock == view.GetBestBlock());
-	LogPrintf(" assert(hashPrevBlock == view.GetBestBlock()) done\n");
 
     // Special case for the genesis block, skipping connection of its transactions
     // (its coinbase is unspendable)
@@ -2801,7 +2798,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return state.DoS(100, error("ConnectBlock() : PoW period ended"),
             REJECT_INVALID, "PoW-ended");
 
-	LogPrintf(" bool fScriptChecks = pindex->nHeight >= Ch\n");
     bool fScriptChecks = pindex->nHeight >= Checkpoints::GetTotalBlocksEstimate();
 
     // Do not allow blocks that contain transactions which 'overwrite' older transactions,
@@ -2824,7 +2820,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 REJECT_INVALID, "bad-txns-BIP30");
     }
 
-	LogPrintf("CCheckQueueControl<CScriptCheck> contro\n");
     CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
 
     int64_t nTimeStart = GetTimeMicros();
@@ -2841,8 +2836,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount nValueIn = 0;
     unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS_CURRENT;
     vector<uint256> vSpendsInBlock;
-	LogPrintf("for (unsigned int i = 0; i < block.vtx.size(); i++) {\n");
-    for (unsigned int i = 0; i < block.vtx.size(); i++) {
+
+    for (unsigned int i = 0; i < block.vtx.size(); i++)
+	{
         const CTransaction& tx = block.vtx[i];
 
         nInputs += tx.vin.size();
@@ -2857,7 +2853,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
         if (tx.IsZerocoinSpend())
 		{
-			LogPrintf("tx.IsZerocoinSpend()\n");
             int nHeightTx = 0;
             uint256 txid = tx.GetHash();
             vSpendsInBlock.emplace_back(txid);
@@ -2886,7 +2881,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		}
 		else if (!tx.IsCoinBase())
 		{
-			LogPrintf("if (!view.HaveInputs(tx)) return\n");
 			if (!view.HaveInputs(tx)) return state.DoS(100, error("ConnectBlock() : inputs missing/spent"), REJECT_INVALID, "bad-txns-inputs-missingorspent");
 
             // Check that the inputs are not marked as invalid/fraudulent
@@ -2900,24 +2894,23 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             // Add in sigops done by pay-to-script-hash inputs;
             // this is to prevent a "rogue miner" from creating
             // an incredibly-expensive-to-validate block.
-			LogPrintf(" nSigOps += GetP2SHSigOpCount(tx, view);\n");
             nSigOps += GetP2SHSigOpCount(tx, view);
             if (nSigOps > nMaxBlockSigOps)
                 return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
-			LogPrintf("if (!tx.IsCoinStake()) nFees += view.GetValueIn(tx) - tx.GetValueOut();\n");
+
             if (!tx.IsCoinStake()) nFees += view.GetValueIn(tx) - tx.GetValueOut();
-			LogPrintf("nValueIn += view.GetValueIn(tx);\n");
+
             nValueIn += view.GetValueIn(tx);
 
             std::vector<CScriptCheck> vChecks;
             unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_DERSIG;
-			LogPrintf("if (!CheckInputs(tx, state, view, fScriptChecks\n");
+
             if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : NULL))
                 return false;
             control.Add(vChecks);
         }
-		LogPrintf("nValueOut += tx.GetValueOut();\n");
+
         nValueOut += tx.GetValueOut();
 
         CTxUndo undoDummy;
@@ -2925,21 +2918,19 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		{
             blockundo.vtxundo.push_back(CTxUndo());
         }
-		LogPrintf("UpdateCoins(tx, stat\n");
+
         UpdateCoins(tx, state, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
-		LogPrintf("vPos.push_back(std::make_pair(tx.GetHash(), pos));\n");
+
         vPos.push_back(std::make_pair(tx.GetHash(), pos));
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
 
-	LogPrintf("Track zBTC2 money \n");
     //Track zBTC2 money supply in the block index
     if (!UpdateZBTC2Supply(block, pindex))
         return state.DoS(100, error("%s: Failed to calculate new zBTC2 supply for block=%s height=%d", __func__,
                                     block.GetHash().GetHex(), pindex->nHeight), REJECT_INVALID);
 
     // track money supply and mint amount info
-	LogPrintf("CAmount nMoneySupplyPre\n");
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
     pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
     pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev/* + nFees*/; // PIVX has + nFees here
@@ -2953,10 +2944,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
     // Redistributed fees to miner.
-	LogPrintf("CAmount nExpectedMint = GetBlockValue\n");
     CAmount nExpectedMint = GetBlockValue(pindex->nHeight);//pindex->pprev->nHeight);
     nExpectedMint += nFees;
-	LogPrintf("if (pindex->nMint > nExpectedMint)\n");
+
 	if (pindex->nMint > nExpectedMint) // Check if block reward is higher than it should be.
 	{
 		return state.DoS(100,
@@ -2967,7 +2957,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     // Ensure that accumulator checkpoints are valid and in the same state as this instance of the chain
     AccumulatorMap mapAccumulators;
-	LogPrintf("if (!ValidateAccumulatorChec\n");
     if (!ValidateAccumulatorCheckpoint(block, pindex, mapAccumulators))
         return state.DoS(100, error("%s: Failed to validate accumulator checkpoint for block=%s height=%d", __func__,
                                     block.GetHash().GetHex(), pindex->nHeight), REJECT_INVALID, "bad-acc-checkpoint");
@@ -2979,7 +2968,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime2 - nTimeStart), nInputs <= 1 ? 0 : 0.001 * (nTime2 - nTimeStart) / (nInputs - 1), nTimeVerify * 0.000001);
 
     //IMPORTANT NOTE: Nothing before this point should actually store to disk (or even memory)
-	LogPrintf("if (fJustCheck) return true;\n");
     if (fJustCheck) return true;
 
     // Write undo information to disk

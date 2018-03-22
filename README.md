@@ -17,10 +17,6 @@ software which enables the use of this currency.
 For more information, as well as a binary version of
 the Bitcoin 2 Core software, see www.bitc2.org
 
-## Not yet ready for release
-
-A lot of the source code for Bitcoin 2 is not yet ready for release and not all of the files required to build the software are yet in Github. It will all be available along with built Bitcoin 2 Core wallets right before the Bitcoin 2 network goes live.
-
 License
 -------
 
