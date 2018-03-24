@@ -176,6 +176,8 @@ done
 if [[ $lxc = true ]]
 then
     export USE_LXC=1
+    export GITIAN_HOST_IP=10.0.3.2
+		export LXC_GUEST_IP=10.0.3.5
 fi
 
 # Check for OSX SDK
