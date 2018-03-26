@@ -156,10 +156,9 @@ public:
         assert(hashGenesisBlock == uint256("3ee1620fa1706966da5e5182a664220691491bdfd9289a73cadf6244fa5dccb5"));
         assert(genesis.hashMerkleRoot == uint256("ce76be25027ca16966cec5d8a05c1eb36c545fe541a9fa07c4889933062823bb"));
 
-		vFixedSeeds.clear();
-		vSeeds.clear();
 		vSeeds.push_back(CDNSSeedData("202.57.4.210", "202.57.4.210"));
 		vSeeds.push_back(CDNSSeedData("18.219.118.94", "18.219.118.94"));
+		vSeeds.push_back(CDNSSeedData("69.197.167.254", "69.197.167.254"));
         //vSeeds.push_back(CDNSSeedData("domain.name", "seed.domain.name"));     // Primary DNS Seeder
 
 		// bitcoin
@@ -169,7 +168,7 @@ public:
 		base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E };
 		base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 };
 
-        //convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
+        convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
 
         fMiningRequiresPeers = true;
         fAllowMinDifficultyBlocks = false;

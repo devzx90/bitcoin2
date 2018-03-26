@@ -11,7 +11,7 @@ build=false
 # Systems to build
 linux=true
 windows=true
-osx=false
+osx=true
 
 # Other Basic variables
 SIGNER=
