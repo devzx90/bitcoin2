@@ -134,10 +134,13 @@ script: |
 
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
-  CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
+  CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --disable-tests --prefix=/
   make dist
   SOURCEDIST=`echo bitcoin2-*.tar.gz`
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
+  # Remove any trailing slashes
+  DISTNAME=$(echo $DISTNAME | sed 's:/*$::')
+
   # Correct tar file order
   mkdir -p temp
   pushd temp

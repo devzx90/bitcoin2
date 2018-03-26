@@ -9,7 +9,7 @@ verify=false
 build=false
 
 # Systems to build
-linux=false
+linux=true
 windows=true
 osx=false
 
@@ -19,7 +19,7 @@ VERSION=
 commit=false
 url=https://github.com/BITC2/bitcoin2
 proc=2
-mem=2000
+mem=3000
 lxc=true
 osslTarUrl=http://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
 osslPatchUrl=https://bitcoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
@@ -43,7 +43,7 @@ Options:
 -B|--buildsign	Build both signed and unsigned binaries
 -o|--os		Specify which Operating Systems the build is for. Default is lwx. l for linux, w for windows, x for osx
 -j		Number of processes to use. Default 2
--m		Memory to allocate in MiB. Default 2000
+-m		Memory to allocate in MiB. Default 3000
 --kvm           Use KVM instead of LXC
 --setup         Set up the Gitian building environment. Uses KVM. If you want to use lxc, use the --lxc option. Only works on Debian-based systems (Ubuntu, Debian)
 --detach-sign   Create the assert file for detached signing. Will not commit anything.
