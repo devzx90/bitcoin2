@@ -336,8 +336,9 @@ void CMasternodeSync::Process()
                     return;
                 }
 
-                //if (pnode->HasFulfilledRequest("mnwsync")) continue;
-                //pnode->FulfilledRequest("mnwsync");
+				// These two were commented before.
+                if (pnode->HasFulfilledRequest("mnwsync")) continue;
+                pnode->FulfilledRequest("mnwsync");
 
                 // timeout
                 if (lastMasternodeWinner == 0 &&
