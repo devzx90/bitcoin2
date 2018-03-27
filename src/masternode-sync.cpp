@@ -336,10 +336,6 @@ void CMasternodeSync::Process()
                     return;
                 }
 
-				// These two were commented before.
-                if (pnode->HasFulfilledRequest("mnwsync")) continue;
-                pnode->FulfilledRequest("mnwsync");
-
                 // timeout
                 if (lastMasternodeWinner == 0 &&
                     (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3 || GetTime() - nAssetSyncStarted > MASTERNODE_SYNC_TIMEOUT * 5))
@@ -356,6 +352,9 @@ void CMasternodeSync::Process()
 
                     return;
                 }
+
+				if (pnode->HasFulfilledRequest("mnwsync")) continue;
+				pnode->FulfilledRequest("mnwsync");
 
                 if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
 
