@@ -10,7 +10,7 @@ build=false
 
 # Systems to build
 linux=true
-windows=true
+windows=false
 osx=false
 
 # Other Basic variables
@@ -178,6 +178,7 @@ then
     export USE_LXC=1
     export GITIAN_HOST_IP=10.0.3.2
 		export LXC_GUEST_IP=10.0.3.5
+    export LXC_SUITE=trusty
 fi
 
 # Check for OSX SDK
