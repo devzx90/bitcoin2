@@ -253,9 +253,12 @@ then
 	echo "Building Dependencies"
 	echo ""
 	pushd ./gitian-builder
+  if [[ $setup = true ]]
 	mkdir -p inputs
+  then
 	wget -N -P inputs $osslPatchUrl
 	wget -N -P inputs $osslTarUrl
+  fi
 	make -C ../bitcoin2/depends download SOURCES_PATH=`pwd`/cache/common
 
 	# Linux
