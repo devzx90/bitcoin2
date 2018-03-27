@@ -503,7 +503,8 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 {
     //LogPrintf("%s\n", pblock->ToString());
-	LogPrintf("generated %s\n", FormatMoney(pblock->vtx[chainActive.Tip()->nHeight > Params().LAST_POW_BLOCK() ? 1 : 0].vout[0].nValue));
+	if(chainActive.Tip()->nHeight > Params().LAST_POW_BLOCK()) LogPrintf("generated %s\n", FormatMoney(pblock->vtx[1].vout[1].nValue));
+	else LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
 
     // Found a solution
     {

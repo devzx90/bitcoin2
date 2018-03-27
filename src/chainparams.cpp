@@ -227,7 +227,7 @@ public:
 		pchMessageStart[2] = 240;
 		pchMessageStart[3] = 146;
         vAlertPubKey = ParseHex("04bf10d29fbbc541d2e7da47574cb6ebbb056eb17628cb0837af00529e29ea04d74ab1714d250d049060d58e296b6fd3624e926d99a194c678c880b65564e9ef4a"); // BTC2
-        nDefaultPort = 50446;
+        nDefaultPort = 40446;
         nEnforceBlockUpgradeMajority = 51;
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
