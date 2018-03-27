@@ -5289,7 +5289,7 @@ void static ProcessGetData(CNode* pfrom)
     }
 }
 
-//bool fRequestedSporksIDB = false;
+bool fRequestedSporksIDB = false;
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, int64_t nTimeReceived)
 {
     RandAddSeedPerfmon();
