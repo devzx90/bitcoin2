@@ -9,7 +9,7 @@ verify=false
 build=false
 
 # Systems to build
-linux=true
+linux=false
 windows=true
 osx=false
 
