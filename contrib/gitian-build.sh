@@ -10,7 +10,7 @@ build=false
 
 # Systems to build
 linux=true
-windows=false
+windows=true
 osx=false
 
 # Other Basic variables
