@@ -278,8 +278,8 @@ then
 	    echo "Compiling ${VERSION} Windows"
 	    echo ""
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit bitcoin2=${COMMIT} --url bitcoin2=${url} ../bitcoin2/contrib/gitian-descriptors/gitian-win.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../bitcoin2/contrib/gitian-descriptors/gitian-win.yml
-	    mv build/out/bitcoin2-*-win-unsigned.tar.gz inputs/bitcoin2-win-unsigned.tar.gz
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win --destination ../gitian.sigs/ ../bitcoin2/contrib/gitian-descriptors/gitian-win.yml
+	    mv build/out/bitcoin2-*-win.tar.gz inputs/bitcoin2-win.tar.gz
 	    mv build/out/bitcoin2-*.zip build/out/bitcoin2-*.exe ../bitcoin2-binaries/${VERSION}
 	fi
 	# Mac OSX
@@ -303,7 +303,7 @@ then
             echo ""
             pushd gitian.sigs
             git add ${VERSION}-linux/${SIGNER}
-            git add ${VERSION}-win-unsigned/${SIGNER}
+            git add ${VERSION}-win/${SIGNER}
             git add ${VERSION}-osx-unsigned/${SIGNER}
             git commit -a -m "Add ${VERSION} unsigned sigs for ${SIGNER}"
             popd
@@ -323,7 +323,7 @@ then
 	echo ""
 	echo "Verifying v${VERSION} Windows"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../bitcoin2/contrib/gitian-descriptors/gitian-win.yml
+	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win ../bitcoin2/contrib/gitian-descriptors/gitian-win.yml
 	# Mac OSX
 	echo ""
 	echo "Verifying v${VERSION} Mac OSX"
@@ -333,7 +333,7 @@ then
 	echo ""
 	echo "Verifying v${VERSION} Signed Windows"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-signed ../bitcoin2/contrib/gitian-descriptors/gitian-osx-signer.yml
+	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-signed ../bitcoin2/contrib/gitian-descriptors/gitian-win-signer.yml
 	# Signed Mac OSX
 	echo ""
 	echo "Verifying v${VERSION} Signed Mac OSX"
