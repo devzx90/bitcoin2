@@ -103,12 +103,12 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
     ./bin/gbuild --memory 3000 --commit bitcoin2=v${VERSION} ../bitcoin2/contrib/gitian-descriptors/gitian-linux.yml
     ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../bitcoin2/contrib/gitian-descriptors/gitian-linux.yml
     mv build/out/bitcoin2-*.tar.gz build/out/src/bitcoin2-*.tar.gz ../
-
+    
     ./bin/gbuild --memory 3000 --commit bitcoin2=v${VERSION} ../bitcoin2/contrib/gitian-descriptors/gitian-win.yml
     ./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../bitcoin2/contrib/gitian-descriptors/gitian-win.yml
     mv build/out/bitcoin2-*-win-unsigned.tar.gz inputs/bitcoin2-win-unsigned.tar.gz
     mv build/out/bitcoin2-*.zip build/out/bitcoin2-*.exe ../
-
+    
     ./bin/gbuild --memory 3000 --commit bitcoin2=v${VERSION} ../bitcoin2/contrib/gitian-descriptors/gitian-osx.yml
     ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../bitcoin2/contrib/gitian-descriptors/gitian-osx.yml
     mv build/out/bitcoin2-*-osx-unsigned.tar.gz inputs/bitcoin2-osx-unsigned.tar.gz
@@ -117,11 +117,11 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
 Build output expected:
 
-  1. source tarball (`bitcoin2-${VERSION}.tar.gz`)
-  2. linux 32-bit and 64-bit dist tarballs (`bitcoin2-${VERSION}-linux[32|64].tar.gz`)
-  3. windows 32-bit and 64-bit unsigned installers and dist zips (`bitcoin2-${VERSION}-win[32|64]-setup-unsigned.exe`, `bitcoin2-${VERSION}-win[32|64].zip`)
-  4. OS X unsigned installer and dist tarball (`bitcoin2-${VERSION}-osx-unsigned.dmg`, `bitcoin2-${VERSION}-osx64.tar.gz`)
-  5. Gitian signatures (in `gitian.sigs/${VERSION}-<linux|{win,osx}-unsigned>/(your Gitian key)/`)
+    1. source tarball (`bitcoin2-${VERSION}.tar.gz`)
+    2. linux 32-bit and 64-bit dist tarballs (`bitcoin2-${VERSION}-linux[32|64].tar.gz`)
+    3. windows 32-bit and 64-bit unsigned installers and dist zips (`bitcoin2-${VERSION}-win[32|64]-setup-unsigned.exe`, `bitcoin2-${VERSION}-win[32|64].zip`)
+    4. OS X unsigned installer and dist tarball (`bitcoin2-${VERSION}-osx-unsigned.dmg`, `bitcoin2-${VERSION}-osx64.tar.gz`)
+    5. Gitian signatures (in `gitian.sigs/${VERSION}-<linux|{win,osx}-unsigned>/(your Gitian key)/`)
 
 ### Verify other gitian builders signatures to your own. (Optional)
 
@@ -256,10 +256,10 @@ Note: check that SHA256SUMS itself doesn't end up in SHA256SUMS, which is a spur
 
   - bitcointalk announcement thread
 
-  - Optionally twitter, reddit /r/bitcoin2, ... but this will usually sort out itself
+  - Optionally twitter, reddit... but this will usually sort out itself
 
   - Archive release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
 
-  - Create a [new GitHub release](https://github.com/Bitcoin2-Project/Bitcoin2/releases/new) with a link to the archived release notes.
+  - Create a [new GitHub release](https://github.com/BITC2/bitcoin2/releases/new) with a link to the archived release notes.
 
   - Celebrate

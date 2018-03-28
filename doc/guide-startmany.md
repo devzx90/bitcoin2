@@ -4,7 +4,7 @@
 There are many ways to setup a wallet to support start-many. This guide will walk through two of them.
 
 1. [Importing an existing wallet (recommended if you are consolidating wallets).](#option1)
-2. [Sending 10,000 Bitcoin2 to new wallet addresses.](#option2)
+2. [Sending 1000 Bitcoin2 to new wallet addresses.](#option2)
 
 ## <a name="option1"></a>Option 1. Importing an existing wallet
 
@@ -50,15 +50,15 @@ The wallet will re-scan and you will see your available balance increase by the 
     * Label: mn01
     * Amount: 1000 (optional)
     * Click *Request payment*
-5. Click the *Copy Address* button
+4. Click the *Copy Address* button
 
 Create a new wallet address for each MasterNode.
 
 Close your QT Wallet.
 
-### Send 10,000 Bitcoin2 to New Addresses
+### Send 1000 Bitcoin2 to New Addresses
 
-Just like setting up a standard MN. Send exactly 10,000 Bitcoin2 to each new address created above.
+Just like setting up a standard MN. Send exactly 1000 Bitcoin2 to each new address created above.
 
 ### Create New Masternode Private Keys
 
@@ -137,7 +137,7 @@ I usually confirm that remote is on the correct block by issuing:
 
 ```bitcoin2d getinfo```
 
-And compare with the official explorer at http://bitcoin2explorer.coin-server.com <or> dnet.presstab.pw
+And compare with a bitcoin 2 blockchain explorer.
 
 ### Local
 
