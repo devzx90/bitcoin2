@@ -69,7 +69,7 @@ NumEntryGuards 8
 ```
 
 The directory can be different of course, but (both) port numbers should be equal to
-your bitcoin2d's P2P listen port (51472 by default).
+your bitcoin2d's P2P listen port (49144 by default).
 ```
 -externalip=X   You can tell bitcoin2 about its publicly reachable address using
                 this option, and this can be a .onion address. Given the above
@@ -102,25 +102,10 @@ specify:
 ./bitcoin2d ... -discover
 ```
 
-and open port 51472 on your firewall (or use -upnp).
+and open port 49144 on your firewall (or use -upnp).
 
 If you only want to use Tor to reach onion addresses, but not use it as a proxy
 for normal IPv4/IPv6 communication, use:
 ```
 ./bitcoin2d -onion=127.0.0.1:9050 -externalip=dnetzj6l4cvo2fxy.onion:989 -discover
-```
-
-List of known Bitcoin2 Tor relays
-------------------------------------
-```
-y5kcscnhpygvvnjn.onion:989
-5bmhtjvn2jvwpiej.onion:989
-pyfdxkazur3iib7y.onion:989
-ok3ym5zy6m5klimk.onion:989
-i6vpvzk2jxuqqs5f.onion:989
-bgdhpb76fkbw5fmg.onion:989
-gtlqzb5zbws5di7g.onion:989
-f7j2m26rptm5f7af.onion:989
-dnetzj6l4cvo2fxy.onion:989
-s3v3n7xhqafg6sb7.onion:989
 ```
