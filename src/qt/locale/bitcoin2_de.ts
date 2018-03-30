@@ -2528,8 +2528,8 @@ Bitte haben Sie Geduld...</translation>
         <translation>Betrag</translation>
     </message>
     <message>
-        <source>Enter a Bitcoin2 address (e.g. %1)</source>
-        <translation>Bitcoin2-Adresse eingeben (z.B. %1)</translation>
+        <source>Enter a Bitcoin 2 address (e.g. %1)</source>
+        <translation>Bitcoin 2-Adresse eingeben (z.B. %1)</translation>
     </message>
     <message>
         <source>%1 d</source>

@@ -324,22 +324,22 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
     unsigned int nTryTime = 0;
     unsigned int i;
     int nHeightStart = chainActive.Height();
-    for (i = 0; i < 1/*(nHashDrift)*/; i++) //iterate the hashing
+    for (i = 0; i < nHashDrift; i++) //iterate the hashing
     {
         //new block came in, move on
         if (chainActive.Height() != nHeightStart)
             break;
 
         //hash this iteration
-        //nTryTime = nTimeTx + nHashDrift - i;
-        hashProofOfStake = stakeHash(nTimeTx/*nTryTime*/, ss, prevout.n, prevout.hash, nTimeBlockFrom);
+        nTryTime = nTimeTx + nHashDrift - i;
+        hashProofOfStake = stakeHash(nTryTime, ss, prevout.n, prevout.hash, nTimeBlockFrom);
 
         // if stake hash does not meet the target then continue to next iteration
 		if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay))
-			break;//continue;
+			continue;
 
         fSuccess = true; // if we make it this far then we have successfully created a stake hash
-        //nTimeTx = nTryTime;
+        nTimeTx = nTryTime;
 
         if (fDebug && fPrintProofOfStake) {
             LogPrintf("CheckStakeKernelHash() : using modifier %s at height=%d timestamp=%s for block from height=%d timestamp=%s\n",
@@ -353,7 +353,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
                 nTimeBlockFrom, prevout.hash.ToString().c_str(), nTimeBlockFrom, prevout.n, nTryTime,
                 hashProofOfStake.ToString().c_str());
         }
-        //break;
+        break;
     }
 
     mapHashedBlocks.clear();

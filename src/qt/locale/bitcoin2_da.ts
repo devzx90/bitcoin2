@@ -239,16 +239,16 @@
         <translation>BIP 38 kryptografering</translation>
     </message>
     <message>
-        <source>Enter a Bitcoin2 Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
-        <translation>Indtast den Bitcoin2 adresse De ønsker at kryptografere ved hjælp af BIP 38. Indtast et kodeord i den midterste boks. Klik på krypter for at generere den kryptograferede private nøgle.</translation>
+        <source>Enter a Bitcoin 2 Address that you would like to encrypt using BIP 38. Enter a passphrase in the middle box. Press encrypt to compute the encrypted private key.</source>
+        <translation>Indtast den Bitcoin 2 adresse De ønsker at kryptografere ved hjælp af BIP 38. Indtast et kodeord i den midterste boks. Klik på krypter for at generere den kryptograferede private nøgle.</translation>
     </message>
     <message>
         <source>Address:</source>
         <translation>Adresse</translation>
     </message>
     <message>
-        <source>The Bitcoin2 address to sign the message with</source>
-        <translation>Den Bitcoin2 adresse, der skal bruges til at underskrive beskeden med.</translation>
+        <source>The Bitcoin 2 address to sign the message with</source>
+        <translation>Den Bitcoin 2 adresse, der skal bruges til at underskrive beskeden med.</translation>
     </message>
     <message>
         <source>Choose previously used address</source>
@@ -2099,8 +2099,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Beløb</translation>
     </message>
     <message>
-        <source>Enter a Bitcoin2 address (e.g. %1)</source>
-        <translation>Indtast en Bitcoin2 adresse (F.eks. %1)</translation>
+        <source>Enter a Bitcoin 2 address (e.g. %1)</source>
+        <translation>Indtast en Bitcoin 2 adresse (F.eks. %1)</translation>
     </message>
     <message>
         <source>%1 d</source>
