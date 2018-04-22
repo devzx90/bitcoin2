@@ -92,7 +92,6 @@ void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
 
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)
 {
-	LogPrintf("CreateNewBlock()\n");
     CReserveKey reservekey(pwallet);
 
     // Create new block
@@ -151,7 +150,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         CBlockIndex* pindexPrev = chainActive.Tip();
         const int nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
-		LogPrintf("Priority order to process transactions\n");
         // Priority order to process transactions
         list<COrphan> vOrphan; // list memory doesn't move
         map<uint256, vector<COrphan*> > mapDependers;
@@ -174,32 +172,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             double dPriority = 0;
             CAmount nTotalIn = 0;
             bool fMissingInputs = false;
-            uint256 txid = tx.GetHash();
             for (const CTxIn& txin : tx.vin) {
                 //zerocoinspend has special vin
                 if (tx.IsZerocoinSpend()) {
                     nTotalIn = tx.GetZerocoinSpent();
                     // PIVX v.3.0.6 just had break; here.
-                    //Give a high priority to zerocoinspends to get into the next block
-                    //Priority = (age^6+100000)*amount - gives higher priority to zbtc2s that have been in mempool long
-                    //and higher priority to zbtc2s that are large in value
-                    int64_t nTimeSeen = GetAdjustedTime();
-                    double nConfs = 100000;
-
-                    auto it = mapZerocoinspends.find(txid);
-                    if (it != mapZerocoinspends.end()) {
-                        nTimeSeen = it->second;
-                    } else {
-                        //for some reason not in map, add it
-                        mapZerocoinspends[txid] = nTimeSeen;
-                    }
-
-                    double nTimePriority = std::pow(GetAdjustedTime() - nTimeSeen, 6);
-
-                    // zBTC2 spends can have very large priority, use non-overflowing safe functions
-                    dPriority = double_safe_addition(dPriority, (nTimePriority * nConfs));
-                    dPriority = double_safe_multiplication(dPriority, nTotalIn);
-
                     continue;
                 }
 
@@ -244,8 +221,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
                 int nConf = nHeight - coins->nHeight;
 
-                // zBTC2 spends can have very large priority, use non-overflowing safe functions
-                dPriority = double_safe_addition(dPriority, ((double)nValueIn * nConf));
+				dPriority += (double)nValueIn * nConf;
 
             }
             if (fMissingInputs) continue;
@@ -266,7 +242,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 vecPriority.push_back(TxPriority(dPriority, feeRate, &mi->second.GetTx()));
         }
 
-		LogPrintf("Collect transactions into block\n");
         // Collect transactions into block
         uint64_t nBlockSize = 1000;
         uint64_t nBlockTx = 0;
@@ -435,14 +410,17 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 			if (!fStakeFound) return NULL;
 
 			pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
-			pblocktemplate->vTxFees[1] = -nFees; // PIVX didn't have this line for PoS. This should reward the fees to the staker.
+			//pblocktemplate->vTxFees[0] = -nFees; // PIVX didn't have this line for PoS.
 		}
 
         // Fill in header
+		LogPrint("masternode", "pblock->hashPrevBlock = pindexPrev->GetBlockHash();\n");
         pblock->hashPrevBlock = pindexPrev->GetBlockHash();
 
         if(!fProofOfStake) UpdateTime(pblock, pindexPrev);
+		LogPrint("masternode", "GetNextWorkRequired\n");
         if(!Params().AllowMinDifficultyBlocks() || fProofOfStake) pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+		LogPrint("masternode", "pblock->nNonce = 0;\n");
         pblock->nNonce = 0;
         uint256 nCheckpoint = 0;
         AccumulatorMap mapAccumulators;
@@ -451,6 +429,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             LogPrintf("%s: failed to get accumulator checkpoint\n", __func__);
         }
         pblock->nAccumulatorCheckpoint = nCheckpoint;
+		LogPrint("masternode", "pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(\n");
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
         CValidationState state;
@@ -495,7 +474,6 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
     CPubKey pubkey;
     if (!reservekey.GetReservedKey(pubkey))
         return NULL;
-	LogPrintf("CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;\n");
     CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
     return CreateNewBlock(scriptPubKey, pwallet, fProofOfStake);
 }
@@ -529,11 +507,11 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     CValidationState state;
     if (!ProcessNewBlock(state, NULL, pblock))
         return error("Bitcoin2Miner : ProcessNewBlock, block not accepted");
-
+	LogPrint("masternode", "ProcessBlockFound - for (CNode* node : vNodes) {\n");
     for (CNode* node : vNodes) {
         node->PushInventory(CInv(MSG_BLOCK, pblock->GetHash()));
     }
-
+	LogPrint("masternode", "ProcessBlockFound - done. return true\n");
     return true;
 }
 

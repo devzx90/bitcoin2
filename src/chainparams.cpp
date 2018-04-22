@@ -59,14 +59,15 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
 	(500, uint256("674f8e65e01ac23efa66e9d03f98fc795a4fd78f5495ce0e40a4d93fc4596249"))
 	(1000, uint256("5a389fb75660ba5203927aff0e91b24193d187adca415c8c5415cdd5c6b88eb3"))
 	(1190, uint256("c935255f9be0cfa15350ebfa2f3c07aa00e356e3767d373fbf7c65790fcd343"))
-	(1390, uint256("318e54323519a7d35f8d5b6c1a515b03722f9464f3bcacc819b6124a59ba0b21"));
+	(1390, uint256("318e54323519a7d35f8d5b6c1a515b03722f9464f3bcacc819b6124a59ba0b21"))
+	(2244, uint256("9889988d627880d89d61b635b7bc47f1807586926cdd72ef440f887d4f4d81a6"));
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-	1520643508, // * UNIX timestamp of last checkpoint block. obtained by: date +%s.
-	2681,    // * total number of transactions between genesis and last checkpoint
+	1523847002/*1520643508*/, // * UNIX timestamp of last checkpoint block. obtained by: date +%s.
+	4433,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
-    1300        // * estimated number of transactions per day after checkpoint. 1440
+	1400        // * estimated number of transactions per day after checkpoint. 1440
 };
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
@@ -114,7 +115,7 @@ public:
         pchMessageStart[2] = 240;
         pchMessageStart[3] = 246;
         vAlertPubKey = ParseHex("0481144fe24738164032b28205ed30fbb63db0d6764639c3dc6665286547de8bc0bdda77b75f912135fe3c8edde94e9f0ba45da9431e99313c3fb34b278463ea61"); // BTC2
-        nDefaultPort = 49144;
+        nDefaultPort = 49144; // 8333 used by Bitcoin, Bitcoin Gold and Bitcoin Cash.
         bnProofOfWorkLimit = ~uint256(0) >> 1;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
@@ -156,10 +157,10 @@ public:
         assert(hashGenesisBlock == uint256("3ee1620fa1706966da5e5182a664220691491bdfd9289a73cadf6244fa5dccb5"));
         assert(genesis.hashMerkleRoot == uint256("ce76be25027ca16966cec5d8a05c1eb36c545fe541a9fa07c4889933062823bb"));
 
-		vSeeds.push_back(CDNSSeedData("202.57.4.210", "202.57.4.210"));
+		vSeeds.push_back(CDNSSeedData("118.136.3.148", "118.136.3.148"));
 		vSeeds.push_back(CDNSSeedData("18.219.118.94", "18.219.118.94"));
 		vSeeds.push_back(CDNSSeedData("69.197.167.254", "69.197.167.254"));
-        //vSeeds.push_back(CDNSSeedData("domain.name", "seed.domain.name"));     // Primary DNS Seeder
+        //vSeeds.push_back(CDNSSeedData("seed.domain.name", "seed.domain.name"));     // Primary DNS Seeder
 
 		// bitcoin
 		base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 0);

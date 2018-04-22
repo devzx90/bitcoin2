@@ -167,6 +167,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
     }
 
     //set the accumulators to last checkpoint value
+	LogPrint("masternode", "CalculateAccumulatorCheckpoint - mapAccumulators.Reset();\n");
     mapAccumulators.Reset();
     if (!mapAccumulators.Load(chainActive[nHeight - 1]->nAccumulatorCheckpoint)) {
         if (chainActive[nHeight - 1]->nAccumulatorCheckpoint == 0) {
@@ -181,7 +182,7 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
     //Accumulate all coins over the last ten blocks that havent been accumulated (height - 20 through height - 11)
     int nTotalMintsFound = 0;
     CBlockIndex *pindex = chainActive[nHeight - 20];
-
+	LogPrint("masternode", "CalculateAccumulatorCheckpoint -  while (pindex->nHeight < nHeight - 10) {\n");
     while (pindex->nHeight < nHeight - 10) {
         // checking whether we should stop this process due to a shutdown request
         if (ShutdownRequested()) {
@@ -216,12 +217,17 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
         }
         pindex = chainActive.Next(pindex);
     }
-
+	LogPrint("masternode", "CalculateAccumulatorCheckpoint -  // if there were no new mints found, the acc\n");
     // if there were no new mints found, the accumulator checkpoint will be the same as the last checkpoint
     if (nTotalMintsFound == 0)
         nCheckpoint = chainActive[nHeight - 1]->nAccumulatorCheckpoint;
     else
         nCheckpoint = mapAccumulators.GetCheckpoint();
+	LogPrint("masternode", "CalculateAccumulatorCheckpoint -  done. return true\n");
+
+
+	// PIVX v.3.0.6: make sure that these values are databased because reorgs may have deleted the checksums from DB
+	DatabaseChecksums(mapAccumulators);
 
     LogPrint("zero", "%s checkpoint=%s\n", __func__, nCheckpoint.GetHex());
     return true;

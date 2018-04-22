@@ -305,7 +305,7 @@ void PrivacyDialog::on_pushButtonZBTC2Control_clicked()
 
 void PrivacyDialog::setZBTC2ControlLabels(int64_t nAmount, int nQuantity)
 {
-    ui->labelzBTC2Selected_int->setText(QString::number(nAmount));
+    ui->labelzBTC2Selected_int->setText(QString::number(nAmount * 0.01));
     ui->labelQuantitySelected_int->setText(QString::number(nQuantity));
 }
 
@@ -344,16 +344,12 @@ void PrivacyDialog::sendzBTC2()
     fMinimizeChange = ui->checkBoxMinimizeChange->isChecked();
     settings.setValue("fMinimizeChange", fMinimizeChange);
 
-    // Warn for additional fees if amount is not an integer and change as zBTC2 is requested
-    bool fWholeNumber = floor(dAmount) == dAmount;
+    // Warn for additional fees if amount is not able to be divided by 0.05 and change as zBTC2 is requested
+    /*int aRemainder = nAmount % (5 * CENT);
     double dzFee = 0.0;
 
-    if(!fWholeNumber)
-        dzFee = 1.0 - (dAmount - floor(dAmount));
-
-    if(!fWholeNumber && fMintChange){
-        QString strFeeWarning = "You've entered an amount with fractional digits and want the change to be converted to Zerocoin.<br /><br /><b>";
-        strFeeWarning += QString::number(dzFee, 'f', 8) + " BTC2 </b>will be added to the standard transaction fees!<br />";
+    if(aRemainder != 0 && fMintChange){
+        QString strFeeWarning = "You've entered an amount that cannot be divided evenly by 0.05 and want the change to be converted to Zerocoin.<br /><br />A small fee will be added to the standard transaction fees!<br />";
         QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Confirm additional Fees"),
             strFeeWarning,
             QMessageBox::Yes | QMessageBox::Cancel,
@@ -364,7 +360,7 @@ void PrivacyDialog::sendzBTC2()
             ui->zBTC2payAmount->setFocus();
             return;
         }
-    }
+    }*/
 
     // Persist Security Level for next start
     nSecurityLevel = ui->securityLevel->value();
@@ -680,8 +676,8 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
         nLockedBalance = walletModel->getLockedBalance();
     }
 
-    ui->labelzAvailableAmount->setText(QString::number(zerocoinBalance/COIN) + QString(" zBTC2 "));
-    ui->labelzAvailableAmount_2->setText(QString::number(matureZerocoinBalance/COIN) + QString(" zBTC2 "));
+    ui->labelzAvailableAmount->setText(QString::number((double)zerocoinBalance/COIN) + QString(" zBTC2 "));
+    ui->labelzAvailableAmount_2->setText(QString::number((double)matureZerocoinBalance/COIN) + QString(" zBTC2 "));
     ui->labelzBTC2AmountValue->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, balance - immatureBalance - nLockedBalance, false, BitcoinUnits::separatorAlways));
 
     // Display AutoMint status
@@ -698,7 +694,7 @@ void PrivacyDialog::setBalance(const CAmount& balance, const CAmount& unconfirme
     ui->label_AutoMintStatus->setText(strAutomintStatus);
 
     // Display global supply
-    ui->labelZsupplyAmount->setText(QString::number(chainActive.Tip()->GetZerocoinSupply()/COIN) + QString(" <b>zBTC2 </b> "));
+    ui->labelZsupplyAmount->setText(QString::number(chainActive.Tip()->GetZerocoinSupply() * 0.00000001) + QString(" <b>zBTC2 </b> "));
     for (auto denom : libzerocoin::zerocoinDenomList) {
         int64_t nSupply = chainActive.Tip()->mapZerocoinSupply.at(denom);
         QString strSupply = QString::number(nSupply) + " x " + QString::number(denom * 0.01) + " = <b>" +

@@ -58,7 +58,7 @@ void ZBTC2ControlDialog::updateList()
         mapDenomPosition[denom] = ui->treeWidget->indexOfTopLevelItem(itemDenom);
 
         itemDenom->setFlags(flgTristate);
-        itemDenom->setText(COLUMN_DENOMINATION, QString::number(denom));
+        itemDenom->setText(COLUMN_DENOMINATION, QString::number(denom * 0.01));
     }
 
     // select all unused coins - including not mature. Update status of coins too.
@@ -79,7 +79,7 @@ void ZBTC2ControlDialog::updateList()
         if(count(listSelectedMints.begin(), listSelectedMints.end(), strPubCoin))
             itemMint->setCheckState(COLUMN_CHECKBOX, Qt::Checked);
 
-        itemMint->setText(COLUMN_DENOMINATION, QString::number(mint.GetDenomination()));
+        itemMint->setText(COLUMN_DENOMINATION, QString::number(mint.GetDenomination() * 0.01));
         itemMint->setText(COLUMN_PUBCOIN, QString::fromStdString(strPubCoin));
 
         int nConfirmations = (mint.GetHeight() ? nBestHeight - mint.GetHeight() : 0);
@@ -166,7 +166,7 @@ void ZBTC2ControlDialog::updateLabels()
     }
 
     //update this dialog's labels
-    ui->labelZBTC2_int->setText(QString::number(nAmount));
+    ui->labelZBTC2_int->setText(QString::number(nAmount * 0.01));
     ui->labelQuantity_int->setText(QString::number(listSelectedMints.size()));
 
     //update PrivacyDialog labels

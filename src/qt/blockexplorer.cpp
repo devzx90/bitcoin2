@@ -180,7 +180,7 @@ const CBlockIndex* getexplorerBlockIndex(int64_t height)
 
 std::string getexplorerBlockHash(int64_t Height)
 {
-    std::string genesisblockhash = "0000041e482b9b9691d98eefb48473405c0b8ec31b76df3797c74a78680ef818";
+    std::string genesisblockhash = "3ee1620fa1706966da5e5182a664220691491bdfd9289a73cadf6244fa5dccb5";
     CBlockIndex* pindexBest = mapBlockIndex[chainActive.Tip()->GetBlockHash()];
     if ((Height < 0) || (Height > pindexBest->nHeight)) {
         return genesisblockhash;
@@ -257,25 +257,7 @@ std::string BlockToString(CBlockIndex* pBlock)
     Content += ">&nbsp;►</a></h2>";
     Content += BlockContent;
     Content += "</br>";
-    /*
-    if (block.nHeight > getThirdHardforkBlock())
-    {
-        std::vector<std::string> votes[2];
-        for (int i = 0; i < 2; i++)
-        {
-            for (unsigned int j = 0; j < block.vvotes[i].size(); j++)
-            {
-                votes[i].push_back(block.vvotes[i][j].hash.ToString() + ':' + itostr(block.vvotes[i][j].n));
-            }
-        }
-        Content += "<h3>" + _("Votes +") + "</h3>";
-        Content += makeHTMLTable(&votes[1][0], votes[1].size(), 1);
-        Content += "</br>";
-        Content += "<h3>" + _("Votes -") + "</h3>";
-        Content += makeHTMLTable(&votes[0][0], votes[0].size(), 1);
-        Content += "</br>";
-    }
-    */
+
     Content += "<h2>" + _("Transactions") + "</h2>";
     Content += TxContent;
 
@@ -370,6 +352,37 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx)
     return Content;
 }
 
+bool LoggedDifficultyInfo = false;
+void LogDifficultyInfo()
+{
+	// \t as delimiter
+	if (LoggedDifficultyInfo) return;
+	LoggedDifficultyInfo = true;
+
+	int maxheight = chainActive.Tip()->nHeight;
+	if (maxheight > 1900) maxheight = 1900;
+	int64_t previousblocktime = 0;
+	LogPrintf("Difficulty - Block time stamp - Time taken - Dif/time taken\n");
+	for (int i = 1410; i <= maxheight; i++)
+	{
+		std::string hex = getexplorerBlockHash(i);
+		uint256 hash = uint256S(hex);
+		CBlockIndex* pBlock = mapBlockIndex[hash];
+		if (pBlock)
+		{
+			CBlock block;
+			ReadBlockFromDisk(block, pBlock);
+			double adifficulty = GetDifficulty(pBlock);
+			int64_t timetaken = block.nTime - previousblocktime;
+			std::string output = strprintf("%.4f", adifficulty);
+			output += "\t" + i64tostr(block.nTime) + "\t" + i64tostr(timetaken) + "\t" + strprintf("%.4f", adifficulty / timetaken) + "\n";
+			LogPrintf(output.c_str());
+			previousblocktime = block.nTime;
+		}
+
+	}
+}
+
 std::string AddressToString(const CBitcoinAddress& Address)
 {
     std::string TxLabels[] =
@@ -421,6 +434,9 @@ std::string AddressToString(const CBitcoinAddress& Address)
     Content += "<h1>" + _("Transactions to/from") + "&nbsp;<span>" + Address.ToString() + "</span></h1>";
 	Content += "<h2>Under construction</h2>"; // TODO: Remove this line once this page actually shows the transactions from/to the address.
     Content += TxContent;
+
+	//LogDifficultyInfo();
+
     return Content;
 }
 
