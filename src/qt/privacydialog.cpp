@@ -337,6 +337,12 @@ void PrivacyDialog::sendzBTC2()
         return;
     }
 
+	// BTC2: If there is an easy to spot rounding error due to using double that would cause there to be change, fix it.
+	CAmount nValueRemaining = 0;
+	libzerocoin::CoinDenomination denomination = libzerocoin::AmountToClosestDenomination(nAmount, nValueRemaining);
+	if (nValueRemaining <= 10 && nValueRemaining >= -2) nAmount -= nValueRemaining; // Satoshis.
+
+
     // Convert change to zBTC2
     bool fMintChange = ui->checkBoxMintChange->isChecked();
 

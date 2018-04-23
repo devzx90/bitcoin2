@@ -116,7 +116,7 @@ bool getIdealSpends(
                 mapOfDenomsUsed.at(coin)++;
                 nRemainingValue -= mint.GetDenominationAsAmount();
             }
-            if (nRemainingValue < ZerocoinDenominationToAmount(coin)) break;
+            //if (nRemainingValue < ZerocoinDenominationToAmount(coin)) break; PIVX had this line. Using this could cause change when change isn't really needed. (for example when spending 0.05, it could return a 20 denom and saying nothing ideal found even if you have a 0.05 mint)
         }
     }
     return (nRemainingValue == 0);

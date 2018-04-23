@@ -4591,7 +4591,7 @@ bool CWallet::CreateZerocoinSpendTransaction(CAmount nValue, int nSecurityLevel,
     if (vSelectedMints.empty()) {
         listMints = walletdb.ListMintedCoins(true, true, true); // need to find mints to spend
         if(listMints.empty()) {
-            receipt.SetStatus(_("Failed to find Zerocoins in in wallet.dat"), nStatus);
+            receipt.SetStatus(_("Failed to find Zerocoins in wallet.dat"), nStatus);
             return false;
         }
 
@@ -4998,7 +4998,7 @@ bool CWallet::SpendZerocoin(CAmount nAmount, int nSecurityLevel, CWalletTx& wtxN
         // erase new mints
         for (auto& mint : vNewMints) {
             if (!walletdb.EraseZerocoinMint(mint)) {
-                receipt.SetStatus("Error: Unable to cannot delete zerocoin mint in wallet", ZBTC2_ERASE_NEW_MINTS_FAILED);
+                receipt.SetStatus("Error: Unable to delete zerocoin mint in wallet", ZBTC2_ERASE_NEW_MINTS_FAILED);
             }
         }
 

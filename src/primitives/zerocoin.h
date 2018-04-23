@@ -52,7 +52,7 @@ public:
     CBigNum GetValue() const { return value; }
     void SetValue(CBigNum value){ this->value = value; }
     libzerocoin::CoinDenomination GetDenomination() const { return denomination; }
-    int64_t GetDenominationAsAmount() const { return denomination * COIN; }
+    int64_t GetDenominationAsAmount() const { return denomination * CENT; }
     void SetDenomination(libzerocoin::CoinDenomination denom){ this->denomination = denom; }
     int GetHeight() const { return nHeight; }
     void SetHeight(int nHeight){ this->nHeight = nHeight; }
