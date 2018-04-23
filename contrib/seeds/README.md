@@ -6,10 +6,21 @@ Utility to generate the seeds.txt list that is compiled into the client
 Be sure to update `PATTERN_AGENT` in `makeseeds.py` to include the current version,
 and remove old versions as necessary.
 
-The seeds compiled into the release are created from fuzzbawls' DNS seed data, like this:
+The seeds compiled into the release are created like this:
 
-    curl -s http://seeder.fuzzbawls.pw/pivx-mainnet.txt > seeds_main.txt
-    python3 makeseeds.py < seeds_main.txt > nodes_main.txt
+    Script to generate list of seed nodes for chainparams.cpp.
+    This script expects two text files in the directory that is passed as an
+    argument:
+        nodes_main.txt
+        nodes_test.txt
+    These files must consist of lines in the format
+        <ip>
+        <ip>:<port>
+        [<ipv6>]
+        [<ipv6>]:<port>
+        <onion>.onion
+        0xDDBBCCAA (IPv4 little-endian old pnSeeds format)
+    
     python3 generate-seeds.py . > ../../src/chainparamsseeds.h
 
 ## Dependencies

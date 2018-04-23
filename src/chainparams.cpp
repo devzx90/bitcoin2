@@ -157,10 +157,10 @@ public:
         assert(hashGenesisBlock == uint256("3ee1620fa1706966da5e5182a664220691491bdfd9289a73cadf6244fa5dccb5"));
         assert(genesis.hashMerkleRoot == uint256("ce76be25027ca16966cec5d8a05c1eb36c545fe541a9fa07c4889933062823bb"));
 
+		vSeeds.push_back(CDNSSeedData("seed.bitc2.org", "seed.bitc2.org"));  // Primary DNS Seeder
 		vSeeds.push_back(CDNSSeedData("118.136.3.148", "118.136.3.148"));
-		vSeeds.push_back(CDNSSeedData("18.219.118.94", "18.219.118.94"));
 		vSeeds.push_back(CDNSSeedData("69.197.167.254", "69.197.167.254"));
-        //vSeeds.push_back(CDNSSeedData("seed.domain.name", "seed.domain.name"));     // Primary DNS Seeder
+		vSeeds.push_back(CDNSSeedData("18.219.118.94", "18.219.118.94"));
 
 		// bitcoin
 		base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 0);
