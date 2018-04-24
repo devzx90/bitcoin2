@@ -3494,8 +3494,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Você deve especificar uma masternodeprivkey na configuração. Favor verificar o manual para obter ajuda.</translation>
     </message>
     <message>
-        <source>(49144 could be used only on mainnet)</source>
-        <translation>(49144 could be used only on mainnet)</translation>
+        <source>(8333 could be used only on mainnet)</source>
+        <translation>(8333 could be used only on mainnet)</translation>
     </message>
     <message>
         <source>(default: %s)</source>
@@ -3506,8 +3506,8 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>(padrão: 1)</translation>
     </message>
     <message>
-        <source>(must be 49144 for mainnet)</source>
-        <translation>(deve ser 49144 para mainnet)</translation>
+        <source>(must be 8333 for mainnet)</source>
+        <translation>(deve ser 8333 para mainnet)</translation>
     </message>
     <message>
         <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>

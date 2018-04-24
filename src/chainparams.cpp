@@ -115,7 +115,7 @@ public:
         pchMessageStart[2] = 240;
         pchMessageStart[3] = 246;
         vAlertPubKey = ParseHex("0481144fe24738164032b28205ed30fbb63db0d6764639c3dc6665286547de8bc0bdda77b75f912135fe3c8edde94e9f0ba45da9431e99313c3fb34b278463ea61"); // BTC2
-        nDefaultPort = 49144; // 8333 used by Bitcoin, Bitcoin Gold and Bitcoin Cash.
+        nDefaultPort = 8333; // 8333 used by Bitcoin, Bitcoin Gold and Bitcoin Cash. 49144 used by BTC2 before.
         bnProofOfWorkLimit = ~uint256(0) >> 1;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
