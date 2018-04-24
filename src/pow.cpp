@@ -19,16 +19,55 @@
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
 {
 	// Bigger difficulty number means less work.
-    const CBlockIndex* BlockLastSolved = pindexLast;
-
-    if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || BlockLastSolved->nHeight <= Params().LAST_POW_BLOCK()) {
+    if (pindexLast == NULL || pindexLast->nHeight <= Params().LAST_POW_BLOCK()) {
         return Params().ProofOfWorkLimit().GetCompact();
     }
 
 	int64_t nTargetSpacing = 60;
+	int64_t nActualTimespan;
+
+	int nHeightFirst = pindexLast->nHeight - 10;
+	if (nHeightFirst <= Params().LAST_POW_BLOCK())
+	{
+		// Re-target every block.
+		nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
+	}
+	else
+	{
+		// Re-target every 10 blocks.
+		if (pindexLast->nHeight % 10 != 1) return pindexLast->nBits;
+		
+		CBlockIndex* pindexFirst = pindexLast->pprev;
+		while (pindexFirst->nHeight > nHeightFirst) {
+			pindexFirst = pindexFirst->pprev;
+		}
+		assert(pindexFirst);
+		nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
+
+		nActualTimespan /= 10;
+	}
 
 	// Limit adjustment step
-	int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
+	if (nActualTimespan < 30) nActualTimespan = 30;
+	else if (nActualTimespan > 120) nActualTimespan = 120;
+	
+	// Retarget
+	uint256 bnNew;
+	
+	bnNew.SetCompact(pindexLast->nBits);
+
+	if (bnNew == Params().ProofOfWorkLimit() && nActualTimespan >= nTargetSpacing) return bnNew.GetCompact();
+	
+	bnNew /= nTargetSpacing;
+	bnNew *= nActualTimespan;
+
+	if (bnNew > Params().ProofOfWorkLimit()) bnNew = Params().ProofOfWorkLimit();
+	if (pindexLast->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // PoS Starting difficulty can't be too low.
+
+
+	////////// Version 2.0.0
+	// Limit adjustment step
+	/*nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
 	if (nActualTimespan < 30) nActualTimespan = 30;
 	else if (nActualTimespan > 120) nActualTimespan = 120;
 
@@ -41,7 +80,10 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 	if (bnNew > bnPowLimit) bnNew = bnPowLimit;
 
-	if (BlockLastSolved->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew.SetCompact(469827583U); // PoS Starting difficulty can't be too low.
+	if (pindexLast->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew.SetCompact(469827583U); // PoS Starting difficulty can't be too low.
+	*/
+	/////////////
+
 	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
 
 	return bnNew.GetCompact();
@@ -60,7 +102,7 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
 
     // Check range
     if (fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit())
-        return false; // error("CheckProofOfWork() : nBits below minimum work");
+        error("CheckProofOfWork() : nBits below minimum work");
 
     // Check proof of work matches claimed amount
     if (hash > bnTarget)
