@@ -26,6 +26,29 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	int64_t nTargetSpacing = 60;
 	int64_t nActualTimespan;
 
+	////////// Version 2.0.0
+	// Limit adjustment step
+	if (pindexLast->nHeight < 6437)
+	{
+		nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
+		if (nActualTimespan < 30) nActualTimespan = 30;
+		else if (nActualTimespan > 120) nActualTimespan = 120;
+
+		// Retarget
+		const uint256 bnPowLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // Same as in Bitcoin
+		uint256 bnNew;
+		bnNew.SetCompact(pindexLast->nBits);
+		bnNew *= nActualTimespan;
+		bnNew /= nTargetSpacing;
+
+		if (bnNew > bnPowLimit) bnNew = bnPowLimit;
+
+		if (pindexLast->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew.SetCompact(469827583U); // PoS Starting difficulty can't be too low.
+
+		return bnNew.GetCompact();
+	}
+	/////////////
+
 	int nHeightFirst = pindexLast->nHeight - 10;
 	if (nHeightFirst <= Params().LAST_POW_BLOCK())
 	{
@@ -62,27 +85,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	bnNew *= nActualTimespan;
 
 	if (bnNew > Params().ProofOfWorkLimit()) bnNew = Params().ProofOfWorkLimit();
-	if (pindexLast->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // PoS Starting difficulty can't be too low.
+	//if (pindexLast->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // PoS Starting difficulty can't be too low.
 
-
-	////////// Version 2.0.0
-	// Limit adjustment step
-	/*nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
-	if (nActualTimespan < 30) nActualTimespan = 30;
-	else if (nActualTimespan > 120) nActualTimespan = 120;
-
-	// Retarget
-	const uint256 bnPowLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // Same as in Bitcoin
-	uint256 bnNew;
-	bnNew.SetCompact(pindexLast->nBits);
-	bnNew *= nActualTimespan;
-	bnNew /= nTargetSpacing;
-
-	if (bnNew > bnPowLimit) bnNew = bnPowLimit;
-
-	if (pindexLast->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew.SetCompact(469827583U); // PoS Starting difficulty can't be too low.
-	*/
-	/////////////
 
 	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
 
