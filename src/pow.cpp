@@ -28,7 +28,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 	////////// Version 2.0.0
 	// Limit adjustment step
-	if (pindexLast->nHeight < 6437)
+	if (pindexLast->nHeight < /*6437*/6539)
 	{
 		nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
 		if (nActualTimespan < 30) nActualTimespan = 30;
