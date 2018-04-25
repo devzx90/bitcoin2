@@ -26,9 +26,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	int64_t nTargetSpacing = 60;
 	int64_t nActualTimespan;
 
-	////////// Version 2.0.0
-	// Limit adjustment step
-	if (pindexLast->nHeight < /*6437*/6539)
+	////////// Old, version 2.0.0
+	if (pindexLast->nHeight < 6538) // CheckWork() will pass Block 6538 and earlier to this old version.
 	{
 		nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
 		if (nActualTimespan < 30) nActualTimespan = 30;
