@@ -10,7 +10,7 @@ Bitcoin 2 is an experimental digital currency that enables nearly instant, priva
 anyone, anywhere in the world. Bitcoin 2 uses peer-to-peer technology to operate
 with no central authority: managing transactions and issuing money are carried
 out collectively by the network. Bitcoin 2 Core is the name of the open source
-software which enables the use of this currency.
+software which enables the use of this currency. A BTC address is also a valid BTC2 address but Bitcoin 2 has replay protection.
 
 For more information, as well as a binary version of the Bitcoin 2 Core software, see www.bitc2.org
 
@@ -23,6 +23,10 @@ Bitcoin 2 also implements Masternodes, which enable Swift TX and add to the secu
 Bitcoin 2 uses the latest thoroughly tested Proof of Stake algorithm. Greatly reducing electricity use compared to Bitcoin. This also enables anyone to run the core software and create blocks, without needing a ASIC miner. A laptop is enough.
 
 Unlike Bitcoin, Bitcoin 2 supports truly anonymous transactions by using the Zerocoin Protocol. What zBTC2 provides is a protocol-level coin mixing service using zero knowledge proofs to sever the link between the sender and the receiver with 100% anonymity and untraceability. [Technical paper about zBTC2](https://www.bitc2.org/zBTC2-Bitcoin-2-Zerocoin-Protocol).
+
+The Bitcoin 2 blockchain is currently only about 1.5 GB and yet the balances of Bitcoin as of block 507850 were recorded to it.
+
+Blocks are created around once per minute instead of once per 10 minutes, this means that transactions confirm faster. Bitcoin 2's mining/forging difficulty is adjusted every 10 blocks.
 
 License
 -------
