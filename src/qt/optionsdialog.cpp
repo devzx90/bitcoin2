@@ -86,14 +86,14 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet) : QDialog(paren
 
     /* Preferred Zerocoin Denominations */
     ui->preferredDenom->addItem(QString(tr("Any")), QVariant("0"));
-    ui->preferredDenom->addItem(QString("5"), QVariant("5"));
-    ui->preferredDenom->addItem(QString("20"), QVariant("20"));
-    ui->preferredDenom->addItem(QString("100"), QVariant("100"));
-    ui->preferredDenom->addItem(QString("500"), QVariant("500"));
-    ui->preferredDenom->addItem(QString("2000"), QVariant("2000"));
-    ui->preferredDenom->addItem(QString("10000"), QVariant("10000"));
-    ui->preferredDenom->addItem(QString("50000"), QVariant("50000"));
-    ui->preferredDenom->addItem(QString("200000"), QVariant("200000"));
+    ui->preferredDenom->addItem(QString("0.05"), QVariant("5"));
+    ui->preferredDenom->addItem(QString("0.20"), QVariant("20"));
+    ui->preferredDenom->addItem(QString("1"), QVariant("100"));
+    ui->preferredDenom->addItem(QString("5"), QVariant("500"));
+    ui->preferredDenom->addItem(QString("20"), QVariant("2000"));
+    ui->preferredDenom->addItem(QString("100"), QVariant("10000"));
+    ui->preferredDenom->addItem(QString("500"), QVariant("50000"));
+    ui->preferredDenom->addItem(QString("2000"), QVariant("200000"));
 
     /* Theme selector external themes */
     boost::filesystem::path pathAddr = GetDataDir() / "themes";

@@ -116,7 +116,7 @@ public:
         pchMessageStart[2] = 240;
         pchMessageStart[3] = 246;
         vAlertPubKey = ParseHex("0481144fe24738164032b28205ed30fbb63db0d6764639c3dc6665286547de8bc0bdda77b75f912135fe3c8edde94e9f0ba45da9431e99313c3fb34b278463ea61"); // BTC2
-        nDefaultPort = 8333; // 8333 used by Bitcoin, Bitcoin Gold and Bitcoin Cash. 49144 used by BTC2 before.
+        nDefaultPort = 8333; // 44798 should be good. 8333 used by Bitcoin, Bitcoin Gold and Bitcoin Cash. 49144 used by BTC2 before.
         bnProofOfWorkLimit = ~uint256(0) >> 1;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
@@ -137,7 +137,7 @@ public:
 
         /**
          * Build the genesis block. Note that the output of the genesis coinbase cannot
-         * be spent as it did not originally exist in the database.
+         * be spent as it did not originally exist in the database. It is also 0 in Bitcoin 2.
          */
         const char* pszTimestamp = "Therapy Reverses Alzheimer's Brain Plaque Buildup -- in Mice";
         CMutableTransaction txNew;
@@ -159,9 +159,7 @@ public:
         assert(genesis.hashMerkleRoot == uint256("ce76be25027ca16966cec5d8a05c1eb36c545fe541a9fa07c4889933062823bb"));
 
 		vSeeds.push_back(CDNSSeedData("seed.bitc2.org", "seed.bitc2.org"));  // Primary DNS Seeder
-		vSeeds.push_back(CDNSSeedData("118.136.3.148", "118.136.3.148"));
-		vSeeds.push_back(CDNSSeedData("69.197.167.254", "69.197.167.254"));
-		vSeeds.push_back(CDNSSeedData("18.219.118.94", "18.219.118.94"));
+		vSeeds.push_back(CDNSSeedData("seeder.bitc2.org", "seeder.bitc2.org"));  // Secondary DNS Seeder on another server.
 
 		// bitcoin
 		base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 0);
