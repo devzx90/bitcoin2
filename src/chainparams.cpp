@@ -136,8 +136,7 @@ public:
         nZerocoinStartTime = 1519330596; // 22nd of February 2018
 
         /**
-         * Build the genesis block. Note that the output of the genesis coinbase cannot
-         * be spent as it did not originally exist in the database. It is also 0 in Bitcoin 2.
+         * Build the genesis block. 0 output in Bitcoin 2.
          */
         const char* pszTimestamp = "Therapy Reverses Alzheimer's Brain Plaque Buildup -- in Mice";
         CMutableTransaction txNew;
@@ -160,6 +159,7 @@ public:
 
 		vSeeds.push_back(CDNSSeedData("seed.bitc2.org", "seed.bitc2.org"));  // Primary DNS Seeder
 		vSeeds.push_back(CDNSSeedData("seeder.bitc2.org", "seeder.bitc2.org"));  // Secondary DNS Seeder on another server.
+		convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main)); // Fixed seed IP addresses as a fallback.
 
 		// bitcoin
 		base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 0);
@@ -167,8 +167,6 @@ public:
 		base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 128);
 		base58Prefixes[EXT_PUBLIC_KEY] = { 0x04, 0x88, 0xB2, 0x1E };
 		base58Prefixes[EXT_SECRET_KEY] = { 0x04, 0x88, 0xAD, 0xE4 };
-
-        convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
 
         fMiningRequiresPeers = true;
         fAllowMinDifficultyBlocks = false;

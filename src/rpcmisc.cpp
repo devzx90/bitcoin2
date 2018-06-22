@@ -66,14 +66,14 @@ UniValue getinfo(const UniValue& params, bool fHelp)
             "  \"moneysupply\" : \"supply\"       (numeric) The money supply when this block was added to the blockchain\n"
             "  \"zBTC2supply\" :\n"
             "  {\n"
-			"     \"5\" : n,            (numeric) supply of 0.05 zBTC2 denomination\n"
-			"     \"20\" : n,            (numeric) supply of 0.2 zBTC2 denomination\n"
-			"     \"100\" : n,           (numeric) supply of 1 zBTC2 denomination\n"
-			"     \"500\" : n,           (numeric) supply of 5 zBTC2 denomination\n"
-			"     \"2000\" : n,          (numeric) supply of 20 zBTC2 denomination\n"
-			"     \"10000\" : n,          (numeric) supply of 100 zBTC2 denomination\n"
-			"     \"50000\" : n,         (numeric) supply of 500 zBTC2 denomination\n"
-			"     \"200000\" : n,         (numeric) supply of 2000 zBTC2 denomination\n"
+			"     \"0.05\" : n,            (numeric) supply of 0.05 zBTC2 denomination\n"
+			"     \"0.2\" : n,            (numeric) supply of 0.2 zBTC2 denomination\n"
+			"     \"1\" : n,           (numeric) supply of 1 zBTC2 denomination\n"
+			"     \"5\" : n,           (numeric) supply of 5 zBTC2 denomination\n"
+			"     \"20\" : n,          (numeric) supply of 20 zBTC2 denomination\n"
+			"     \"100\" : n,          (numeric) supply of 100 zBTC2 denomination\n"
+			"     \"500\" : n,         (numeric) supply of 500 zBTC2 denomination\n"
+			"     \"2000\" : n,         (numeric) supply of 2000 zBTC2 denomination\n"
             "     \"total\" : n,        (numeric) The total supply of all zBTC2 denominations\n"
             "  }\n"
             "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
@@ -122,7 +122,7 @@ UniValue getinfo(const UniValue& params, bool fHelp)
     obj.push_back(Pair("moneysupply",ValueFromAmount(chainActive.Tip()->nMoneySupply)));
     UniValue zbtc2Obj(UniValue::VOBJ);
     for (auto denom : libzerocoin::zerocoinDenomList) {
-        zbtc2Obj.push_back(Pair(to_string(denom), ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * (denom*COIN))));
+        zbtc2Obj.push_back(Pair(to_string(denom * 0.01), ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * denom*CENT)));
     }
     zbtc2Obj.push_back(Pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
     obj.push_back(Pair("zBTC2supply", zbtc2Obj));
