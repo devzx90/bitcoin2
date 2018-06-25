@@ -49,7 +49,7 @@ bool fPayAtLeastCustomFee = true;
  * Fees smaller than this (in duffs) are considered zero fee (for transaction creation)
  * Override with -mintxfee
  */
-CFeeRate CWallet::minTxFee = CFeeRate(10000);
+CFeeRate CWallet::minTxFee = CFeeRate(1600);
 int64_t nStartupTime = GetAdjustedTime();
 
 /** @defgroup mapWallet
