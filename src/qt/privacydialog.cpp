@@ -328,7 +328,10 @@ void PrivacyDialog::sendzBTC2()
 
     // Double is allowed now
     double dAmount = ui->zBTC2payAmount->text().toDouble();
-    CAmount nAmount = dAmount * COIN;
+    CAmount nAmount = dAmount * COIN; 
+	CAmount Remainder = nAmount % 1000;
+	if(Remainder > 0) nAmount += 1000 - Remainder; // Add the remainder to fix rounding errors.
+	else if (Remainder < 0) nAmount -= Remainder; // Remove the remainder to fix rounding errors.
 
     // Check amount validity
     if (!MoneyRange(nAmount) || nAmount <= 0) {
@@ -336,12 +339,6 @@ void PrivacyDialog::sendzBTC2()
         ui->zBTC2payAmount->setFocus();
         return;
     }
-
-	// BTC2: If there is an easy to spot rounding error due to using double that would cause there to be change, fix it.
-	CAmount nValueRemaining = 0;
-	libzerocoin::CoinDenomination denomination = libzerocoin::AmountToClosestDenomination(nAmount, nValueRemaining);
-	if (nValueRemaining <= 10 && nValueRemaining >= -2) nAmount -= nValueRemaining; // Satoshis.
-
 
     // Convert change to zBTC2
     bool fMintChange = ui->checkBoxMintChange->isChecked();

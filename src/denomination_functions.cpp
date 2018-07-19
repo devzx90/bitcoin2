@@ -109,14 +109,17 @@ bool getIdealSpends(
 
     // Start with the Highest Denomination coin and grab coins as long as the remaining amount is greater than the
     // current denomination value
-    for (auto& coin : reverse_iterate(zerocoinDenomList)) {
-        for (const CZerocoinMint mint : listMints) {
+    for (auto& coin : reverse_iterate(zerocoinDenomList))
+	{
+        for (const CZerocoinMint mint : listMints)
+		{
             if (mint.IsUsed()) continue;
-            if (nRemainingValue >= ZerocoinDenominationToAmount(coin) && coin == mint.GetDenomination()) {
+			CAmount zAmount = ZerocoinDenominationToAmount(coin);
+            if (nRemainingValue >= zAmount && coin == mint.GetDenomination()) {
                 mapOfDenomsUsed.at(coin)++;
-                nRemainingValue -= mint.GetDenominationAsAmount();
+                nRemainingValue -= zAmount;
             }
-            //if (nRemainingValue < ZerocoinDenominationToAmount(coin)) break; PIVX had this line. Using this could cause change when change isn't really needed. (for example when spending 0.05, it could return a 20 denom and saying nothing ideal found even if you have a 0.05 mint)
+            if(nRemainingValue < zAmount) break;
         }
     }
     return (nRemainingValue == 0);
@@ -419,6 +422,7 @@ std::vector<CZerocoinMint> SelectMintsFromList(const CAmount nValueTarget, CAmou
     bool fCanMeetExactly = getIdealSpends(nValueTarget, listMints, mapOfDenomsHeld, mapOfDenomsUsed);
     if (fCanMeetExactly) {
         nCoinsReturned = 0;
+		LogPrint("zero", "%s: fCanMeetExactly == true\n", __func__);
         nSelectedValue = nValueTarget;
         vSelectedMints = getSpends(listMints, mapOfDenomsUsed, nSelectedValue);
         // If true, we are good and done!
@@ -429,6 +433,7 @@ std::vector<CZerocoinMint> SelectMintsFromList(const CAmount nValueTarget, CAmou
             nNeededSpends = vSelectedMints.size();
         }
     }
+	LogPrint("zero", "%s: fCanMeetExactly == false\n", __func__);
     // Since either too many spends needed or can not spend the exact amount,
     // calculate the change needed and the map of coins used
     nCoinsReturned = calculateChange(nMaxNumberOfSpends, fMinimizeChange, nValueTarget, mapOfDenomsHeld, mapOfDenomsUsed);

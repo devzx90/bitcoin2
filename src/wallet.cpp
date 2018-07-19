@@ -1682,8 +1682,11 @@ std::map<libzerocoin::CoinDenomination, CAmount> CWallet::GetMyZerocoinDistribut
     {
         LOCK2(cs_main, cs_wallet);
         list<CZerocoinMint> listPubCoin = CWalletDB(strWalletFile).ListMintedCoins(true, true, true);
-        for (auto& mint : listPubCoin)
-            spread.at(mint.GetDenomination())++;
+		for (auto& mint : listPubCoin)
+		{
+			spread.at(mint.GetDenomination())++;
+			LogPrint("zero", "%s Adding to map: %ld\n", __func__, mint.GetDenominationAsAmount());
+		}
     }
     return spread;
 }
