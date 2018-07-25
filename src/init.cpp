@@ -469,7 +469,7 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-stopafterblockimport", strprintf(_("Stop running after importing blocks from disk (default: %u)"), 0));
         strUsage += HelpMessageOpt("-sporkkey=<privkey>", _("Enable spork administration functionality with the appropriate private key."));
     }
-    string debugCategories = "addrman, alert, bench, coindb, db, lock, rand, rpc, selectcoins, tor, mempool, net, proxy, http, libevent, bitcoin2, (obfuscation, swiftx, masternode, mnpayments, mnbudget, zero)"; // Don't translate these and qt below
+    string debugCategories = "addrman, alert, bench, coindb, db, lock, rand, rpc, selectcoins, tor, mempool, net, proxy, http, libevent, bitcoin2, (obfuscation, swiftx, masternode, mnpayments, mnbudget, zero, net)"; // Don't translate these and qt below
     if (mode == HMM_BITCOIN_QT)
         debugCategories += ", qt";
     strUsage += HelpMessageOpt("-debug=<category>", strprintf(_("Output debugging information (default: %u, supplying <category> is optional)"), 0) + ". " +
@@ -1814,7 +1814,8 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
     if (GetBoolArg("-listenonion", DEFAULT_LISTEN_ONION))
         StartTorControl(threadGroup);
 
-    StartNode(threadGroup, scheduler);
+	
+	StartNode(threadGroup, scheduler);
 
 #ifdef ENABLE_WALLET
     // Generate coins in the background
@@ -1834,6 +1835,8 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
 
         // Run a thread to flush wallet periodically
         threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
+
+		LogPrint("masternode", "%s finished. balance: %d. chainActive.Height(): %d. nChainWork: %s\n", __func__, pwalletMain ? pwalletMain->GetBalance() : 0, chainActive.Height(), chainActive.Tip()->nChainWork.ToString());
     }
 #endif
 
