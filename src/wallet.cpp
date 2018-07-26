@@ -1589,9 +1589,7 @@ CAmount CWallet::GetZerocoinBalance(bool fMatureOnly) const
             myZerocoinSupply.at(denom)++;
         }
     }
-    for (auto& denom : libzerocoin::zerocoinDenomList) {
-        LogPrint("zero","%s My coins for denomination %d pubcoin %s\n", __func__,denom, myZerocoinSupply.at(denom));
-    }
+
     LogPrint("zero","Total value of coins %d\n",nTotal);
 
     if (nTotal < 0 ) nTotal = 0; // Sanity never hurts
