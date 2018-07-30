@@ -5913,11 +5913,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 				if (pindex == NULL) return false;
 				if (block.nTime > pindex->nTime + (block.IsProofOfStake() ? 40 : 7200))
 				{
-					static int64_t LastActivateBestChainCallTime = nTimeReceived; 
-					if(LastActivateBestChainCallTime + 30 < nTimeReceived) // This variable ensures that ActivateBestChain isn't called too often by this. At least 31 seconds need to pass between calls by this.
+					static int64_t LastActivateBestChainCallTime = 0;
+					int64_t aCurrentTime = GetTime();
+					if(LastActivateBestChainCallTime + 30 < aCurrentTime) // This variable ensures that ActivateBestChain isn't called too often by this. At least 31 seconds need to pass between calls by this.
 					{
 						ActivateBestChain(state, &block);
-						LastActivateBestChainCallTime = nTimeReceived;
+						LastActivateBestChainCallTime = aCurrentTime;
 					}
 				}
 			}
