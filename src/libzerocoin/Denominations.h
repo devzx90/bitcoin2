@@ -30,9 +30,9 @@ enum  CoinDenomination { // In cents
 
 // Order is with the Smallest Denomination first and is important for a particular routine that this order is maintained
 const std::vector<CoinDenomination> zerocoinDenomList = {ZQ_FIVECENTS, ZQ_TWENTYCENTS, ZQ_ONE, ZQ_FIVE, ZQ_TWENTY, ZQ_ONE_HUNDRED, ZQ_FIVE_HUNDRED, ZQ_TWO_THOUSAND};
-// These are the max number you'd need at any one Denomination before moving to the higher denomination. Last number is 4, since it's the max number of
-// possible spends at the moment    /
-const std::vector<int> maxCoinsAtDenom   = {3, 4, 4, 3, 4, 4, 3, 4};
+// These are the max number you'd need at any one Denomination before moving to the higher denomination. Last number is 16, since it's the max number of
+// possible spends at the moment. Not used at the moment.
+//const std::vector<int> maxCoinsAtDenom   = {3, 4, 4, 3, 4, 4, 3, 16};
 
 int64_t ZerocoinDenominationToInt(const CoinDenomination& denomination);
 int64_t ZerocoinDenominationToAmount(const CoinDenomination& denomination);
