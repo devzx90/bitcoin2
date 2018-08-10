@@ -5911,15 +5911,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 				// Check if that block is newer than our newest block. If so, call ActivateBestChain(), just in case.
 				CBlockIndex* pindex = chainActive.Tip();
 				if (pindex == NULL) return false;
-				if (block.nTime > pindex->nTime + (block.IsProofOfStake() ? 40 : 7200))
+				if (block.nTime > pindex->nTime/* + (block.IsProofOfStake() ? 40 : 7200)*/)
 				{
-					static int64_t LastActivateBestChainCallTime = 0;
+					/*static int64_t LastActivateBestChainCallTime = 0;
 					int64_t aCurrentTime = GetTime();
-					if(LastActivateBestChainCallTime + 5 < aCurrentTime) // This variable ensures that ActivateBestChain isn't called too often by this. At least 6 seconds need to pass between calls by this.
-					{
+					if(LastActivateBestChainCallTime + 1 < aCurrentTime) // This variable ensures that ActivateBestChain isn't called too often by this. At least 2 seconds need to pass between calls by this.
+					{*/
 						ActivateBestChain(state, &block);
-						LastActivateBestChainCallTime = aCurrentTime;
-					}
+						//LastActivateBestChainCallTime = aCurrentTime;
+					//}
 				}
 			}
         }
