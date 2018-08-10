@@ -3491,7 +3491,7 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
  */
 bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChecked)
 {
-	LogPrint("masternode", "%s started. balance: %d. chainActive.Height(): %d. nChainWork: %s\n", __func__, pwalletMain ? pwalletMain->GetBalance() : 0, chainActive.Height(), chainActive.Tip()->nChainWork.ToString());
+	// CANT BE UNCOMMENTED WITHOUT SAFETY CHECKS: LogPrint("masternode", "%s started. balance: %d. chainActive.Height(): %d. nChainWork: %s\n", __func__, pwalletMain ? pwalletMain->GetBalance() : 0, chainActive.Height(), chainActive.Tip()->nChainWork.ToString());
 
     CBlockIndex* pindexNewTip = NULL;
     CBlockIndex* pindexMostWork = NULL;
@@ -3552,7 +3552,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
         return false;
     }
 
-	LogPrint("masternode", "%s finished. balance: %d. chainActive.Height(): %d. nChainWork: %s\n", __func__, pwalletMain ? pwalletMain->GetBalance() : 0, chainActive.Height(), chainActive.Tip()->nChainWork.ToString());
+	// CANT BE UNCOMMENTED WITHOUT SAFETY CHECKS: LogPrint("masternode", "%s finished. balance: %d. chainActive.Height(): %d. nChainWork: %s\n", __func__, pwalletMain ? pwalletMain->GetBalance() : 0, chainActive.Height(), chainActive.Tip()->nChainWork.ToString());
     return true;
 }
 
@@ -4748,20 +4748,25 @@ bool InitBlockIndex()
             CValidationState state;
             if (!FindBlockPos(state, blockPos, nBlockSize + 8, 0, block.GetBlockTime()))
                 return error("LoadBlockIndex() : FindBlockPos failed");
+			LogPrintf("...WriteBlockToDisk\n");
             if (!WriteBlockToDisk(block, blockPos))
                 return error("LoadBlockIndex() : writing genesis block to disk failed");
+			LogPrintf("...AddToBlockIndex\n");
             CBlockIndex* pindex = AddToBlockIndex(block);
+			LogPrintf("...ReceivedBlockTransactions\n");
             if (!ReceivedBlockTransactions(block, state, pindex, blockPos))
                 return error("LoadBlockIndex() : genesis block not accepted");
+			LogPrintf("...ActivateBestChain\n");
             if (!ActivateBestChain(state, &block))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
+			LogPrintf("...FlushStateToDisk\n");
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);
         } catch (std::runtime_error& e) {
             return error("LoadBlockIndex() : failed to initialize block database: %s", e.what());
         }
     }
-
+	LogPrintf("...Done.\n");
     return true;
 }
 
