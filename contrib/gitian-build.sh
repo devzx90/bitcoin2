@@ -9,9 +9,9 @@ verify=false
 build=false
 
 # Systems to build
-linux=true
+linux=false
 windows=false
-osx=false
+osx=true
 
 # Other Basic variables
 SIGNER=
