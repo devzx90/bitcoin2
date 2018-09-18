@@ -789,7 +789,7 @@ UniValue movecmd(const UniValue& params, bool fHelp)
 
 UniValue sendfrom(const UniValue& params, bool fHelp)
 {
-    if (fHelp || params.size() < 3 || params.size() > 6)
+    if (fHelp || params.size() < 3 || params.size() > 7)
         throw runtime_error(
             "sendfrom \"fromaccount\" \"tobitcoin2address\" amount ( minconf \"comment\" \"comment-to\" )\n"
             "\nSent an amount from an account to a bitcoin2 address.\n"
@@ -800,18 +800,19 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
                                         "2. \"tobitcoin2address\"  (string, required) The bitcoin2 address to send funds to.\n"
                                         "3. amount                (numeric, required) The amount in btc. (transaction fee is added on top).\n"
                                         "4. minconf               (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
-                                        "5. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
+										"5. UseSwiftTX            (boolean, optional, default=false) Send as a Swift Transaction.\n"
+                                        "6. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
                                         "                                     This is not part of the transaction, just kept in your wallet.\n"
-                                        "6. \"comment-to\"        (string, optional) An optional comment to store the name of the person or organization \n"
+                                        "7. \"comment-to\"        (string, optional) An optional comment to store the name of the person or organization \n"
                                         "                                     to which you're sending the transaction. This is not part of the transaction, \n"
                                         "                                     it is just kept in your wallet.\n"
                                         "\nResult:\n"
                                         "\"transactionid\"        (string) The transaction id.\n"
                                         "\nExamples:\n"
-                                        "\nSend 0.01 btc from the default account to the address, must have at least 1 confirmation\n" +
+                                        "\nSend 0.01 btc2 from the default account to the address, must have at least 1 confirmation\n" +
             HelpExampleCli("sendfrom", "\"\" \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.01") +
-            "\nSend 0.01 from the tabby account to the given address, funds must have at least 6 confirmations\n" + HelpExampleCli("sendfrom", "\"tabby\" \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.01 6 \"donation\" \"seans outpost\"") +
-            "\nAs a json rpc call\n" + HelpExampleRpc("sendfrom", "\"tabby\", \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\", 0.01, 6, \"donation\", \"seans outpost\""));
+            "\nSend 0.01 from the tabby account to the given address, funds must have at least 6 confirmations\n" + HelpExampleCli("sendfrom", "\"tabby\" \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.01 6 false \"donation\" \"seans outpost\"") +
+            "\nAs a json rpc call\n" + HelpExampleRpc("sendfrom", "\"tabby\", \"XwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\", 0.01, 6, false, \"donation\", \"seans outpost\""));
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -824,21 +825,41 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
     if (params.size() > 3)
         nMinDepth = params[3].get_int();
 
+	bool UseSwiftTX = false;
+	if (params.size() > 4) UseSwiftTX = params[4].get_bool();
+
     CWalletTx wtx;
     wtx.strFromAccount = strAccount;
-    if (params.size() > 4 && !params[4].isNull() && !params[4].get_str().empty())
-        wtx.mapValue["comment"] = params[4].get_str();
     if (params.size() > 5 && !params[5].isNull() && !params[5].get_str().empty())
-        wtx.mapValue["to"] = params[5].get_str();
+        wtx.mapValue["comment"] = params[5].get_str();
+    if (params.size() > 6 && !params[6].isNull() && !params[6].get_str().empty())
+        wtx.mapValue["to"] = params[6].get_str();
 
     EnsureWalletIsUnlocked();
 
     // Check funds
     CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
     if (nAmount > nBalance)
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
 
-    SendMoney(address.Get(), nAmount, wtx);
+	// Parse Bitcoin2 address
+	CScript scriptPubKey = GetScriptForDestination(address.Get());
+
+	// Create and send the transaction
+	string strError;
+	CReserveKey reservekey(pwalletMain);
+	CAmount nFeeRequired;
+	if (!pwalletMain->CreateTransaction(scriptPubKey, nAmount, wtx, reservekey, nFeeRequired, strError, NULL, ALL_COINS, UseSwiftTX, (CAmount)0))
+	{
+		if (nValue + nFeeRequired > nBalance)
+		{
+			strError = strprintf("Insufficient funds. You can send at most: %s. The fee is %s.", FormatMoney(nBalance - nFeeRequired), FormatMoney(nFeeRequired));
+			throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strError);
+		}
+		else throw JSONRPCError(RPC_WALLET_ERROR, strError);
+	}
+	if (!pwalletMain->CommitTransaction(wtx, reservekey, (!UseSwiftTX ? "tx" : "ix")))
+		throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
 
     return wtx.GetHash().GetHex();
 }
