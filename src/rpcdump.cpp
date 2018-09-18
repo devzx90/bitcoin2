@@ -83,10 +83,10 @@ UniValue importprivkey(const UniValue& params, bool fHelp)
     if (fHelp || params.size() < 1 || params.size() > 3)
         throw runtime_error(
             "importprivkey \"bitcoin2privkey\" ( \"label\" rescan )\n"
-            "\nAdds a private key (as returned by dumpprivkey) to your wallet.\n"
+            "\nAdds a private key (as returned by dumpprivkey) to your wallet and returns the public address.\n"
             "\nArguments:\n"
             "1. \"bitcoin2privkey\"   (string, required) The private key (see dumpprivkey)\n"
-            "2. \"label\"            (string, optional, default=\"\") An optional label\n"
+            "2. \"label\"            (string, optional, default=\"\") An optional label. $pub sets it to the public address.\n"
             "3. rescan               (boolean, optional, default=true) Rescan the wallet for transactions\n"
             "\nNote: This call can take minutes to complete if rescan is true.\n"
             "\nExamples:\n"
@@ -102,6 +102,7 @@ UniValue importprivkey(const UniValue& params, bool fHelp)
 
     string strSecret = params[0].get_str();
     string strLabel = "";
+	string thePublicAddress;
     if (params.size() > 1)
         strLabel = params[1].get_str();
 
@@ -122,12 +123,14 @@ UniValue importprivkey(const UniValue& params, bool fHelp)
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
     {
+		thePublicAddress = CBitcoinAddress(vchAddress).ToString();
         pwalletMain->MarkDirty();
+		if (strLabel == "$pub") strLabel = thePublicAddress;
         pwalletMain->SetAddressBook(vchAddress, strLabel, "receive");
 
         // Don't throw error in case a key is already there
         if (pwalletMain->HaveKey(vchAddress))
-            return NullUniValue;
+            return thePublicAddress;
 
         pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = 1;
 
@@ -142,7 +145,7 @@ UniValue importprivkey(const UniValue& params, bool fHelp)
         }
     }
 
-    return NullUniValue;
+    return thePublicAddress;
 }
 
 UniValue importaddress(const UniValue& params, bool fHelp)
