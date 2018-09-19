@@ -858,6 +858,12 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
 		}
 		else throw JSONRPCError(RPC_WALLET_ERROR, strError);
 	}
+	else if (nValue + nFeeRequired > nBalance)
+	{
+		strError = strprintf("Insufficient funds. You can send at most: %s. The fee is %s.", FormatMoney(nBalance - nFeeRequired), FormatMoney(nFeeRequired));
+		throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strError);
+	}
+
 	if (!pwalletMain->CommitTransaction(wtx, reservekey, (!UseSwiftTX ? "tx" : "ix")))
 		throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
 
