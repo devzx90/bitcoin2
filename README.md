@@ -18,7 +18,7 @@ For more information, as well as a binary version of the Bitcoin 2 Core software
 
 Bitcoin 2 has much lower fees and up to 40 times higher limit of transactions per second than Bitcoin.
 
-Bitcoin 2 also implements Masternodes, which enable Swift TX and add to the security of the network. The Swift TX feature allows Masternodes to confirm your transaction almost immediately so that it can be considered confirmed even before it shows in a block. This kind of a transaction is good for Point of Sale situations in the real world. Anybody with 1000 BTC2 can run a Masternode.
+Bitcoin 2 also implements Masternodes, which enable the Swift TX feature along with adding to the speed, connectivity and redundancy of the network. The Swift TX feature allows Masternodes to confirm your transaction almost immediately so that it can be considered confirmed even before it shows in a block. This kind of a transaction is good for Point of Sale situations in the real world. Anybody with 1000 BTC2 can run a Masternode.
 
 Bitcoin 2 uses the latest thoroughly tested Proof of Stake algorithm. Greatly reducing electricity use compared to Bitcoin. This also enables anyone to run the core software and create blocks, without needing a ASIC miner. A laptop is enough.
 
