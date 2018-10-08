@@ -2605,7 +2605,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     CAmount nFeePay,
 	std::string theChangeAddress)
 {
-    if (useIX && nFeePay < 50000) nFeePay = 50000;
+    if (useIX && nFeePay < (CAmount)50000) nFeePay = (CAmount)50000;
 
     CAmount nValue = 0;
 
