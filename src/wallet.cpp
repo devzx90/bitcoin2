@@ -2596,13 +2596,14 @@ bool CWallet::ConvertList(std::vector<CTxIn> vCoins, std::vector<CAmount>& vecAm
 
 bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     CWalletTx& wtxNew,
-    CReserveKey& reservekey,
+	CReserveKey& reservekey,
     CAmount& nFeeRet,
     std::string& strFailReason,
     const CCoinControl* coinControl,
     AvailableCoinsType coin_type,
     bool useIX,
-    CAmount nFeePay)
+    CAmount nFeePay,
+	std::string theChangeAddress)
 {
     if (useIX && nFeePay < 50000) nFeePay = 50000;
 
@@ -2712,30 +2713,26 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     wtxNew.mapValue["DS"] = "1";
                 }
 
-                if (nChange > 0) {
+                if (nChange > 0)
+				{
                     // Fill a vout to ourself
-                    // TODO: pass in scriptChange instead of reservekey so
-                    // change transaction isn't always pay-to-bitcoin2-address
                     CScript scriptChange;
                     bool combineChange = false;
+					bool returnkeyregardless = false;
 
                     // coin control: send change to custom address
-                    if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange)) {
+                    if (coinControl && !boost::get<CNoDestination>(&coinControl->destChange))
+					{
                         scriptChange = GetScriptForDestination(coinControl->destChange);
-
-                        vector<CTxOut>::iterator it = txNew.vout.begin();
-                        while (it != txNew.vout.end()) {
-                            if (scriptChange == it->scriptPubKey) {
-                                it->nValue += nChange;
-                                nChange = 0;
-                                reservekey.ReturnKey();
-                                combineChange = true;
-                                break;
-                            }
-                            ++it;
-                        }
+						returnkeyregardless = true;
                     }
-
+					// theChangeAddress set, so send change there.
+					else if (theChangeAddress != "")
+					{
+						CBitcoinAddress changeAddress(theChangeAddress);
+						scriptChange = GetScriptForDestination(changeAddress.Get());
+						returnkeyregardless = true;
+					}
                     // no coin control: send change to newly generated address
                     else {
                         // Note: We use a new key here to keep it from being obvious which side is the change.
@@ -2754,7 +2751,24 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                         scriptChange = GetScriptForDestination(vchPubKey.GetID());
                     }
 
-                    if (!combineChange) {
+					if(returnkeyregardless) // Custom change address.
+					{
+						// Add the change to an existing output to that address if possible.
+						vector<CTxOut>::iterator it = txNew.vout.begin();
+						while (it != txNew.vout.end()) {
+							if (scriptChange == it->scriptPubKey) {
+								it->nValue += nChange;
+								nChange = 0;
+								reservekey.ReturnKey();
+								combineChange = true;
+								break;
+							}
+							++it;
+						}
+					}
+
+                    if (!combineChange)
+					{
                         CTxOut newTxOut(nChange, scriptChange);
 
                         // Never create dust outputs; if we would, just
@@ -2767,10 +2781,11 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                             // Insert change txn at random position:
                             vector<CTxOut>::iterator position = txNew.vout.begin() + GetRandInt(txNew.vout.size() + 1);
                             txNew.vout.insert(position, newTxOut);
+							if(returnkeyregardless) reservekey.ReturnKey();
                         }
                     }
-                } else
-                    reservekey.ReturnKey();
+                }
+				else reservekey.ReturnKey();
 
                 // Fill vin
                 BOOST_FOREACH (const PAIRTYPE(const CWalletTx*, unsigned int) & coin, setCoins)
@@ -2829,11 +2844,11 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     return true;
 }
 
-bool CWallet::CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay)
+bool CWallet::CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay, std::string theChangeAddress)
 {
-    vector<pair<CScript, CAmount> > vecSend;
+    vector<pair<CScript, CAmount>> vecSend;
     vecSend.push_back(make_pair(scriptPubKey, nValue));
-    return CreateTransaction(vecSend, wtxNew, reservekey, nFeeRet, strFailReason, coinControl, coin_type, useIX, nFeePay);
+    return CreateTransaction(vecSend, wtxNew, reservekey, nFeeRet, strFailReason, coinControl, coin_type, useIX, nFeePay, theChangeAddress);
 }
 
 // ppcoin: create coin stake transaction

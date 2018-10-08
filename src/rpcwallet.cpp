@@ -849,7 +849,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
 	string strError;
 	CReserveKey reservekey(pwalletMain);
 	CAmount nFeeRequired;
-	if (!pwalletMain->CreateTransaction(scriptPubKey, nAmount, wtx, reservekey, nFeeRequired, strError, NULL, ALL_COINS, UseSwiftTX, (CAmount)0))
+	if (!pwalletMain->CreateTransaction(scriptPubKey, nAmount, wtx, reservekey, nFeeRequired, strError, NULL, ALL_COINS, UseSwiftTX, (CAmount)0, strAccount))
 	{
 		if (nValue + nFeeRequired > nBalance)
 		{
