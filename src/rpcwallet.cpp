@@ -851,14 +851,14 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
 	CAmount nFeeRequired;
 	if (!pwalletMain->CreateTransaction(scriptPubKey, nAmount, wtx, reservekey, nFeeRequired, strError, NULL, ALL_COINS, UseSwiftTX, (CAmount)0, strAccount))
 	{
-		if (nValue + nFeeRequired > nBalance)
+		if (nAmount + nFeeRequired > nBalance)
 		{
 			strError = strprintf("Insufficient funds. You can send at most: %s. The fee is %s.", FormatMoney(nBalance - nFeeRequired), FormatMoney(nFeeRequired));
 			throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strError);
 		}
 		else throw JSONRPCError(RPC_WALLET_ERROR, strError);
 	}
-	else if (nValue + nFeeRequired > nBalance)
+	else if (nAmount + nFeeRequired > nBalance)
 	{
 		strError = strprintf("Insufficient funds. You can send at most: %s. The fee is %s.", FormatMoney(nBalance - nFeeRequired), FormatMoney(nFeeRequired));
 		throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strError);
