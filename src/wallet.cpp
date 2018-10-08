@@ -2730,26 +2730,12 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
 					else if (theChangeAddress != "")
 					{
 						CBitcoinAddress changeAddress(theChangeAddress);
-						scriptChange = GetScriptForDestination(changeAddress.Get());
-						returnkeyregardless = true;
+						if(changeAddress.IsValid())
+						{
+							scriptChange = GetScriptForDestination(changeAddress.Get());
+							returnkeyregardless = true;
+						}
 					}
-                    // no coin control: send change to newly generated address
-                    else {
-                        // Note: We use a new key here to keep it from being obvious which side is the change.
-                        //  The drawback is that by not reusing a previous key, the change may be lost if a
-                        //  backup is restored, if the backup doesn't have the new private key for the change.
-                        //  If we reused the old key, it would be possible to add code to look for and
-                        //  rediscover unknown transactions that were written with keys of ours to recover
-                        //  post-backup change.
-
-                        // Reserve a new key pair from key pool
-                        CPubKey vchPubKey;
-                        bool ret;
-                        ret = reservekey.GetReservedKey(vchPubKey);
-                        assert(ret); // should never fail, as we just unlocked
-
-                        scriptChange = GetScriptForDestination(vchPubKey.GetID());
-                    }
 
 					if(returnkeyregardless) // Custom change address.
 					{
@@ -2765,6 +2751,23 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
 							}
 							++it;
 						}
+					}
+					else // send change to newly generated address
+					{
+						// Note: We use a new key here to keep it from being obvious which side is the change.
+						//  The drawback is that by not reusing a previous key, the change may be lost if a
+						//  backup is restored, if the backup doesn't have the new private key for the change.
+						//  If we reused the old key, it would be possible to add code to look for and
+						//  rediscover unknown transactions that were written with keys of ours to recover
+						//  post-backup change.
+
+						// Reserve a new key pair from key pool
+						CPubKey vchPubKey;
+						bool ret;
+						ret = reservekey.GetReservedKey(vchPubKey);
+						assert(ret); // should never fail, as we just unlocked
+
+						scriptChange = GetScriptForDestination(vchPubKey.GetID());
 					}
 
                     if (!combineChange)
