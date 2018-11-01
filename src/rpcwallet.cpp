@@ -624,7 +624,11 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
         wtx.GetAccountAmounts(strAccount, nReceived, nSent, nFee, filter);
 
         if (nReceived != 0 && wtx.GetDepthInMainChain() >= nMinDepth)
-            nBalance += nReceived;
+		{
+			nBalance += nReceived;
+			if (wtx.IsCoinStake() && nReceived > CENT * 60) nBalance -= CENT * 20; // Masternode reward deducted from the block reward.
+		}
+            
         nBalance -= nSent + nFee;
     }
 
@@ -634,10 +638,11 @@ CAmount GetAccountBalance(CWalletDB& walletdb, const string& strAccount, int nMi
     return nBalance;
 }
 
+
 CAmount GetAccountBalance(const string& strAccount, int nMinDepth, const isminefilter& filter)
 {
-    CWalletDB walletdb(pwalletMain->strWalletFile);
-    return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
+   CWalletDB walletdb(pwalletMain->strWalletFile);
+   return GetAccountBalance(walletdb, strAccount, nMinDepth, filter);
 }
 
 
@@ -1208,23 +1213,40 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
     bool fAllAccounts = (strAccount == string("*"));
     bool involvesWatchonly = wtx.IsFromMe(ISMINE_WATCH_ONLY);
 
+	CAmount stakinginputamount = 0;
+
     // Sent
-    if ((!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount)) {
-        BOOST_FOREACH (const COutputEntry& s, listSent) {
-            UniValue entry(UniValue::VOBJ);
-            if (involvesWatchonly || (::IsMine(*pwalletMain, s.destination) & ISMINE_WATCH_ONLY))
-                entry.push_back(Pair("involvesWatchonly", true));
-            entry.push_back(Pair("account", strSentAccount));
-            MaybePushAddress(entry, s.destination);
-            std::map<std::string, std::string>::const_iterator it = wtx.mapValue.find("DS");
-            entry.push_back(Pair("category", (it != wtx.mapValue.end() && it->second == "1") ? "darksent" : "send"));
-            entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
-            entry.push_back(Pair("vout", s.vout));
-            entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
-            if (fLong)
-                WalletTxToJSON(wtx, entry);
-            ret.push_back(entry);
-        }
+    if (!listSent.empty())
+	{
+		BOOST_FOREACH(const COutputEntry& s, listSent)
+		{
+			// BTC2: Staking input handling.
+			if (wtx.IsCoinStake() && s.amount != 0 && wtx.GetDepthInMainChain() >= nMinDepth)
+			{
+				stakinginputamount = s.amount;
+				break;
+			}
+		}
+
+		if(fAllAccounts || strAccount == strSentAccount)
+		{
+			BOOST_FOREACH (const COutputEntry& s, listSent)
+			{
+				UniValue entry(UniValue::VOBJ);
+				if (involvesWatchonly || (::IsMine(*pwalletMain, s.destination) & ISMINE_WATCH_ONLY))
+					entry.push_back(Pair("involvesWatchonly", true));
+				entry.push_back(Pair("account", strSentAccount));
+				MaybePushAddress(entry, s.destination);
+				std::map<std::string, std::string>::const_iterator it = wtx.mapValue.find("DS");
+				entry.push_back(Pair("category", (it != wtx.mapValue.end() && it->second == "1") ? "darksent" : "send"));
+				entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
+				entry.push_back(Pair("vout", s.vout));
+				entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
+				if (fLong)
+					WalletTxToJSON(wtx, entry);
+				ret.push_back(entry);
+			}
+		}
     }
 
     // Received
@@ -1239,18 +1261,22 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
                     entry.push_back(Pair("involvesWatchonly", true));
                 entry.push_back(Pair("account", account));
                 MaybePushAddress(entry, r.destination);
-                if (wtx.IsCoinBase()) {
+                if (wtx.IsCoinBase())
+				{
                     if (wtx.GetDepthInMainChain() < 1)
                         entry.push_back(Pair("category", "orphan"));
                     else if (wtx.GetBlocksToMaturity() > 0)
                         entry.push_back(Pair("category", "immature"));
                     else
                         entry.push_back(Pair("category", "generate"));
-                } else {
-                    entry.push_back(Pair("category", "receive"));
                 }
-                entry.push_back(Pair("amount", ValueFromAmount(r.amount)));
+				else entry.push_back(Pair("category", "receive"));
+
+				if (stakinginputamount != 0 && r.amount > 60 * CENT && r.vout < 2) entry.push_back(Pair("amount", ValueFromAmount((-nFee) - 20 * CENT))); // nFee minus masternode reward equals the staking reward.
+                else entry.push_back(Pair("amount", ValueFromAmount(r.amount)));
+
                 entry.push_back(Pair("vout", r.vout));
+
                 if (fLong)
                     WalletTxToJSON(wtx, entry);
                 ret.push_back(entry);
@@ -1355,7 +1381,7 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
 
     const CWallet::TxItems & txOrdered = pwalletMain->wtxOrdered;
 
-    // iterate backwards until we have nCount items to return:
+    // iterate backwards until we have nCount + nFrom items to return:
     for (CWallet::TxItems::const_reverse_iterator it = txOrdered.rbegin(); it != txOrdered.rend(); ++it) {
         CWalletTx* const pwtx = (*it).second.first;
         if (pwtx != 0)
@@ -1364,14 +1390,12 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
         if (pacentry != 0)
             AcentryToJSON(*pacentry, strAccount, ret);
 
-        if ((int)ret.size() >= (nCount + nFrom)) break;
+        if ((int)ret.size() >= (nCount + nFrom)) break; // Cannot just skip nFrom amount of transactions in this loop because not all are from the requested account.
     }
     // ret is newest to oldest
 
-    if (nFrom > (int)ret.size())
-        nFrom = ret.size();
-    if ((nFrom + nCount) > (int)ret.size())
-        nCount = ret.size() - nFrom;
+    if (nFrom > (int)ret.size()) nFrom = ret.size();
+    if ((nFrom + nCount) > (int)ret.size()) nCount = ret.size() - nFrom;
 
     vector<UniValue> arrTmp = ret.getValues();
 
@@ -1383,7 +1407,7 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
     if (last != arrTmp.end()) arrTmp.erase(last, arrTmp.end());
     if (first != arrTmp.begin()) arrTmp.erase(arrTmp.begin(), first);
 
-    std::reverse(arrTmp.begin(), arrTmp.end()); // Return oldest to newest
+    //std::reverse(arrTmp.begin(), arrTmp.end()); // This would return oldest to newest which is usually not wanted.
 
     ret.clear();
     ret.setArray();
@@ -1397,7 +1421,7 @@ UniValue listaccounts(const UniValue& params, bool fHelp)
     if (fHelp || params.size() > 2)
         throw runtime_error(
             "listaccounts ( minconf includeWatchonly)\n"
-            "\nReturns Object that has account names as keys, account balances as values.\n"
+            "\nReturns Object that has account names as keys, and unreliable account balance totals as values.\n"
             "\nArguments:\n"
             "1. minconf          (numeric, optional, default=1) Only include transactions with at least this many confirmations\n"
             "2. includeWatchonly (bool, optional, default=false) Include balances in watchonly addresses (see 'importaddress')\n"
@@ -1440,14 +1464,19 @@ UniValue listaccounts(const UniValue& params, bool fHelp)
             continue;
         wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount, includeWatchonly);
         mapAccountBalances[strSentAccount] -= nFee;
-        BOOST_FOREACH (const COutputEntry& s, listSent)
-            mapAccountBalances[strSentAccount] -= s.amount;
-        if (nDepth >= nMinDepth) {
+
+        BOOST_FOREACH (const COutputEntry& s, listSent) mapAccountBalances[strSentAccount] -= s.amount;
+
+        if (nDepth >= nMinDepth)
+		{
             BOOST_FOREACH (const COutputEntry& r, listReceived)
-                if (pwalletMain->mapAddressBook.count(r.destination))
-                    mapAccountBalances[pwalletMain->mapAddressBook[r.destination].name] += r.amount;
-                else
-                    mapAccountBalances[""] += r.amount;
+			{
+				if (pwalletMain->mapAddressBook.count(r.destination))
+				{
+					mapAccountBalances[pwalletMain->mapAddressBook[r.destination].name] += r.amount;
+				}
+                else  mapAccountBalances[""] += r.amount;
+			}
         }
     }
 
@@ -1998,7 +2027,7 @@ UniValue settxfee(const UniValue& params, bool fHelp)
     if (params[0].get_real() != 0.0)
         nAmount = AmountFromValue(params[0]); // rejects 0.0 amounts
 
-    payTxFee = CFeeRate(nAmount, 1000);
+    payTxFee = CFeeRate(nAmount);
     return true;
 }
 

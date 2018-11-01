@@ -1339,8 +1339,12 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived,
         nFee = nDebit - nValueOut;
     }
 
+	//CAmount stakinginputamount = 0;
+	//std::string stakingaddress = "";
+
     // Sent/received.
-    for (unsigned int i = 0; i < vout.size(); ++i) {
+    for (unsigned int i = 0; i < vout.size(); ++i)
+	{
         const CTxOut& txout = vout[i];
         isminetype fIsMine = pwallet->IsMine(txout);
         // Only need to handle txouts if AT LEAST one of these is true:
@@ -1367,18 +1371,41 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived,
         COutputEntry output = {address, txout.nValue, (int)i};
 
         // If we are debited by the transaction, add the output as a "sent" entry
-        if (nDebit > 0)
-            listSent.push_back(output);
-
+		if (nDebit > 0)
+		{
+			listSent.push_back(output);
+			// Not needed: Staking reward record handling.
+			/*if (stakinginputamount == 0 && IsCoinStake() && output.amount != 0)
+			{
+				stakinginputamount = output.amount;
+				CBitcoinAddress tempaddr;
+				if(tempaddr.Set(address)) stakingaddress = tempaddr.ToString();
+			}*/
+		}
+            
         // If we are receiving the output, add it as a "received" entry
-        if (fIsMine & filter)
-            listReceived.push_back(output);
+		if (fIsMine & filter)
+		{
+			// Not needed: Staking reward record handling.
+			/*if (output.amount != 0 && nFee != 0 && stakinginputamount == output.amount && IsCoinStake())
+			{
+				CBitcoinAddress tempaddr;
+				if (tempaddr.Set(address) && stakingaddress == tempaddr.ToString())
+				{
+					output.amount += nFee - CENT * 20; // Staking reward minus masternode reward.
+					stakinginputamount = -1; // To ensure this won't be done again.
+				}
+			}*/
+			listReceived.push_back(output);
+		}
     }
 }
 
 void CWalletTx::GetAccountAmounts(const string& strAccount, CAmount& nReceived, CAmount& nSent, CAmount& nFee, const isminefilter& filter) const
 {
-    nReceived = nSent = nFee = 0;
+	nReceived = 0;
+	nSent = 0;
+	nFee = 0;
 
     CAmount allFee;
     string strSentAccount;
@@ -1386,21 +1413,28 @@ void CWalletTx::GetAccountAmounts(const string& strAccount, CAmount& nReceived, 
     list<COutputEntry> listSent;
     GetAmounts(listReceived, listSent, allFee, strSentAccount, filter);
 
-    if (strAccount == strSentAccount) {
-        BOOST_FOREACH (const COutputEntry& s, listSent)
-            nSent += s.amount;
-        nFee = allFee;
-    }
+	CBitcoinAddress addr;
+
+	BOOST_FOREACH(const COutputEntry& s, listSent)
+	{
+		if (strAccount == strSentAccount || (addr.Set(s.destination) && addr.ToString() == strAccount))
+		{
+			nSent += s.amount;
+			nFee = allFee;
+		}
+	}
+
     {
         LOCK(pwallet->cs_wallet);
-        BOOST_FOREACH (const COutputEntry& r, listReceived) {
-            if (pwallet->mapAddressBook.count(r.destination)) {
+        BOOST_FOREACH (const COutputEntry& r, listReceived)
+		{
+            if (pwallet->mapAddressBook.count(r.destination))
+			{
                 map<CTxDestination, CAddressBookData>::const_iterator mi = pwallet->mapAddressBook.find(r.destination);
                 if (mi != pwallet->mapAddressBook.end() && (*mi).second.name == strAccount)
                     nReceived += r.amount;
-            } else if (strAccount.empty()) {
-                nReceived += r.amount;
             }
+			else if (strAccount.empty()) nReceived += r.amount;
         }
     }
 }
@@ -3552,6 +3586,48 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
 
     return balances;
 }
+
+/*CAmount GetWalletAddressBalance(const std::string &theAddress)
+{
+	// Currently this function is not yet used and has not been tested. Based on GetAddressBalances(). This function is overly expensive for what it does and shouldn't be used constantly.
+	CAmount balance = 0;
+	{
+		LOCK(cs_wallet);
+		BOOST_FOREACH(PAIRTYPE(uint256, CWalletTx) walletEntry, mapWallet)
+		{
+			CWalletTx* pcoin = &walletEntry.second;
+
+			if (!IsFinalTx(*pcoin) || !pcoin->IsTrusted())
+				continue;
+
+			if (pcoin->IsCoinBase() && pcoin->GetBlocksToMaturity() > 0)
+				continue;
+
+			int nDepth = pcoin->GetDepthInMainChain();
+			if (nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? 0 : 1))
+				continue;
+
+			for (unsigned int i = 0; i < pcoin->vout.size(); i++)
+			{
+				CTxDestination addr;
+
+				if (!ExtractDestination(pcoin->vout[i].scriptPubKey, addr)) continue;
+
+				CBitcoinAddress anAddress;
+				if(!anAddress.Set(addr)) continue;
+
+				if(anAddress.ToString() == theAddress)
+				{
+					CAmount n = IsSpent(walletEntry.first, i) ? 0 : pcoin->vout[i].nValue;
+
+					balance += n;
+				}
+			}
+		}
+	}
+
+	return balance;
+}*/
 
 set<set<CTxDestination> > CWallet::GetAddressGroupings()
 {
