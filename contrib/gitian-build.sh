@@ -10,8 +10,8 @@ build=false
 
 # Systems to build
 linux=true
-windows=false
-osx=false
+windows=true
+osx=true
 
 # Other Basic variables
 SIGNER=
