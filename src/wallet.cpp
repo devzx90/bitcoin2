@@ -2007,6 +2007,63 @@ void CWallet::AvailableCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, const
     }
 }
 
+CAmount CWallet::GetSpendableCoinsOfAddress(CBitcoinAddress &theAddress, CCoinControl* ToCoinControl, int minConfirmations, CAmount StopAtAmount)
+{
+	CAmount TotalAmount = 0;
+	{
+		LOCK2(cs_main, cs_wallet);
+		for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it) {
+			const uint256& wtxid = it->first;
+			const CWalletTx* pcoin = &(*it).second;
+
+			if (!CheckFinalTx(*pcoin))
+				continue;
+
+			if ((pcoin->IsCoinBase() || pcoin->IsCoinStake()) && pcoin->GetBlocksToMaturity() > 0)
+				continue;
+
+			int nDepth = pcoin->GetDepthInMainChain(false);
+			if (nDepth < minConfirmations)
+				continue;
+
+			// We should not consider coins which aren't at least in our mempool
+			// It's possible for these to be conflicted via ancestors which we may never be able to detect
+			if (nDepth == 0 && !pcoin->InMempool())
+				continue;
+
+			for (unsigned int i = 0; i < pcoin->vout.size(); i++)
+			{
+				isminetype mine = IsMine(pcoin->vout[i]);
+				if (IsSpent(wtxid, i))
+					continue;
+				if (mine != ISMINE_SPENDABLE)
+					continue;
+
+				if (IsLockedCoin((*it).first, i) || pcoin->vout[i].nValue <= 0)
+					continue;
+
+				CTxDestination CTXaddress;
+				if (!ExtractDestination(pcoin->vout[i].scriptPubKey, CTXaddress))
+					continue;
+
+				CBitcoinAddress anAddress(CTXaddress);
+				if (anAddress.CompareTo(theAddress) != 0) continue; // the coins have to be of theAddress.
+
+				
+				if (ToCoinControl)
+				{
+					COutPoint outpt(pcoin->GetHash(), i);
+					ToCoinControl->Select(outpt);
+				}
+
+				TotalAmount += pcoin->vout[i].nValue;
+				if (TotalAmount >= StopAtAmount) break;
+			}
+		}
+	}
+	return TotalAmount;
+}
+
 map<CBitcoinAddress, vector<COutput> > CWallet::AvailableCoinsByAddress(bool fConfirmed, CAmount maxCoinValue)
 {
     vector<COutput> vCoins;
@@ -2259,7 +2316,8 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*
     AvailableCoins(vCoins, true, coinControl, false, coin_type, useIX);
 
     // coin control -> return all selected outputs (we want all selected to go into the transaction for sure)
-    if (coinControl && coinControl->HasSelected()) {
+    if (coinControl && coinControl->HasSelected())
+	{
         BOOST_FOREACH (const COutput& out, vCoins) {
             if (!out.fSpendable)
                 continue;

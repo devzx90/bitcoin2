@@ -8,6 +8,7 @@
 
 #include "amount.h"
 #include "base58.h"
+#include "coincontrol.h"
 #include "core_io.h"
 #include "init.h"
 #include "net.h"
@@ -851,24 +852,47 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
 	// Parse Bitcoin2 address
 	CScript scriptPubKey = GetScriptForDestination(address.Get());
 
+	CCoinControl* coinControl = NULL;
+	CBitcoinAddress FromAddress(strAccount);
+	CAmount TotalSpendable = 0;
+
+	if (FromAddress.IsValid())
+	{	// The account is a valid BTC2 address.
+		// Create coincontrol in order to only select coins belonging to this account.
+		coinControl = new CCoinControl();
+		coinControl->fAllowWatchOnly = false;
+		coinControl->destChange = FromAddress.Get(); // Set the change to be returned to the from address.
+		TotalSpendable = pwalletMain->GetSpendableCoinsOfAddress(FromAddress, coinControl, nMinDepth, nAmount + CENT); // the extra CENT as a spare for the fee.
+
+		if (nAmount > TotalSpendable)
+		{
+			delete coinControl;
+			throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient spendable funds");
+		}
+	}
+	else TotalSpendable = nBalance;
+
 	// Create and send the transaction
 	string strError;
 	CReserveKey reservekey(pwalletMain);
 	CAmount nFeeRequired;
-	if (!pwalletMain->CreateTransaction(scriptPubKey, nAmount, wtx, reservekey, nFeeRequired, strError, NULL, ALL_COINS, UseSwiftTX, (CAmount)0, strAccount))
+	if (!pwalletMain->CreateTransaction(scriptPubKey, nAmount, wtx, reservekey, nFeeRequired, strError, coinControl, ALL_COINS, UseSwiftTX, (CAmount)0, strAccount))
 	{
-		if (nAmount + nFeeRequired > nBalance)
+		if (nAmount + nFeeRequired <= TotalSpendable) // Enough funds, so some other error.
 		{
-			strError = strprintf("Insufficient funds. You can send at most: %s. The fee is %s.", FormatMoney(nBalance - nFeeRequired), FormatMoney(nFeeRequired));
-			throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strError);
+			if (coinControl) delete coinControl;
+			throw JSONRPCError(RPC_WALLET_ERROR, strError);
 		}
-		else throw JSONRPCError(RPC_WALLET_ERROR, strError);
 	}
-	else if (nAmount + nFeeRequired > nBalance)
+
+	if (nAmount + nFeeRequired > TotalSpendable)
 	{
-		strError = strprintf("Insufficient funds. You can send at most: %s. The fee is %s.", FormatMoney(nBalance - nFeeRequired), FormatMoney(nFeeRequired));
+		strError = strprintf("Insufficient funds. You can send at most: %s. The fee is %s.", FormatMoney(TotalSpendable - nFeeRequired), FormatMoney(nFeeRequired));
+		if (coinControl) delete coinControl;
 		throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strError);
 	}
+
+	if (coinControl) delete coinControl;
 
 	if (!pwalletMain->CommitTransaction(wtx, reservekey, (!UseSwiftTX ? "tx" : "ix")))
 		throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
