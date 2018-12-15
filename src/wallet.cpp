@@ -2059,6 +2059,8 @@ CAmount CWallet::GetSpendableCoinsOfAddress(CBitcoinAddress &theAddress, CCoinCo
 				TotalAmount += pcoin->vout[i].nValue;
 				if (TotalAmount >= StopAtAmount) break;
 			}
+
+			if (TotalAmount >= StopAtAmount) break;
 		}
 	}
 	return TotalAmount;
