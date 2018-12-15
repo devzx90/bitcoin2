@@ -844,11 +844,6 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    // Check funds
-    CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
-    if (nAmount > nBalance)
-        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
-
 	// Parse Bitcoin2 address
 	CScript scriptPubKey = GetScriptForDestination(address.Get());
 
@@ -856,8 +851,9 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
 	CBitcoinAddress FromAddress(strAccount);
 	CAmount TotalSpendable = 0;
 
+	// Check funds
 	if (FromAddress.IsValid())
-	{	// The account is a valid BTC2 address.
+	{	// The account name is a valid BTC2 address.
 		// Create coincontrol in order to only select coins belonging to this account.
 		coinControl = new CCoinControl();
 		coinControl->fAllowWatchOnly = false;
@@ -870,7 +866,13 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
 			throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient spendable funds");
 		}
 	}
-	else TotalSpendable = nBalance;
+	else
+	{
+		CAmount nBalance = GetAccountBalance(strAccount, nMinDepth, ISMINE_SPENDABLE);
+		if (nAmount > nBalance) throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
+
+		TotalSpendable = nBalance;
+	}
 
 	// Create and send the transaction
 	string strError;
