@@ -127,6 +127,15 @@ bool SerialNumberSignatureOfKnowledge::Verify(const CBigNum& coinSerialNumber, c
 	CBigNum b = params->coinCommitmentGroup.h;
 	CBigNum g = params->serialNumberSoKCommitmentGroup.g;
 	CBigNum h = params->serialNumberSoKCommitmentGroup.h;
+
+	CBigNum zero = CBigNum(0);
+	// Check that the serial is within range and the commitment is under the correct group
+	if (coinSerialNumber < zero || coinSerialNumber > CBigNum(2).pow(256))
+		return error("Invalid serial range");
+
+	if (valueOfCommitmentToCoin < zero || valueOfCommitmentToCoin > params->serialNumberSoKCommitmentGroup.modulus)
+		return error("Invalid commitment to coin value range");
+
 	CHashWriter hasher(0,0);
 	hasher << *params << valueOfCommitmentToCoin << coinSerialNumber << msghash;
 
