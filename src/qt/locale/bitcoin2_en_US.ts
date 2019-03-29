@@ -62,12 +62,12 @@
         <translation>Receiving addresses</translation>
     </message>
     <message>
-        <source>These are your Bitcoin2 addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>These are your Bitcoin2 addresses for sending payments. Always check the amount and the receiving address before sending coins.</translation>
+        <source>These are your Bitcoin 2 addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <translation>These are your Bitcoin 2 addresses for sending payments. Always check the amount and the receiving address before sending coins.</translation>
     </message>
     <message>
-        <source>These are your Bitcoin2 addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>These are your Bitcoin2 addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</translation>
+        <source>These are your Bitcoin 2 addresses for receiving payments. Includes watch-only addresses. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>These are your Bitcoin 2 addresses for receiving payments. Includes watch-only addresses. It is recommended to use a new receiving address for each transaction.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
