@@ -1114,15 +1114,17 @@ bool CObfuscationPool::SignaturesComplete()
 //
 void CObfuscationPool::SendObfuscationDenominate(std::vector<CTxIn>& vin, std::vector<CTxOut>& vout, CAmount amount)
 {
+	return; // unused.
+
     if (fMasterNode) {
         LogPrintf("CObfuscationPool::SendObfuscationDenominate() - Obfuscation from a Masternode is not supported currently.\n");
         return;
     }
 
-    if (txCollateral == CMutableTransaction()) {
+    /*if (txCollateral == CMutableTransaction()) {  BUGGED CHECK.
         LogPrintf("CObfuscationPool:SendObfuscationDenominate() - Obfuscation collateral not set");
         return;
-    }
+    }*/
 
     // lock the funds we're going to use
     BOOST_FOREACH (CTxIn in, txCollateral.vin)
