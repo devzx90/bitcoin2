@@ -1504,12 +1504,12 @@ bool CObfuscationPool::DoAutomaticDenominating(bool fDryRun)
         //check our collateral nad create new if needed
         std::string strReason;
         CValidationState state;
-        if (txCollateral == CMutableTransaction()) {
+        /*if ( BUGGED empty check: txCollateral.vin == CMutableTransaction()) {
             if (!pwalletMain->CreateCollateralTransaction(txCollateral, strReason)) {
                 LogPrintf("% -- create collateral error:%s\n", __func__, strReason);
                 return false;
             }
-        } else {
+        } else*/ {
             if (!IsCollateralValid(txCollateral)) {
                 LogPrintf("%s -- invalid collateral, recreating...\n", __func__);
                 if (!pwalletMain->CreateCollateralTransaction(txCollateral, strReason)) {
