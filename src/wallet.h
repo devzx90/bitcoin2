@@ -285,10 +285,10 @@ public:
         fBackupMints = false;
 
         // Stake Settings
-        nHashDrift = 25; // Attempt to hash up to 25 seconds into the future.
+        nHashDrift = 40; // Attempt to hash up to 40 seconds into the future, which is the limit accepted by the network.
         nStakeSplitThreshold = 2000;
-        nHashInterval = 22; // break between failed staking attempts
-        nStakeSetUpdateTime = 300; // 5 minutes
+        nHashInterval = 1; // break in seconds between failed staking attempts. Setting it to 1 can increase staking power at the cost of wasted CPU use, because currently it will retry hashes that it already tried.
+        nStakeSetUpdateTime = 180; // 3 minutes
 
         //MultiSend
         vMultiSend.clear();
