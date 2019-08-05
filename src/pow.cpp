@@ -49,25 +49,18 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	/////////////
 
 	int nHeightFirst = pindexLast->nHeight - 10;
-	if (nHeightFirst <= Params().LAST_POW_BLOCK())
-	{
-		// Re-target every block.
-		nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
-	}
-	else
-	{
-		// Re-target every 10 blocks.
-		if (pindexLast->nHeight % 10 != 1) return pindexLast->nBits;
-		
-		CBlockIndex* pindexFirst = pindexLast->pprev;
-		while (pindexFirst->nHeight > nHeightFirst) {
-			pindexFirst = pindexFirst->pprev;
-		}
-		assert(pindexFirst);
-		nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
 
-		nActualTimespan /= 10;
+	// Re-target every 10 blocks.
+	if (pindexLast->nHeight % 10 != 1) return pindexLast->nBits;
+		
+	CBlockIndex* pindexFirst = pindexLast->pprev;
+	while (pindexFirst->nHeight > nHeightFirst) {
+		pindexFirst = pindexFirst->pprev;
 	}
+	assert(pindexFirst);
+	nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
+
+	nActualTimespan /= 10;
 
 	// Limit adjustment step
 	if (nActualTimespan < 30) nActualTimespan = 30;
@@ -84,8 +77,6 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	bnNew *= nActualTimespan;
 
 	if (bnNew > Params().ProofOfWorkLimit()) bnNew = Params().ProofOfWorkLimit();
-	//if (pindexLast->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // PoS Starting difficulty can't be too low.
-
 
 	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
 

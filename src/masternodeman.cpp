@@ -613,7 +613,7 @@ int CMasternodeMan::GetMasternodeRank(const CTxIn& vin, int64_t nBlockHeight, in
             nMasternode_Age = GetAdjustedTime() - mn.sigTime;
             if ((nMasternode_Age) < nMasternode_Min_Age) {
                 if (fDebug) LogPrint("masternode","Skipping just activated Masternode. Age: %ld\n", nMasternode_Age);
-                continue;                                                   // Skip masternodes younger than (default) 1 hour
+                continue;                                                   // Skip masternodes younger than (default) 8000 secs
             }
         }
         if (fOnlyActive) {
