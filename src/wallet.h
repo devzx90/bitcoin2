@@ -234,8 +234,6 @@ public:
     unsigned int nMasterKeyMaxID;
 
     // Stake Settings
-    unsigned int nHashDrift;
-    unsigned int nHashInterval;
     uint64_t nStakeSplitThreshold;
     int nStakeSetUpdateTime;
 
@@ -285,9 +283,7 @@ public:
         fBackupMints = false;
 
         // Stake Settings
-        nHashDrift = 40; // Attempt to hash up to 40 seconds into the future, which is the limit accepted by the network.
         nStakeSplitThreshold = 2000;
-        nHashInterval = 1; // break in seconds between failed staking attempts. Setting it to 1 can increase staking power at the cost of wasted CPU use, because currently it will retry hashes that it already tried.
         nStakeSetUpdateTime = 180; // 3 minutes
 
         //MultiSend
@@ -480,7 +476,7 @@ public:
     int GenerateObfuscationOutputs(int nTotalValue, std::vector<CTxOut>& vout);
     bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string& strReason);
     bool ConvertList(std::vector<CTxIn> vCoins, std::vector<int64_t>& vecAmounts);
-    bool CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, unsigned int& nTxNewTime, CAmount theTXFees);
+    bool CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMutableTransaction& txNew, unsigned int& nTxNewTime, CAmount theTXFees);
     bool MultiSend();
     void AutoCombineDust();
     void AutoZeromint();
@@ -701,9 +697,6 @@ struct COutputEntry {
 /** A transaction with a merkle branch linking it to the block chain. */
 class CMerkleTx : public CTransaction
 {
-private:
-    int GetDepthInMainChainINTERNAL(const CBlockIndex*& pindexRet) const;
-
 public:
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;
@@ -760,7 +753,7 @@ public:
     bool IsInMainChain() const
     {
         const CBlockIndex* pindexRet;
-        return GetDepthInMainChainINTERNAL(pindexRet) > 0;
+        return GetDepthInMainChain(pindexRet, false) > 0;
     }
     int GetBlocksToMaturity() const;
     bool AcceptToMemoryPool(bool fLimitFree = true, bool fRejectInsaneFee = true, bool ignoreFees = false);

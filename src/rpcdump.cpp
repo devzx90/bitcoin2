@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
+// Copyright (c) 2017-2019 The Bitcoin 2 developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -124,6 +125,12 @@ UniValue importprivkey(const UniValue& params, bool fHelp)
     CKeyID vchAddress = pubkey.GetID();
     {
 		thePublicAddress = CBitcoinAddress(vchAddress).ToString();
+		if (thePublicAddress[0] != '1') throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin 2 address or script");
+
+		int result = ScanTX(thePublicAddress, params.size() > 3);
+		if (result == -1) throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Still downloading initial blocks. Please wait for it to finish first.");
+		else if(result == 1) return thePublicAddress;
+
         pwalletMain->MarkDirty();
 		if (strLabel == "$pub") strLabel = thePublicAddress;
         pwalletMain->SetAddressBook(vchAddress, strLabel, "receive");
@@ -168,15 +175,16 @@ UniValue importaddress(const UniValue& params, bool fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     CScript script;
-
+	
     CBitcoinAddress address(params[0].get_str());
-    if (address.IsValid()) {
+	bool IsValidAddress = address.IsValid();
+    if (IsValidAddress) {
         script = GetScriptForDestination(address.Get());
     } else if (IsHex(params[0].get_str())) {
         std::vector<unsigned char> data(ParseHex(params[0].get_str()));
         script = CScript(data.begin(), data.end());
     } else {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin2 address or script");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin 2 address or script");
     }
 
     string strLabel = "";
@@ -193,8 +201,16 @@ UniValue importaddress(const UniValue& params, bool fHelp)
             throw JSONRPCError(RPC_WALLET_ERROR, "The wallet already contains the private key for this address or script");
 
         // add to address book or update label
-        if (address.IsValid())
-            pwalletMain->SetAddressBook(address.Get(), strLabel, "receive");
+		if (IsValidAddress)
+		{
+			string thePublicAddress = address.ToString();
+			if(thePublicAddress[0] != '1') throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin 2 address or script");
+			int result = ScanTX(thePublicAddress);
+			if (result == -1) throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Still downloading initial blocks. Please wait for it to finish first.");
+			else if (result == 1) return NullUniValue;
+			pwalletMain->SetAddressBook(address.Get(), strLabel, "receive");
+		}
+
 
         // Don't throw error in case an address is already there
         if (pwalletMain->HaveWatchOnly(script))
@@ -240,6 +256,7 @@ UniValue importwallet(const UniValue& params, bool fHelp)
     int64_t nTimeBegin = chainActive.Tip()->GetBlockTime();
 
     bool fGood = true;
+	string thePublicAddress;
 
     int64_t nFilesize = std::max((int64_t)1, (int64_t)file.tellg());
     file.seekg(0, file.beg);
@@ -267,6 +284,19 @@ UniValue importwallet(const UniValue& params, bool fHelp)
             LogPrintf("Skipping import of %s (key already present)\n", CBitcoinAddress(keyid).ToString());
             continue;
         }
+
+		thePublicAddress = CBitcoinAddress(keyid).ToString();
+		if (thePublicAddress[0] != '1') {
+			fGood = false;
+			continue;
+		}
+
+		int result = ScanTX(thePublicAddress, true);
+		if (result != 0) {
+			fGood = false;
+			continue;
+		}
+
         int64_t nTime = DecodeDumpTime(vstr[1]);
         std::string strLabel;
         bool fLabel = true;
@@ -282,7 +312,7 @@ UniValue importwallet(const UniValue& params, bool fHelp)
                 fLabel = true;
             }
         }
-        LogPrintf("Importing %s...\n", CBitcoinAddress(keyid).ToString());
+        LogPrintf("Importing %s...\n", thePublicAddress);
         if (!pwalletMain->AddKeyPubKey(key, pubkey)) {
             fGood = false;
             continue;

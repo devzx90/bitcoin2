@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2017-2018 The Bitcoin 2 developers
+// Copyright (c) 2017-2019 The Bitcoin 2 developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -2163,11 +2163,11 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         }
 
         //check for min age
-        if (GetAdjustedTime() - nTxTime < nStakeMinAge)
+        if (GetAdjustedTime() - nTxTime < nStakeMinAge || nTxTime < 1522240800)
             continue;
 
         //check that it is matured
-        if (out.nDepth < (out.tx->IsCoinStake() ? Params().COINBASE_MATURITY() : 10))
+        if (out.nDepth < Params().COINBASE_MATURITY())
             continue;
 
         //add to our stake set
@@ -2196,7 +2196,7 @@ bool CWallet::MintableCoins()
             nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
         }
 
-        if (GetAdjustedTime() - nTxTime > nStakeMinAge)
+        if (GetAdjustedTime() - nTxTime > nStakeMinAge && out.tx->GetDepthInMainChain() >= Params().COINBASE_MATURITY())
             return true;
     }
 
@@ -2949,7 +2949,7 @@ bool CWallet::CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWa
 }
 
 // ppcoin: create coin stake transaction
-bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, unsigned int& nTxNewTime, CAmount theTXFees)
+bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMutableTransaction& txNew, unsigned int& nTxNewTime, CAmount theTXFees)
 {
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences
@@ -2985,19 +2985,22 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     }
 
     if (setStakeCoins.empty())
-        return false;
+	{
+		//MilliSleep(50000);
+		return false;
+	}
 
     vector<const CWalletTx*> vwtxPrev;
 
     CAmount nCredit = 0;
     CScript scriptPubKeyKernel;
 
-    //prevent staking a time that won't be accepted
-    while (GetAdjustedTime() + nHashDrift <= chainActive.Tip()->nTime)
-        MilliSleep(10000);
-
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
 	{
+		// Make sure the wallet is unlocked and shutdown hasn't been requested
+		if (IsLocked() || ShutdownRequested())
+			return false;
+
         //make sure that enough time has elapsed between
         CBlockIndex* pindex = NULL;
         BlockMap::iterator it = mapBlockIndex.find(pcoin.first->hashBlock);
@@ -3018,7 +3021,12 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         nTxNewTime = GetAdjustedTime();
 		//LogPrintf("CreateCoinStake : passing block header of block: %d\n", pindex->nHeight);
         //iterates each utxo inside of CheckStakeKernelHash()
-        if (CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, nHashDrift, false, hashProofOfStake, true)) {
+		if (nTxNewTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) fKernelFound = CheckStakeKernelHashV2(nBits, pindex, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
+		else fKernelFound = CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
+        
+		if (fKernelFound) {
+			fKernelFound = false; // Set it back to false for now in case error checks fail.
+
             //Double check that this will pass time requirements
             if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast()) {
                 LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
@@ -3059,7 +3067,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
                 scriptPubKeyOut = scriptPubKeyKernel;
 
             txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
-            nCredit += pcoin.first->vout[pcoin.second].nValue;
+            nCredit = pcoin.first->vout[pcoin.second].nValue;
             vwtxPrev.push_back(pcoin.first);
             txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
 
@@ -3091,28 +3099,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 	else nReward = GetBlockValue(pIndex0->nHeight + 1) + theTXFees;
 
     nCredit += nReward;
-
-    /*CAmount nMinFee = 0; // PIVX deducted tx fee from coin stake tx. BTC2 not.
-    while (true) {
-        // Set output amount
-        if (txNew.vout.size() == 3) {
-            txNew.vout[1].nValue = ((nCredit - nMinFee) / 2 / CENT) * CENT;
-            txNew.vout[2].nValue = nCredit - nMinFee - txNew.vout[1].nValue;
-        } else
-            txNew.vout[1].nValue = nCredit - nMinFee;
-
-        CAmount nFeeNeeded = GetMinimumFee(nBytes, nTxConfirmTarget, mempool);
-
-        // Check enough fee is paid
-        if (nMinFee < nFeeNeeded) {
-            nMinFee = nFeeNeeded;
-            continue; // try signing again
-        } else {
-            if (fDebug)
-                LogPrintf("CreateCoinStake : fee for coinstake %s\n", FormatMoney(nMinFee).c_str());
-            break;
-        }
-    }*/
 
 	// Set output amount
 	if ((txNew.vout.size() == 3 || txNew.vout.size() == 4) && txNew.vout[1].nValue == 0 && txNew.vout[2].nValue == 0) { // Without the == 0 checks this could erase the masternode reward.
@@ -4411,48 +4397,39 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
     return chainActive.Height() - pindex->nHeight + 1;
 }
 
-int CMerkleTx::GetDepthInMainChainINTERNAL(const CBlockIndex*& pindexRet) const
-{
-    if (hashBlock == 0 || nIndex == -1)
-        return 0;
-    AssertLockHeld(cs_main);
-
-    // Find the block it claims to be in
-    BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
-    if (mi == mapBlockIndex.end())
-        return 0;
-    CBlockIndex* pindex = (*mi).second;
-    if (!pindex || !chainActive.Contains(pindex))
-        return 0;
-
-    // Make sure the merkle branch connects to this block
-    if (!fMerkleVerified) {
-        if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, nIndex) != pindex->hashMerkleRoot)
-            return 0;
-        fMerkleVerified = true;
-    }
-
-    pindexRet = pindex;
-    return chainActive.Height() - pindex->nHeight + 1;
-}
-
 int CMerkleTx::GetDepthInMainChain(const CBlockIndex*& pindexRet, bool enableIX) const
 {
-    AssertLockHeld(cs_main);
-    int nResult = GetDepthInMainChainINTERNAL(pindexRet);
-    if (nResult == 0 && !mempool.exists(GetHash()))
-        return -1; // Not in chain, not in mempool
+	if (hashUnset())
+		return 0;
+	AssertLockHeld(cs_main);
+	int nResult;
 
-    if (enableIX) {
-        if (nResult < 6) {
-            int signatures = GetTransactionLockSignatures();
-            if (signatures >= SWIFTTX_SIGNATURES_REQUIRED) {
-                return nSwiftTXDepth + nResult;
-            }
-        }
-    }
+	// Find the block it claims to be in
+	BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
+	if (mi == mapBlockIndex.end()) {
+		nResult = 0;
+	}
+	else {
+		CBlockIndex* pindex = (*mi).second;
+		if (!pindex || !chainActive.Contains(pindex)) {
+			nResult = 0;
+		}
+		else {
+			pindexRet = pindex;
+			nResult = ((nIndex == -1) ? -1 : 1) * (chainActive.Height() - pindex->nHeight + 1);
+		}
+	}
 
-    return nResult;
+	if (enableIX) {
+		if (nResult < 6) {
+			int signatures = GetTransactionLockSignatures();
+			if (signatures >= SWIFTTX_SIGNATURES_REQUIRED) {
+				return nSwiftTXDepth + nResult;
+			}
+		}
+	}
+
+	return nResult;
 }
 
 int CMerkleTx::GetBlocksToMaturity() const
