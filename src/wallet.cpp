@@ -2232,7 +2232,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
             const CWalletTx* pcoin = output.tx;
 
             //            if (fDebug) LogPrint("selectcoins", "value %s confirms %d\n", FormatMoney(pcoin->vout[output.i].nValue), output.nDepth);
-            if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs))
+            if (output.nDepth < (pcoin->IsFromMe(ISMINE_ALL) ? nConfMine : nConfTheirs) || pcoin->GetTxTime() < 1522240800)
                 continue;
 
             int i = output.i;
@@ -2321,9 +2321,9 @@ bool CWallet::SelectCoins(const CAmount& nTargetValue, set<pair<const CWalletTx*
     if (coinControl && coinControl->HasSelected())
 	{
         BOOST_FOREACH (const COutput& out, vCoins) {
-            if (!out.fSpendable)
+            if (!out.fSpendable || out.tx->GetTxTime() < 1522240800)
                 continue;
-
+			
             if (coin_type == ONLY_DENOMINATED) {
                 CTxIn vin = CTxIn(out.tx->GetHash(), out.i);
                 int rounds = GetInputObfuscationRounds(vin);
