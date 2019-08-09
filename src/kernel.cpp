@@ -386,7 +386,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
 	uint64_t nStakeModifier = 0;
 	int nStakeModifierHeight = 0;
 	int64_t nStakeModifierTime = 0;
-	if (!GetKernelStakeModifier(blockFrom.GetHash(), nStakeModifier, nStakeModifierHeight, nStakeModifierTime, fPrintProofOfStake)) {
+	if (!GetKernelStakeModifier(blockFrom.GetHash(), nStakeModifier, nStakeModifierHeight, nStakeModifierTime)) {
 		LogPrintf("CheckStakeKernelHash(): failed to get kernel stake modifier \n");
 		return false;
 	}
