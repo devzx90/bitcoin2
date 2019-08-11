@@ -475,9 +475,9 @@ bool CMasternodeBroadcast::CheckDefaultPort(std::string strService, std::string&
 bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
 {
     // make sure signature isn't in the future (past is OK)
-    if (sigTime > GetAdjustedTime() + 60 * 60) {
+    if (sigTime > GetAdjustedTime() + 60 * 5) {
         LogPrint("masternode","mnb - Signature rejected, too far into the future %s\n", vin.prevout.hash.ToString());
-        nDos = 10;
+        nDos = 1;
         return false;
     }
 
