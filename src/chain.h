@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2015-2017 The PIVX developers
+// Copyright (c) 2017-2019 The Bitcoin 2 developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +14,7 @@
 #include "uint256.h"
 #include "util.h"
 #include "libzerocoin/Denominations.h"
-
+#include "spork.h"
 #include <vector>
 
 #include <boost/foreach.hpp>
@@ -464,7 +465,7 @@ public:
         READWRITE(nMoneySupply);
         READWRITE(nFlags);
         READWRITE(nStakeModifier);
-		READWRITE(nStakeModifierV2);
+		if (nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) READWRITE(nStakeModifierV2);
         if (IsProofOfStake()) {
             READWRITE(prevoutStake);
             READWRITE(nStakeTime);

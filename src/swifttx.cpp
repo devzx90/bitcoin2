@@ -63,9 +63,9 @@ void ProcessMessageSwiftTX(CNode* pfrom, std::string& strCommand, CDataStream& v
         }
 
         BOOST_FOREACH (const CTxOut o, tx.vout) {
-            // IX supports normal scripts and unspendable scripts (used in DS collateral and Budget collateral).
+            // IX supports normal scripts
             // TODO: Look into other script types that are normal and can be included
-            if (!o.scriptPubKey.IsNormalPaymentScript() && !o.scriptPubKey.IsUnspendable()) {
+            if (!o.scriptPubKey.IsNormalPaymentScript()) {
                 LogPrintf("ProcessMessageSwiftTX::ix - Invalid Script %s\n", tx.ToString().c_str());
                 return;
             }
@@ -184,10 +184,14 @@ bool IsIXTXValid(const CTransaction& txCollateral)
 
     CAmount nValueIn = 0;
     CAmount nValueOut = 0;
-    bool missingTx = false;
 
     BOOST_FOREACH (const CTxOut o, txCollateral.vout)
         nValueOut += o.nValue;
+
+	if (nValueOut > GetSporkValue(SPORK_5_MAX_VALUE) * COIN) {
+		LogPrint("swiftx", "IsIXTXValid - Transaction value too high - %s\n", txCollateral.ToString().c_str());
+		return false;
+	}
 
     BOOST_FOREACH (const CTxIn i, txCollateral.vin) {
         CTransaction tx2;
@@ -196,24 +200,16 @@ bool IsIXTXValid(const CTransaction& txCollateral)
             if (tx2.vout.size() > i.prevout.n) {
                 nValueIn += tx2.vout[i.prevout.n].nValue;
             }
-        } else {
-            missingTx = true;
         }
-    }
-
-    if (nValueOut > GetSporkValue(SPORK_5_MAX_VALUE) * COIN) {
-        LogPrint("swiftx", "IsIXTXValid - Transaction value too high - %s\n", txCollateral.ToString().c_str());
-        return false;
-    }
-
-    if (missingTx) {
-        LogPrint("swiftx", "IsIXTXValid - Unknown inputs in IX transaction - %s\n", txCollateral.ToString().c_str());
-        /*
-            This happens sometimes for an unknown reason, so we'll return that it's a valid transaction.
-            If someone submits an invalid transaction it will be rejected by the network anyway and this isn't
-            very common, but we don't want to block IX just because the client can't figure out the fee.
-        */
-        return true;
+		else {
+			LogPrint("swiftx", "IsIXTXValid - Unknown inputs in IX transaction - %s\n", txCollateral.ToString().c_str());
+			/*
+				This happens sometimes for an unknown reason, so we'll return that it's a valid transaction.
+				If someone submits an invalid transaction it will be rejected by the network anyway and this isn't
+				very common, but we don't want to block IX just because the client can't figure out the fee.
+			*/
+			return true;
+        }
     }
 
     if (nValueIn - nValueOut < 50000) {
@@ -248,7 +244,7 @@ int64_t CreateNewLock(CTransaction tx)
 
         CTransactionLock newLock;
         newLock.nBlockHeight = nBlockHeight;
-        newLock.nExpiration = GetTime() + (60 * 60); //locks expire after 60 minutes (24 confirmations)
+        newLock.nExpiration = GetTime() + (60 * 60); //locks expire after 60 minutes
         newLock.nTimeout = GetTime() + (60 * 5);
         newLock.txHash = tx.GetHash();
         mapTxLocks.insert(make_pair(tx.GetHash(), newLock));
