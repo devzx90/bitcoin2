@@ -405,7 +405,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
     unsigned int nTryTime = 0;
 	int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
 	int64_t TimePastDifference = nTimeTx - ActualMedianTimePast; // nTimeTx starts as GetAdjustedTime when creating a new block.
-	if(nTimetx % 15 == 0) LogPrintf("CheckStakeKernelHash(): TimePastDifference=%d\n", TimePastDifference);
+	if(nTimeTx % 15 == 0) LogPrintf("CheckStakeKernelHash(): TimePastDifference=%d\n", TimePastDifference);
 	if (TimePastDifference > 45) TimePastDifference = 45; // arbitrary limit.
     int nHeightStart = chainActive.Height();
 	
