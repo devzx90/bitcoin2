@@ -472,6 +472,18 @@ bool CMasternodeBroadcast::CheckDefaultPort(std::string strService, std::string&
     return true;
 }
 
+int GetMasternodeInputAge()
+{
+	if (chainActive.Tip() == NULL) return 0;
+
+	if (cacheInputAge == 0) {
+		cacheInputAge = GetInputAge(vin);
+		cacheInputAgeBlock = chainActive.Tip()->nHeight;
+	}
+
+	return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
+}
+
 bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
 {
     // make sure signature isn't in the future (past is OK)
