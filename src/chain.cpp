@@ -24,7 +24,8 @@ void CChain::SetTip(CBlockIndex* pindex)
     }
 }
 
-void CDiskBlockIndex::SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion);
+template <typename Stream, typename Operation>
+void CDiskBlockIndex::SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
 {
 	if (!(nType & SER_GETHASH))
 		READWRITE(VARINT(nVersion));
