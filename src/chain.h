@@ -19,7 +19,10 @@
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
+// Mini version of spork.h:
 int64_t GetSporkValue(int nSporkID);
+#define SPORK_13_STAKING_PROTOCOL_2 10012
+//
 
 struct CDiskBlockPos {
     int nFile;
