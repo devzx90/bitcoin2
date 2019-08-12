@@ -1,10 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2017-2019 The Bitcoin 2 developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chain.h"
-
+#include "spork.h"
 using namespace std;
 
 /**
@@ -21,6 +22,52 @@ void CChain::SetTip(CBlockIndex* pindex)
         vChain[pindex->nHeight] = pindex;
         pindex = pindex->pprev;
     }
+}
+
+void CDiskBlockIndex::SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion);
+{
+	if (!(nType & SER_GETHASH))
+		READWRITE(VARINT(nVersion));
+
+	READWRITE(VARINT(nHeight));
+	READWRITE(VARINT(nStatus));
+	READWRITE(VARINT(nTx));
+	if (nStatus & (BLOCK_HAVE_DATA | BLOCK_HAVE_UNDO))
+		READWRITE(VARINT(nFile));
+	if (nStatus & BLOCK_HAVE_DATA)
+		READWRITE(VARINT(nDataPos));
+	if (nStatus & BLOCK_HAVE_UNDO)
+		READWRITE(VARINT(nUndoPos));
+
+
+	READWRITE(nMint);
+	READWRITE(nMoneySupply);
+	READWRITE(nFlags);
+	READWRITE(nStakeModifier);
+	if (nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) READWRITE(nStakeModifierV2);
+	if (IsProofOfStake()) {
+		READWRITE(prevoutStake);
+		READWRITE(nStakeTime);
+	}
+	else {
+		const_cast<CDiskBlockIndex*>(this)->prevoutStake.SetNull();
+		const_cast<CDiskBlockIndex*>(this)->nStakeTime = 0;
+		const_cast<CDiskBlockIndex*>(this)->hashProofOfStake = uint256();
+	}
+
+	// block header
+	READWRITE(this->nVersion);
+	READWRITE(hashPrev);
+	READWRITE(hashNext);
+	READWRITE(hashMerkleRoot);
+	READWRITE(nTime);
+	READWRITE(nBits);
+	READWRITE(nNonce);
+	if (this->nVersion > 3) {
+		READWRITE(nAccumulatorCheckpoint);
+		READWRITE(mapZerocoinSupply);
+		READWRITE(vMintDenominationsInBlock);
+	}
 }
 
 CBlockLocator CChain::GetLocator(const CBlockIndex* pindex) const

@@ -14,7 +14,6 @@
 #include "uint256.h"
 #include "util.h"
 #include "libzerocoin/Denominations.h"
-#include "spork.h"
 #include <vector>
 
 #include <boost/foreach.hpp>
@@ -445,51 +444,7 @@ public:
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
-    {
-        if (!(nType & SER_GETHASH))
-            READWRITE(VARINT(nVersion));
-
-        READWRITE(VARINT(nHeight));
-        READWRITE(VARINT(nStatus));
-        READWRITE(VARINT(nTx));
-        if (nStatus & (BLOCK_HAVE_DATA | BLOCK_HAVE_UNDO))
-            READWRITE(VARINT(nFile));
-        if (nStatus & BLOCK_HAVE_DATA)
-            READWRITE(VARINT(nDataPos));
-        if (nStatus & BLOCK_HAVE_UNDO)
-            READWRITE(VARINT(nUndoPos));
-
-
-        READWRITE(nMint);
-        READWRITE(nMoneySupply);
-        READWRITE(nFlags);
-        READWRITE(nStakeModifier);
-		if (nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) READWRITE(nStakeModifierV2);
-        if (IsProofOfStake()) {
-            READWRITE(prevoutStake);
-            READWRITE(nStakeTime);
-        } else {
-            const_cast<CDiskBlockIndex*>(this)->prevoutStake.SetNull();
-            const_cast<CDiskBlockIndex*>(this)->nStakeTime = 0;
-            const_cast<CDiskBlockIndex*>(this)->hashProofOfStake = uint256();
-        }
-
-        // block header
-        READWRITE(this->nVersion);
-        READWRITE(hashPrev);
-        READWRITE(hashNext);
-        READWRITE(hashMerkleRoot);
-        READWRITE(nTime);
-        READWRITE(nBits);
-        READWRITE(nNonce);
-        if(this->nVersion > 3) {
-            READWRITE(nAccumulatorCheckpoint);
-            READWRITE(mapZerocoinSupply);
-            READWRITE(vMintDenominationsInBlock);
-        }
-
-    }
+	void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion);
 
     uint256 GetBlockHash() const
     {

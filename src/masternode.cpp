@@ -472,7 +472,7 @@ bool CMasternodeBroadcast::CheckDefaultPort(std::string strService, std::string&
     return true;
 }
 
-int GetMasternodeInputAge()
+int CMasternode::GetMasternodeInputAge()
 {
 	if (chainActive.Tip() == NULL) return 0;
 
