@@ -2013,7 +2013,7 @@ bool HasTX(int a, int n, const string &theAddress, bool QuickScan)
 		if (!QuickScan && i % aPercent == 0)
 		{
 			double percentage = double(i - a) / (double)c * 100.0;
-			pwalletMain->ShowProgress("", percentage);
+			pwalletMain->ShowProgress(_("Scanning..."), percentage);
 		}
 		CBlock block;
 		ReadBlockFromDisk(block, pindex);
@@ -2050,13 +2050,12 @@ int ScanTX(const string &theAddress, bool QuickScan)
 	{
 		LOCK2(cs_main, pwalletMain->cs_wallet);
 
-		if(!QuickScan) pwalletMain->ShowProgress(_("Scanning..."), 0); // show scan progress in GUI as dialog
 		if (HasTX(102, n, theAddress, QuickScan))
 		{
 			if (chainActive.Height() < 628729 || QuickScan) returnvalue = -1;
 			else if (!HasTX(n, chainActive.Height(), theAddress)) returnvalue = 1;
 		}
-		if(!QuickScan) pwalletMain->ShowProgress("", 100); // hide progress dialog in GUI
+		if(!QuickScan) pwalletMain->ShowProgress(_("Scanning..."), 100); // hide progress dialog in GUI
 	}
 
 	return returnvalue;
