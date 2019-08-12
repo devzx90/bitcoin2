@@ -316,7 +316,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 	unsigned int nTryTime = 0;
 	int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
 	int64_t TimePastDifference = nTimeTx - ActualMedianTimePast; // nTimeTx starts as GetAdjustedTime when creating a new block.
-	if (TimePastDifference > 45) TimePastDifference = 45; // arbitrary limit.
+	if (TimePastDifference > 60) TimePastDifference = 60;
 	int nHeightStart = chainActive.Height();
 
 	int HashingStart = 0;
@@ -406,7 +406,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
 	int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
 	int64_t TimePastDifference = nTimeTx - ActualMedianTimePast; // nTimeTx starts as GetAdjustedTime when creating a new block.
 	if(nTimeTx % 15 == 0) LogPrintf("CheckStakeKernelHash(): TimePastDifference=%d\n", TimePastDifference);
-	if (TimePastDifference > 45) TimePastDifference = 45; // arbitrary limit.
+	if (TimePastDifference > 100) TimePastDifference = 100; // 162
     int nHeightStart = chainActive.Height();
 	
 	unsigned int HashingEnd = nMaxStakingFutureDrift;
@@ -420,7 +420,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
 
 		//hash this iteration
 		nTryTime = nTimeTx + nMaxStakingFutureDrift - i;
-		if (i > nMaxStakingFutureDrift && (nTryTime < nTimeBlockFrom || nTimeBlockFrom + nStakeMinAge > nTryTime)) break; // Don't try with unacceptable times.
+		if (i > nMaxStakingFutureDrift && (nTryTime < nTimeBlockFrom || nTimeBlockFrom + nStakeMinAge > nTryTime)) continue; // Don't try with unacceptable times.
 
 		hashProofOfStake = stakeHash(nTryTime, ss, prevout.n, prevout.hash, nTimeBlockFrom);
 

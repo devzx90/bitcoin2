@@ -84,6 +84,7 @@ bool fAlerts = DEFAULT_ALERTS;
 
 unsigned int nStakeInterval = 15; // Every 15 seconds.
 unsigned int nMaxStakingFutureDrift = 40; // Max 40 second future drift for POS.
+unsigned int nMaxPastTimeSecs = 100; // Max history drift for POS.
 unsigned int nStakeMinAge = 60 * 60;
 int64_t nReserveBalance = 0;
 
@@ -2053,7 +2054,11 @@ int ScanTX(const string &theAddress, bool QuickScan)
 		if (HasTX(102, n, theAddress, QuickScan))
 		{
 			if (chainActive.Height() < 628729 || QuickScan) returnvalue = -1;
-			else if (!HasTX(n, chainActive.Height(), theAddress)) returnvalue = 1;
+			else
+			{
+				if (!QuickScan) pwalletMain->ShowProgress(_("Scanning..."), 100); // hide progress dialog in GUI
+				if (!HasTX(n, chainActive.Height(), theAddress)) returnvalue = 1;
+			}
 		}
 		if(!QuickScan) pwalletMain->ShowProgress(_("Scanning..."), 100); // hide progress dialog in GUI
 	}
@@ -4018,7 +4023,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         return state.Invalid(error("CheckBlock() : block timestamp too far in the future"),
             REJECT_INVALID, "time-too-new");
 
-	if (block.GetBlockTime() % nStakeInterval != 0 && block.GetBlockTime() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
+	if (block.GetBlockTime() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && block.GetBlockTime() % nStakeInterval != 0)
 		return state.Invalid(error("CheckBlock() : block timestamp invalid."),
 			REJECT_INVALID, "time-invalid");
 
@@ -4444,6 +4449,10 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 				}
 			}
 		}
+
+		// Check timestamp
+		if (block.GetBlockTime() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && pindexPrev->GetBlockTime() > block.GetBlockTime() + nMaxPastTimeSecs)
+			return error("%s: timestamp invalid. previous block %s", __func__, pindexPrev->GetBlockHash().GetHex());
 
 		// Check whether is a fork or not
 		if (isBlockFromFork)
