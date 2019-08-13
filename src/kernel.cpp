@@ -315,8 +315,10 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 	bool fSuccess = false;
 	unsigned int nTryTime = 0;
 	int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
-	int64_t TimePastDifference = nTimeTx - ActualMedianTimePast; // nTimeTx starts as GetAdjustedTime when creating a new block.
-	if (TimePastDifference > 60) TimePastDifference = 60;
+	int64_t TimePastDifference2 = nTimeTx - ActualMedianTimePast; // nTimeTx starts as GetAdjustedTime when creating a new block.
+	int64_t TimePastDifference = nTimeTx - chainActive.Tip()->GetBlockTime() + nMaxPastTimeSecs - 1;
+	if (TimePastDifference > TimePastDifference2) TimePastDifference = TimePastDifference2;
+
 	int nHeightStart = chainActive.Height();
 
 	int HashingStart = 0;
@@ -325,6 +327,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 		int nFactor = TimePastDifference / nStakeInterval;
 		HashingStart -= nFactor * nStakeInterval; // This makes it try past times too.
 	}
+	if (nTimeTx % 60 == 0) LogPrintf("CheckStakeKernelHashV2(): HashingStart=%d\n", HashingStart);
 	for (int i = HashingStart; i < nMaxStakingFutureDrift; i += nStakeInterval) //iterate the hashing
 	{
 		//new block came in, move on
@@ -405,8 +408,8 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
     unsigned int nTryTime = 0;
 	int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
 	int64_t TimePastDifference = nTimeTx - ActualMedianTimePast; // nTimeTx starts as GetAdjustedTime when creating a new block.
-	if(nTimeTx % 15 == 0) LogPrintf("CheckStakeKernelHash(): TimePastDifference=%d\n", TimePastDifference);
-	if (TimePastDifference > 100) TimePastDifference = 100; // 162
+	if(nTimeTx % 60 == 0) LogPrintf("CheckStakeKernelHash(): TimePastDifference=%d\n", TimePastDifference);
+	if (TimePastDifference > 100) TimePastDifference = 100; // 162 - 230+
     int nHeightStart = chainActive.Height();
 	
 	unsigned int HashingEnd = nMaxStakingFutureDrift;

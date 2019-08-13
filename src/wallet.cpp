@@ -4399,7 +4399,7 @@ int CMerkleTx::SetMerkleBranch(const CBlock& block)
 
 int CMerkleTx::GetDepthInMainChain(const CBlockIndex*& pindexRet, bool enableIX) const
 {
-	if (hashBlock.IsNull())
+	if (hashBlock == 0 || nIndex == -1)
 		return 0;
 	AssertLockHeld(cs_main);
 	int nResult;
@@ -4414,9 +4414,17 @@ int CMerkleTx::GetDepthInMainChain(const CBlockIndex*& pindexRet, bool enableIX)
 		if (!pindex || !chainActive.Contains(pindex)) {
 			nResult = 0;
 		}
-		else {
+		else
+		{
+			// Make sure the merkle branch connects to this block
+			if (!fMerkleVerified) {
+				if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, nIndex) != pindex->hashMerkleRoot)
+					return 0;
+				fMerkleVerified = true;
+			}
+
 			pindexRet = pindex;
-			nResult = ((nIndex == -1) ? -1 : 1) * (chainActive.Height() - pindex->nHeight + 1);
+			nResult = chainActive.Height() - pindex->nHeight + 1;
 		}
 	}
 
