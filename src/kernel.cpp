@@ -328,7 +328,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 		int nFactor = TimePastDifference / nStakeInterval;
 		HashingStart -= nFactor * nStakeInterval; // This makes it try past times too.
 	}
-	if (nTimeTx % 60 == 0) LogPrintf("CheckStakeKernelHashV2(): HashingStart=%d\n", HashingStart);
+	if (LastHashedBlockHeight != chainActive.Tip()->nHeight) LogPrintf("CheckStakeKernelHashV2(): HashingStart=%d\n", HashingStart);
 	for (int i = HashingStart; i < nMaxStakingFutureDrift; i += nStakeInterval) //iterate the hashing
 	{
 		//new block came in, move on

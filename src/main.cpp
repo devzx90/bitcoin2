@@ -4024,7 +4024,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
             REJECT_INVALID, "time-too-new");
 
 	if (block.GetBlockTime() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && block.GetBlockTime() % nStakeInterval != 0)
-		return state.Invalid(error("CheckBlock() : block timestamp invalid."),
+		return state.Invalid(error("CheckBlock() : block timestamp invalid:%d", block.GetBlockTime()),
 			REJECT_INVALID, "time-invalid");
 
     // Check the merkle root.
