@@ -1775,7 +1775,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
-        if (!CheckInputs(tx, state, view, true, STANDARD_SCRIPT_VERIFY_FLAGS, true, NULL, GetAdjustedTime() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) ? Params().Zerocoin_StartHeight() : 0)) {
+        if (!CheckInputs(tx, state, view, true, STANDARD_SCRIPT_VERIFY_FLAGS, true, NULL, chainActive.Height() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) ? Params().Zerocoin_StartHeight() : 0)) {
             return error("AcceptToMemoryPool: : ConnectInputs failed %s", hash.ToString());
         }
 
@@ -2965,7 +2965,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
 
 	// Set proof-of-stake hash modifier v2
-	if(pindex->nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) pindex->nStakeModifierV2 = ComputeStakeModifierV2(pindex->pprev, block.vtx[1].vin[0].prevout.hash);
+	if(pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) pindex->nStakeModifierV2 = ComputeStakeModifierV2(pindex->pprev, block.vtx[1].vin[0].prevout.hash);
 
 	LogPrint("masternode", "CCheckQueueControl<CScriptCheck> control\n");
     CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
@@ -3029,7 +3029,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		}
 		else if (!tx.IsCoinBase())
 		{
-			if (pindex->nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
+			if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
 			{
 				for (unsigned int j = 0; j < tx.vin.size(); j++) {
 					const COutPoint& prevout = tx.vin[j].prevout;
@@ -3840,7 +3840,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
         }
 
         // ppcoin: compute stake modifier
-		if (pindexNew->nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
+		if (pindexNew->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
 		{
 			pindexNew->nStakeModifierV2 = ComputeStakeModifierV2(pindexNew->pprev, block.vtx[1].vin[0].prevout.hash);
 		}
@@ -4023,10 +4023,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         return state.Invalid(error("CheckBlock() : block timestamp too far in the future"),
             REJECT_INVALID, "time-too-new");
 
-	if (block.GetBlockTime() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && block.GetBlockTime() % nStakeInterval != 0)
-		return state.Invalid(error("CheckBlock() : block timestamp invalid:%d", block.GetBlockTime()),
-			REJECT_INVALID, "time-invalid");
-
     // Check the merkle root.
     if (fCheckMerkleRoot) {
         bool mutated;
@@ -4111,8 +4107,12 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
               if (mi != mapBlockIndex.end() && (*mi).second)
                   nHeight = (*mi).second->nHeight + 1;
           }
-  
-          // Bitcoin2
+
+		  // Bitcoin2
+		  if (nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && block.GetBlockTime() % nStakeInterval != 0)
+			  return state.Invalid(error("CheckBlock() : block timestamp invalid:%d", block.GetBlockTime()),
+				  REJECT_INVALID, "time-invalid");
+          
           // It is entirely possible that we don't have enough data and this could fail
           // (i.e. the block could indeed be valid). Store the block for later consideration
           // but issue an initial reject message.
@@ -4439,7 +4439,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 					}
 				}
 
-				if (pindex->nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
+				if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
 				{
 					if (!tx.IsCoinBase() && !in.scriptSig.IsZerocoinSpend())
 					{
@@ -4451,8 +4451,8 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 		}
 
 		// Check timestamp
-		if (block.GetBlockTime() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && pindexPrev->GetBlockTime() > block.GetBlockTime() + nMaxPastTimeSecs)
-			return error("%s: timestamp invalid. previous block %s", __func__, pindexPrev->GetBlockHash().GetHex());
+		if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && (block.GetBlockTime() % nStakeInterval != 0 || pindexPrev->GetBlockTime() > block.GetBlockTime() + nMaxPastTimeSecs))
+			return error("%s: timestamp invalid. block timestamp invalid: %d", __func__, block.GetBlockTime());
 
 		// Check whether is a fork or not
 		if (isBlockFromFork)
@@ -4515,7 +4515,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 					// Coins not available
 					return error("%s: coin stake inputs already spent in main chain", __func__);
 				}
-				else if (pindex->nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && (nHeight - coin->nHeight) < Params().COINBASE_MATURITY()) {
+				else if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && (nHeight - coin->nHeight) < Params().COINBASE_MATURITY()) {
 					// Staked coins immature
 					return error("%s: coin stake inputs immature.", __func__);
 				}

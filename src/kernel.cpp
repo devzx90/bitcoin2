@@ -309,22 +309,24 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 	//if wallet is simply checking to make sure a hash is valid
 	if (fCheck) {
 		CHashWriter ss(SER_GETHASH, 0);
-		ss << pindexPrev->nStakeModifierV2 << nTimeBlockFrom << prevout.hash << prevout.n << nTimeTx;
+		ss << (pindexPrev->nStakeModifierV2 == 0 ? pindexPrev->nStakeModifier : pindexPrev->nStakeModifierV2) << nTimeBlockFrom << prevout.hash << prevout.n << nTimeTx;
 		hashProofOfStake = ss.GetHash();
 		return stakeTargetHit(hashProofOfStake, nValueIn, bnTarget);
 	}
 
 	bool fSuccess = false;
+	// nTimeTx starts as GetAdjustedTime when creating a new block.
+	nTimeTx -= nTimeTx % nStakeInterval; // Round it to the proper staking interval.
 	unsigned int nTryTime = 0;
 	int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
-	int64_t TimePastDifference2 = nTimeTx - ActualMedianTimePast; // nTimeTx starts as GetAdjustedTime when creating a new block.
+	int64_t TimePastDifference2 = nTimeTx - ActualMedianTimePast; 
 	int64_t TimePastDifference = nTimeTx - chainActive.Tip()->GetBlockTime() + nMaxPastTimeSecs - 1;
 	if (TimePastDifference > TimePastDifference2) TimePastDifference = TimePastDifference2;
 
 	int nHeightStart = chainActive.Height();
 
 	int HashingStart = 0;
-	if (TimePastDifference > 1 && nTimeTx - TimePastDifference >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
+	if (TimePastDifference > 1)
 	{
 		int nFactor = TimePastDifference / nStakeInterval;
 		HashingStart -= nFactor * nStakeInterval; // This makes it try past times too.
@@ -342,7 +344,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 		nTryTime = nTimeTx + i;
 
 		CHashWriter ss(SER_GETHASH, 0);
-		ss << pindexPrev->nStakeModifierV2 << nTimeBlockFrom << prevout.hash << prevout.n << nTryTime;
+		ss << (pindexPrev->nStakeModifierV2 == 0 ? pindexPrev->nStakeModifier : pindexPrev->nStakeModifierV2) << nTimeBlockFrom << prevout.hash << prevout.n << nTryTime;
 		hashProofOfStake = ss.GetHash();
 
 		// if stake hash does not meet the target then continue to next iteration
@@ -480,7 +482,7 @@ bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
 		return error("CheckProofOfStake() : coinstake input does not match previous output %s", txin.prevout.hash.GetHex());
 
     unsigned int nTime = block.nTime;
-	if (nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
+	if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
 	{
 		if (!CheckStakeKernelHashV2(block.nBits, pindex, txPrev, txin.prevout, nTime, true, hashProofOfStake))
 			return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync

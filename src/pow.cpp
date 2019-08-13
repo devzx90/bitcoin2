@@ -47,6 +47,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 		return bnNew.GetCompact();
 	}
 	/////////////
+	
 
 	int nHeightFirst = pindexLast->nHeight - 10;
 
@@ -58,19 +59,25 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 		pindexFirst = pindexFirst->pprev;
 	}
 	assert(pindexFirst);
-	nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
 
-	nActualTimespan /= 10;
+	if (pindexLast->nHeight == GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) nActualTimespan = 1200; // Reduce difficulty for a smoother transition to new staking protocol.
+	else
+	{
+		nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
 
-	// Limit adjustment step
-	if (nActualTimespan < 30) nActualTimespan = 30;
-	else if (nActualTimespan > 120) nActualTimespan = 120;
+		nActualTimespan /= 10;
+
+		// Limit adjustment step
 	
+		if (nActualTimespan < 30) nActualTimespan = 30;
+		else if (nActualTimespan > 120) nActualTimespan = 120;
+	}
+
 	// Retarget
 	uint256 bnNew;
 	
 	bnNew.SetCompact(pindexLast->nBits);
-
+	
 	if (bnNew == Params().ProofOfWorkLimit() && nActualTimespan >= nTargetSpacing) return bnNew.GetCompact();
 	
 	bnNew /= nTargetSpacing;

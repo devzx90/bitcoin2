@@ -3021,7 +3021,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
         nTxNewTime = GetAdjustedTime();
 		//LogPrintf("CreateCoinStake : passing block header of block: %d\n", pindex->nHeight);
         //iterates each utxo inside of CheckStakeKernelHash()
-		if (nTxNewTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) fKernelFound = CheckStakeKernelHashV2(nBits, pindex, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
+		if (chainActive.Height() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) fKernelFound = CheckStakeKernelHashV2(nBits, pindex, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
 		else fKernelFound = CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
         
 		if (fKernelFound) {
@@ -3086,7 +3086,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
             break; // if kernel is found stop searching
     }
     if (nCredit == 0 || nCredit > nBalance - nReserveBalance) return false;
-
 
 	//Masternode payment
 	bool MasternodePaid = FillBlockPayee(txNew, true);

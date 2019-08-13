@@ -469,7 +469,7 @@ public:
         READWRITE(nMoneySupply);
         READWRITE(nFlags);
         READWRITE(nStakeModifier);
-		if (nTime >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) READWRITE(nStakeModifierV2);
+		if (nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) READWRITE(nStakeModifierV2);
         if (IsProofOfStake()) {
             READWRITE(prevoutStake);
             READWRITE(nStakeTime);
