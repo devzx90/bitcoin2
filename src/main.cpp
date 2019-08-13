@@ -6226,7 +6226,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 				// Check if that block is newer than our newest block. If so, call ActivateBestChain(), just in case.
 				CBlockIndex* pindex = chainActive.Tip();
 				if (pindex == NULL) return false;
-				if (block.nTime > pindex->nTime + 40)
+				if (block.nTime > pindex->nTime + nMaxStakingFutureDrift)
 				{
 					static int64_t LastActivateBestChainCallTime = 0;
 					int64_t aCurrentTime = GetTime();

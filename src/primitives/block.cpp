@@ -223,9 +223,6 @@ bool CBlock::CheckBlockSignature() const
     if (IsProofOfWork())
         return vchBlockSig.empty();
 
-	if (vchBlockSig.empty())
-		return error("%s: vchBlockSig is empty!", __func__);
-
 	CPubKey pubkey;
 	txnouttype whichType;
 	std::vector<valtype> vSolutions;
@@ -242,6 +239,9 @@ bool CBlock::CheckBlockSignature() const
 
 	if (!pubkey.IsValid())
 		return error("%s: invalid pubkey %s", __func__, HexStr(pubkey));
+
+	if (vchBlockSig.empty())
+		return error("%s: vchBlockSig is empty!", __func__);
 
 	return pubkey.Verify(GetHash(), vchBlockSig);
 }
