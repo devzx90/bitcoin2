@@ -17,7 +17,8 @@
 #include "chainparams.h"
 
 using namespace std;
-extern unsigned int nMaxStakingFutureDrift, nMaxPastTimeSecs;
+extern unsigned int nMaxStakingFutureDrift, nMaxPastTimeSecs, nStakeInterval;
+extern unsigned int LastHashedBlockHeight, LastHashedBlockTime;
 
 bool fTestNet = false; //Params().NetworkID() == CBaseChainParams::TESTNET;
 
@@ -341,7 +342,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 		nTryTime = nTimeTx + i;
 
 		CHashWriter ss(SER_GETHASH, 0);
-		ss << pindexPrev->nStakeModifierV2 << nTimeBlockFrom << prevout.hash << prevout.n << nTimeTx;
+		ss << pindexPrev->nStakeModifierV2 << nTimeBlockFrom << prevout.hash << prevout.n << nTryTime;
 		hashProofOfStake = ss.GetHash();
 
 		// if stake hash does not meet the target then continue to next iteration
@@ -354,7 +355,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 	}
 
 	LastHashedBlockHeight = chainActive.Tip()->nHeight;
-	LastHashedBlockTime = nTryTime; // store a time stamp of the max attempted hash's time stamp on this block.
+	LastHashedBlockTime = nTimeTx; // store a time stamp of the max attempted hash's time stamp on this block.
 	return fSuccess;
 }
 
