@@ -311,7 +311,9 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 		CHashWriter ss(SER_GETHASH, 0);
 		ss << pindexPrev->nStakeModifierV2 << nTimeBlockFrom << prevout.hash << prevout.n << nTimeTx;
 		hashProofOfStake = ss.GetHash();
-		return stakeTargetHit(hashProofOfStake, nValueIn, bnTarget);
+		bool TargetMet = stakeTargetHit(hashProofOfStake, nValueIn, bnTarget);
+		if(!TargetMet) LogPrintf("CheckStakeKernelHashV2() failed: nStakeModifierV2=%s nTimeBlockFrom=%d prevout.hash=%s prevout.n=%d nTimeTx=%u\n", pindexPrev->nStakeModifierV2.ToString().c_str(), nTimeBlockFrom, prevout.hash.ToString().c_str(), prevout.n, nTimeTx);
+		return TargetMet;
 	}
 
 	bool fSuccess = false;
@@ -358,6 +360,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 
 		fSuccess = true; // if we make it this far then we have successfully created a stake hash
 		nTimeTx = nTryTime;
+		LogPrintf("CheckStakeKernelHashV2(): Success. nStakeModifierV2=%s nTimeBlockFrom=%d prevout.hash=%s prevout.n=%d nTimeTx=%u\n", pindexPrev->nStakeModifierV2.ToString().c_str(), nTimeBlockFrom, prevout.hash.ToString().c_str(), prevout.n, nTimeTx);
 		break;
 	}
 
@@ -486,7 +489,7 @@ bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
 	if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
 	{
 		if (!CheckStakeKernelHashV2(block.nBits, pindex, txPrev, txin.prevout, nTime, true, hashProofOfStake))
-			return error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
+			return error("CheckProofOfStake() : INFO: check kernel failed on coinstake v2 %s, hashProof=%s \n", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 	}
 	else
 	{
