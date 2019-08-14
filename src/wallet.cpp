@@ -2976,12 +2976,16 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
     static std::set<pair<const CWalletTx*, unsigned int> > setStakeCoins;
     static int nLastStakeSetUpdate = 0;
 
+	
+
     if (GetTime() - nLastStakeSetUpdate > nStakeSetUpdateTime) {
+		LogPrintf("CreateCoinStake(): Updating setStakeCoins.\n");
         setStakeCoins.clear();
         if (!SelectStakeCoins(setStakeCoins, nBalance - nReserveBalance))
             return false;
 
         nLastStakeSetUpdate = GetTime();
+		LogPrintf("CreateCoinStake(): Updated setStakeCoins. New size: %u\n", setStakeCoins.size());
     }
 
     if (setStakeCoins.empty())
@@ -3021,7 +3025,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
         nTxNewTime = GetAdjustedTime();
 		//LogPrintf("CreateCoinStake : passing block header of block: %d\n", pindex->nHeight);
         //iterates each utxo inside of CheckStakeKernelHash()
-		if (chainActive.Height() >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) fKernelFound = CheckStakeKernelHashV2(nBits, pindex, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
+		if (chainActive.Height() + 1 >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) fKernelFound = CheckStakeKernelHashV2(nBits, pindex, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
 		else fKernelFound = CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
         
 		if (fKernelFound) {

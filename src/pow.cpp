@@ -48,21 +48,20 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	}
 	/////////////
 	
-
-	int nHeightFirst = pindexLast->nHeight - 10;
-
-	// Re-target every 10 blocks.
-	if (pindexLast->nHeight % 10 != 1) return pindexLast->nBits;
-		
-	CBlockIndex* pindexFirst = pindexLast->pprev;
-	while (pindexFirst->nHeight > nHeightFirst) {
-		pindexFirst = pindexFirst->pprev;
-	}
-	assert(pindexFirst);
-
-	if (pindexLast->nHeight == GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) nActualTimespan = 1200; // Reduce difficulty for a smoother transition to new staking protocol.
+	if (pindexLast->nHeight + 1 == GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) nActualTimespan = 1200; // Reduce difficulty for a smoother transition to new staking protocol.
 	else
 	{
+		int nHeightFirst = pindexLast->nHeight - 10;
+
+		// Re-target every 10 blocks.
+		if (pindexLast->nHeight % 10 != 1) return pindexLast->nBits;
+
+		CBlockIndex* pindexFirst = pindexLast->pprev;
+		while (pindexFirst->nHeight > nHeightFirst) {
+			pindexFirst = pindexFirst->pprev;
+		}
+		assert(pindexFirst);
+
 		nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
 
 		nActualTimespan /= 10;
