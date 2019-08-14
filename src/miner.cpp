@@ -175,7 +175,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             for (const CTxIn& txin : tx.vin) {
                 //zerocoinspend has special vin
                 if (tx.IsZerocoinSpend()) {
-                    nTotalIn = tx.GetZerocoinSpent();
+                    nTotalIn += tx.GetZerocoinSpent();
                     // PIVX v.3.0.6 just had break; here.
                     continue;
                 }

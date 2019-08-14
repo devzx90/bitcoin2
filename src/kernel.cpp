@@ -294,13 +294,13 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 	unsigned int nTimeBlockFrom = pindexPrev->nTime;
 
 	if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
-		return error("CheckStakeKernelHash() : nTime violation");
+		return error("CheckStakeKernelHashV2() : nTime violation");
 
 	if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
-		return error("CheckStakeKernelHash() : min age violation - nTimeBlockFrom=%d nStakeMinAge=%d nTimeTx=%d", nTimeBlockFrom, nStakeMinAge, nTimeTx);
+		return error("CheckStakeKernelHashV2() : min age violation - nTimeBlockFrom=%d nStakeMinAge=%d nTimeTx=%d", nTimeBlockFrom, nStakeMinAge, nTimeTx);
 
 	if (nValueIn == 0)
-		return error("CheckStakeKernelHash() : nValueIn = 0");
+		return error("CheckStakeKernelHashV2() : nValueIn = 0");
 
 	//grab difficulty
 	uint256 bnTarget;
@@ -315,8 +315,9 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 	}
 
 	bool fSuccess = false;
+	static int LastLogTime = 0;
 	// nTimeTx starts as GetAdjustedTime when creating a new block.
-	nTimeTx -= nTimeTx % nStakeInterval; // Round it to the proper staking interval.
+	nTimeTx = nTimeTx - (nTimeTx % nStakeInterval); // Round it to the proper staking interval.
 	unsigned int nTryTime = 0;
 	int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
 	int64_t TimePastDifference2 = nTimeTx - ActualMedianTimePast; 
@@ -331,7 +332,8 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 		int nFactor = TimePastDifference / nStakeInterval;
 		HashingStart -= nFactor * nStakeInterval; // This makes it try past times too.
 	}
-	if (LastHashedBlockHeight != chainActive.Tip()->nHeight) LogPrintf("CheckStakeKernelHashV2(): HashingStart=%d\n", HashingStart);
+	if (LastLogTime < nTimeTx) LogPrintf("CheckStakeKernelHashV2(): HashingStart=%d nTimeTx=%d\n", HashingStart, nTimeTx);
+	LastLogTime = nTimeTx;
 	for (int i = HashingStart; i < nMaxStakingFutureDrift; i += nStakeInterval) //iterate the hashing
 	{
 		//new block came in, move on
@@ -356,6 +358,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 		break;
 	}
 
+	LogPrintf("CheckStakeKernelHashV2(): Success. HashingStart=%d nTimeTx=%d\n", HashingStart, nTimeTx);
 	LastHashedBlockHeight = chainActive.Tip()->nHeight;
 	LastHashedBlockTime = nTimeTx; // store a time stamp of the max attempted hash's time stamp on this block.
 	return fSuccess;
