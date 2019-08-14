@@ -226,6 +226,9 @@ bool CSporkManager::UpdateSpork(int nSporkID, int64_t nValue)
         Relay(msg);
         mapSporks[msg.GetHash()] = msg;
         mapSporksActive[nSporkID] = msg;
+
+		// Bitcoin2: add to spork database.
+		pSporkDB->WriteSpork(nSporkID, msg);
         return true;
     }
 
