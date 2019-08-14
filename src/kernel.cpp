@@ -287,11 +287,10 @@ bool stakeTargetHit(const uint256& hashProofOfStake, const int64_t& nValueIn, co
 }
 
 //instead of looping outside and reinitializing variables many times, we will give a nTimeTx so that we can do all the hashing here
-bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const CTransaction& txPrev, const COutPoint& prevout, unsigned int& nTimeTx, bool fCheck, uint256& hashProofOfStake)
+bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, unsigned int nTimeBlockFrom, const CTransaction& txPrev, const COutPoint& prevout, unsigned int& nTimeTx, bool fCheck, uint256& hashProofOfStake)
 {
 	//assign new variables to make it easier to read
 	CAmount nValueIn = txPrev.vout[prevout.n].nValue;
-	unsigned int nTimeBlockFrom = pindexPrev->nTime;
 
 	if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
 		return error("CheckStakeKernelHashV2() : nTime violation");
@@ -450,7 +449,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
 }
 
 // Check kernel hash target and coinstake signature
-bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
+bool CheckProofOfStake(const CBlock& block, CBlockIndex* pindexPrev, uint256& hashProofOfStake)
 {
     const CTransaction tx = block.vtx[1];
     if (!tx.IsCoinStake())
@@ -469,7 +468,8 @@ bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
     if (!VerifyScript(txin.scriptSig, txPrev.vout[txin.prevout.n].scriptPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&tx, 0)))
         return error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.GetHash().ToString().c_str());
 
-    CBlockIndex* pindex = NULL;
+	// Find the previous transaction's block
+    CBlockIndex* pindex = NULL; 
     BlockMap::iterator it = mapBlockIndex.find(hashBlock);
     if (it != mapBlockIndex.end())
         pindex = it->second;
@@ -486,9 +486,9 @@ bool CheckProofOfStake(const CBlock& block, uint256& hashProofOfStake)
 		return error("CheckProofOfStake() : coinstake input does not match previous output %s", txin.prevout.hash.GetHex());
 
     unsigned int nTime = block.nTime;
-	if (pindex->nHeight + 1 >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
+	if (pindexPrev->nHeight + 1 >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
 	{
-		if (!CheckStakeKernelHashV2(block.nBits, pindex, txPrev, txin.prevout, nTime, true, hashProofOfStake))
+		if (!CheckStakeKernelHashV2(block.nBits, pindexPrev, blockprev.GetBlockTime(), txPrev, txin.prevout, nTime, true, hashProofOfStake))
 			return error("CheckProofOfStake() : INFO: check kernel failed on coinstake v2 %s, pindex->nHeight=%u, hashProof=%s \n", tx.GetHash().ToString().c_str(), pindex->nHeight, hashProofOfStake.ToString().c_str()); // may occur during initial download or if behind on block chain sync
 	}
 	else

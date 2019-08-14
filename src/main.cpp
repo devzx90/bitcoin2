@@ -4188,7 +4188,7 @@ bool CheckWork(const CBlock block, CBlockIndex* const pindexPrev)
         uint256 hashProofOfStake = 0;
         uint256 hash = block.GetHash();
 
-        if(!CheckProofOfStake(block, hashProofOfStake)) {
+        if(!CheckProofOfStake(block, pindexPrev, hashProofOfStake)) {
 			return error("%s: proof of stake check failed", __func__);
         }
         if(!mapProofOfStake.count(hash)) // add to mapProofOfStake

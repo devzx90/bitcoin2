@@ -3029,7 +3029,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
 		//LogPrintf("CreateCoinStake : passing block header of block: %d\n", pindex->nHeight);
         //iterates each utxo inside of CheckStakeKernelHash()
 		
-		if (StakingV2) fKernelFound = CheckStakeKernelHashV2(nBits, pindex, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
+		if (StakingV2) fKernelFound = CheckStakeKernelHashV2(nBits, chainActive.Tip(), pindex->nTime, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
 		else fKernelFound = CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
         
 		if (fKernelFound) {
