@@ -309,7 +309,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 	//if wallet is simply checking to make sure a hash is valid
 	if (fCheck) {
 		CHashWriter ss(SER_GETHASH, 0);
-		ss << (pindexPrev->nStakeModifierV2 == 0 ? pindexPrev->nStakeModifier : pindexPrev->nStakeModifierV2) << nTimeBlockFrom << prevout.hash << prevout.n << nTimeTx;
+		ss << pindexPrev->nStakeModifierV2 << nTimeBlockFrom << prevout.hash << prevout.n << nTimeTx;
 		hashProofOfStake = ss.GetHash();
 		return stakeTargetHit(hashProofOfStake, nValueIn, bnTarget);
 	}
@@ -349,7 +349,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 		nTryTime = nTimeTx + i;
 
 		CHashWriter ss(SER_GETHASH, 0);
-		ss << (pindexPrev->nStakeModifierV2 == 0 ? pindexPrev->nStakeModifier : pindexPrev->nStakeModifierV2) << nTimeBlockFrom << prevout.hash << prevout.n << nTryTime;
+		ss << pindexPrev->nStakeModifierV2 << nTimeBlockFrom << prevout.hash << prevout.n << nTryTime;
 		hashProofOfStake = ss.GetHash();
 
 		// if stake hash does not meet the target then continue to next iteration

@@ -48,7 +48,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	}
 	/////////////
 	
-	if (pindexLast->nHeight + 1 == GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) nActualTimespan = 1200; // Reduce difficulty for a smoother transition to new staking protocol.
+	if (pindexLast->nHeight + 1 == GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) nActualTimespan = 12000; // Reduce difficulty for a smoother transition to new staking protocol.
 	else
 	{
 		int nHeightFirst = pindexLast->nHeight - 10;
