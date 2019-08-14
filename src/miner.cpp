@@ -31,6 +31,7 @@
 #include <boost/tuple/tuple.hpp>
 
 using namespace std;
+unsigned int LastHashedBlockHeight = 0, LastHashedBlockTime = 0;
 
 //////////////////////////////////////////////////////////////////////////////
 //

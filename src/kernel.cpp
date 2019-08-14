@@ -18,7 +18,7 @@
 
 using namespace std;
 extern unsigned int nMaxStakingFutureDrift, nMaxPastTimeSecs, nStakeInterval;
-extern unsigned int LastHashedBlockHeight, LastHashedBlockTime;
+extern unsigned int LastHashedBlockHeight;
 
 bool fTestNet = false; //Params().NetworkID() == CBaseChainParams::TESTNET;
 
@@ -327,13 +327,16 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 	int nHeightStart = chainActive.Height();
 
 	int HashingStart = 0;
-	if (TimePastDifference > 1)
+	if (TimePastDifference > 1 && LastHashedBlockHeight != chainActive.Tip()->nHeight)
 	{
 		int nFactor = TimePastDifference / nStakeInterval;
 		HashingStart -= nFactor * nStakeInterval; // This makes it try past times too.
 	}
-	if (LastLogTime < nTimeTx) LogPrintf("CheckStakeKernelHashV2(): HashingStart=%d nTimeTx=%d\n", HashingStart, nTimeTx);
-	LastLogTime = nTimeTx;
+	if (LastLogTime < nTimeTx)
+	{
+		LogPrintf("CheckStakeKernelHashV2(): HashingStart=%d nTimeTx=%d\n", HashingStart, nTimeTx);
+		LastLogTime = nTimeTx;
+	}
 	for (int i = HashingStart; i < nMaxStakingFutureDrift; i += nStakeInterval) //iterate the hashing
 	{
 		//new block came in, move on
@@ -358,9 +361,6 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, const C
 		break;
 	}
 
-	LogPrintf("CheckStakeKernelHashV2(): Success. HashingStart=%d nTimeTx=%d\n", HashingStart, nTimeTx);
-	LastHashedBlockHeight = chainActive.Tip()->nHeight;
-	LastHashedBlockTime = nTimeTx; // store a time stamp of the max attempted hash's time stamp on this block.
 	return fSuccess;
 }
 
@@ -420,7 +420,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
     int nHeightStart = chainActive.Height();
 	
 	unsigned int HashingEnd = nMaxStakingFutureDrift;
-	if(TimePastDifference > 1) HashingEnd += TimePastDifference - 1; // This makes it try past times too.
+	if(TimePastDifference > 1 && LastHashedBlockHeight != chainActive.Tip()->nHeight) HashingEnd += TimePastDifference - 1; // This makes it try past times too.
 
 	for (unsigned int i = 0; i < HashingEnd; ++i) //iterate the hashing
 	{
@@ -443,8 +443,6 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
 		break;
 	}
 
-	LastHashedBlockHeight = chainActive.Tip()->nHeight;
-	LastHashedBlockTime = nTimeTx + nMaxStakingFutureDrift; // store a time stamp of the max attempted hash's time stamp on this block.
     return fSuccess;
 }
 

@@ -45,6 +45,8 @@ bool bdisableSystemnotifications = false; // Those bubbles can be annoying and s
 bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 
+extern unsigned int nMaxStakingFutureDrift, LastHashedBlockHeight, LastHashedBlockTime;
+
 /** 
  * Fees smaller than this (in duffs) are considered zero fee (for transaction creation)
  * Override with -mintxfee
@@ -3025,7 +3027,8 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
         nTxNewTime = GetAdjustedTime();
 		//LogPrintf("CreateCoinStake : passing block header of block: %d\n", pindex->nHeight);
         //iterates each utxo inside of CheckStakeKernelHash()
-		if (chainActive.Height() + 1 >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) fKernelFound = CheckStakeKernelHashV2(nBits, pindex, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
+		bool StakingV2 = (chainActive.Height() + 1 >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2));
+		if (StakingV2) fKernelFound = CheckStakeKernelHashV2(nBits, pindex, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
 		else fKernelFound = CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
         
 		if (fKernelFound) {
@@ -3089,6 +3092,11 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
         if (fKernelFound)
             break; // if kernel is found stop searching
     }
+
+	LastHashedBlockHeight = chainActive.Tip()->nHeight;
+	LastHashedBlockTime = nTxNewTime; // store a time stamp of the max attempted hash's time stamp on this block.
+	if(!StakingV2) LastHashedBlockTime += nMaxStakingFutureDrift;
+
     if (nCredit == 0 || nCredit > nBalance - nReserveBalance) return false;
 
 	//Masternode payment
