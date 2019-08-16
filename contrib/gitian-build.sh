@@ -232,7 +232,7 @@ then
         bin/make-base-vm --suite bionic --arch amd64 --lxc
         sudo sed -i s/lxcbr0/br0/ /etc/default/lxc-net
     else
-        bin/make-base-vm --suite bionic --arch amd64
+        bin/make-base-vm --suite bionic --arch amd64 --docker
     fi
     popd
 fi
