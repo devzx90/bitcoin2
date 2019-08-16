@@ -223,10 +223,8 @@ def main():
         print('Try '+script_name+' --help for more information')
         sys.exit(1)
 
-    # Add leading 'v' for tags
     if args.commit and args.pull:
         raise Exception('Cannot have both commit and pull')
-    args.commit = ('' if args.commit else 'v') + args.version
 
     os.chdir('bitcoin2')
     if args.pull:
