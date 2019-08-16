@@ -755,7 +755,7 @@ public:
         return GetDepthInMainChain(pindexRet, false) > 0;
     }
     int GetBlocksToMaturity() const;
-    bool AcceptToMemoryPool(bool fLimitFree = true, bool fRejectInsaneFee = true, bool ignoreFees = false);
+    bool AcceptToMemoryPool();
     int GetTransactionLockSignatures() const;
     bool IsTransactionLockTimedOut() const;
 };

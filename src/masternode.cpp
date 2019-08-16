@@ -220,7 +220,7 @@ void CMasternode::Check(bool forceCheck)
             TRY_LOCK(cs_main, lockMain);
             if (!lockMain) return;
 
-            if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL)) {
+            if (!AcceptableInputs(mempool, state, CTransaction(tx), NULL)) {
                 activeState = MASTERNODE_VIN_SPENT;
                 return;
             }
@@ -602,7 +602,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
             return false;
         }
 
-        if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL)) {
+        if (!AcceptableInputs(mempool, state, CTransaction(tx), NULL)) {
             //set nDos
             state.IsInvalid(nDoS);
             return false;
