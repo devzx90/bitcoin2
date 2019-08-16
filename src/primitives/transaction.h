@@ -338,6 +338,17 @@ struct CMutableTransaction
     uint256 GetHash() const;
 
     std::string ToString() const;
+
+	// TODO: Removing these 2 fixes transaction timestamp bugs but the wallet's orphan handling does not work like before if the bug is fixed. Orphans would exist forever, locking your coins until you zap wallet transactions. Proper abandon transaction handling required first.
+	friend bool operator==(const CMutableTransaction& a, const CMutableTransaction& b)
+	{
+		return a.GetHash() == b.GetHash();
+	}
+
+	friend bool operator!=(const CMutableTransaction& a, const CMutableTransaction& b)
+	{
+		return !(a == b);
+	}
 };
 
 #endif // BITCOIN_PRIMITIVES_TRANSACTION_H
