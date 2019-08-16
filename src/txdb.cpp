@@ -258,7 +258,6 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nFlags = diskindex.nFlags;
                 pindexNew->nStakeModifier = diskindex.nStakeModifier;
 				if (pindexNew->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) pindexNew->nStakeModifierV2 = diskindex.nStakeModifierV2;
-				else pindexNew->nStakeModifierV2 = 0;
                 pindexNew->prevoutStake = diskindex.prevoutStake;
                 pindexNew->nStakeTime = diskindex.nStakeTime;
                 pindexNew->hashProofOfStake = diskindex.hashProofOfStake;

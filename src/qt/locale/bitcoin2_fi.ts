@@ -1926,14 +1926,6 @@ Please check the address and try again.</source>
         <translation>Suositeltu</translation>
     </message>
     <message>
-        <source>Send as zero-fee transaction if possible</source>
-        <translation>Lähetä nolla taksainen rahansiirto jos mahdollista</translation>
-    </message>
-    <message>
-        <source>(confirmation may take longer)</source>
-        <translation>(Vahvistus voi kestää pidempään)</translation>
-    </message>
-    <message>
         <source>Confirm the send action</source>
         <translation>Vahvista lähetys</translation>
     </message>

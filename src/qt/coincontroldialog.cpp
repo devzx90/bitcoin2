@@ -558,7 +558,6 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog)
     double dPriorityInputs = 0;
     unsigned int nQuantity = 0;
     int nQuantityUncompressed = 0;
-    bool fAllowFree = false;
 
     vector<COutPoint> vCoinControl;
     vector<COutput> vOutputs;
@@ -614,15 +613,6 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog)
 
         // Swift TX Fee
         if (coinControl->useSwiftTX) nPayFee = max(nPayFee, (CAmount)50000);
-        // Allow free?
-        double dPriorityNeeded = mempoolEstimatePriority;
-        if (dPriorityNeeded <= 0)
-            dPriorityNeeded = AllowFreeThreshold(); // not enough data, back to hard-coded
-        fAllowFree = (dPriority >= dPriorityNeeded);
-
-        if (fSendFreeTransactions)
-            if (fAllowFree && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE)
-                nPayFee = 0;
 
         if (nPayAmount > 0) {
             nChange = nAmount - nPayFee - nPayAmount;
@@ -683,8 +673,6 @@ void CoinControlDialog::updateLabels(WalletModel* model, QDialog* dialog)
     }
 
     // turn labels "red"
-    l5->setStyleSheet((nBytes >= MAX_FREE_TRANSACTION_CREATE_SIZE) ? "color:red;" : ""); // Bytes >= 1000
-    l6->setStyleSheet((dPriority > 0 && !fAllowFree) ? "color:red;" : "");               // Priority < "medium"
     l7->setStyleSheet((fDust) ? "color:red;" : "");                                      // Dust = "yes"
 
     // tool tips

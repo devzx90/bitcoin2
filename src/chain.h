@@ -209,7 +209,7 @@ public:
         nMoneySupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
-		nStakeModifierV2 = 0;
+		nStakeModifierV2 = uint256();
         //nStakeModifierChecksum = 0;
         prevoutStake.SetNull();
         nStakeTime = 0;
@@ -250,7 +250,7 @@ public:
         nMoneySupply = 0;
         nFlags = 0;
         nStakeModifier = 0;
-		nStakeModifierV2 = 0;
+		nStakeModifierV2 = uint256();
         //nStakeModifierChecksum = 0;
         hashProofOfStake = uint256();
 

@@ -2774,14 +2774,6 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>권장</translation>
     </message>
     <message>
-        <source>Send as zero-fee transaction if possible</source>
-        <translation>가능하다면 제로 수수료 트랜잭션으로 전송하십시오</translation>
-    </message>
-    <message>
-        <source>(confirmation may take longer)</source>
-        <translation>(승인이 오래걸릴 수 있습니다)</translation>
-    </message>
-    <message>
         <source>Confirm the send action</source>
         <translation>전송 작업 확인</translation>
     </message>

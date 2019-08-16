@@ -2864,14 +2864,6 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Recommended</translation>
     </message>
     <message>
-        <source>Send as zero-fee transaction if possible</source>
-        <translation>Send as zero-fee transaction if possible</translation>
-    </message>
-    <message>
-        <source>(confirmation may take longer)</source>
-        <translation>(confirmation may take longer)</translation>
-    </message>
-    <message>
         <source>Confirm the send action</source>
         <translation>Confirm the send action</translation>
     </message>

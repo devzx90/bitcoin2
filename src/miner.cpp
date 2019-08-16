@@ -139,8 +139,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
     // Minimum block size you want to create; block will be filled with free transactions
     // until there are no more or the block reaches this size:
-    unsigned int nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
-    nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
+    //unsigned int nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
+    //nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
 
     // Collect memory pool transactions into the block
     CAmount nFees = 0;
@@ -247,9 +247,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         uint64_t nBlockSize = 1000;
         uint64_t nBlockTx = 0;
         int nBlockSigOps = 100;
-        bool fSortedByFee = (nBlockPrioritySize <= 0);
 
-        TxPriorityCompare comparer(fSortedByFee);
+		// TODO: Remove priority calculations completely and just sort by fee.
+
+        TxPriorityCompare comparer(true); // fSortedByFee true
         std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
 
         vector<CBigNum> vBlockSerials;
@@ -274,22 +275,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             if (nBlockSigOps + nTxSigOps >= nMaxBlockSigOps)
                 continue;
 
-            // Skip free transactions if we're past the minimum block size:
-            const uint256& hash = tx.GetHash();
-            double dPriorityDelta = 0;
-            CAmount nFeeDelta = 0;
-            mempool.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
-            if (!tx.IsZerocoinSpend() && fSortedByFee && (dPriorityDelta <= 0) && (nFeeDelta <= 0) && (feeRate < ::minRelayTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
+            // Skip free and too low fee transactions
+            if (!tx.IsZerocoinSpend() && (feeRate < ::minRelayTxFee))
                 continue;
-
-            // Prioritise by fee once past the priority size or we run out of high-priority
-            // transactions:
-            if (!fSortedByFee &&
-                ((nBlockSize + nTxSize >= nBlockPrioritySize) || !AllowFree(dPriority))) {
-                fSortedByFee = true;
-                comparer = TxPriorityCompare(fSortedByFee);
-                std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
-            }
 
             if (!view.HaveInputs(tx))
                 continue;
@@ -354,6 +342,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
 
             // Add transactions that depend on this one to the priority queue
+			const uint256& hash = tx.GetHash();
             if (mapDependers.count(hash)) {
                 BOOST_FOREACH (COrphan* porphan, mapDependers[hash]) {
                     if (!porphan->setDependsOn.empty()) {

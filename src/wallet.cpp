@@ -42,7 +42,6 @@ CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 unsigned int nTxConfirmTarget = 1;
 bool bSpendZeroConfChange = true;
 bool bdisableSystemnotifications = false; // Those bubbles can be annoying and slow down the UI when you get lots of trx
-bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
 
 extern unsigned int nMaxStakingFutureDrift, LastHashedBlockHeight, LastHashedBlockTime;
@@ -51,7 +50,7 @@ extern unsigned int nMaxStakingFutureDrift, LastHashedBlockHeight, LastHashedBlo
  * Fees smaller than this (in duffs) are considered zero fee (for transaction creation)
  * Override with -mintxfee
  */
-CFeeRate CWallet::minTxFee = CFeeRate(1600);
+CFeeRate CWallet::minTxFee = CFeeRate(3200);
 int64_t nStartupTime = GetAdjustedTime();
 
 /** @defgroup mapWallet
@@ -2787,27 +2786,14 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     return false;
                 }
 
-
-                BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins) {
-                    CAmount nCredit = pcoin.first->vout[pcoin.second].nValue;
-                    //The coin age after the next block (depth+1) is used instead of the current,
-                    //reflecting an assumption the user would accept a bit more delay for
-                    //a chance at a free transaction.
-                    //But mempool inputs might still be in the mempool, so their age stays 0
-                    int age = pcoin.first->GetDepthInMainChain();
-                    if (age != 0)
-                        age += 1;
-                    dPriority += (double)nCredit * age;
-                }
-
                 CAmount nChange = nValueIn - nValue - nFeeRet;
 
                 //over pay for denominated transactions
-                if (coin_type == ONLY_DENOMINATED) {
+                /*if (coin_type == ONLY_DENOMINATED) {
                     nFeeRet += nChange;
                     nChange = 0;
                     wtxNew.mapValue["DS"] = "1";
-                }
+                }*/
 
                 if (nChange > 0)
 				{
@@ -2907,20 +2893,8 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     strFailReason = _("Transaction too large");
                     return false;
                 }
-                dPriority = wtxNew.ComputePriority(dPriority, nBytes);
+                //dPriority = wtxNew.ComputePriority(dPriority, nBytes);
 
-                // Can we complete this as a free transaction?
-                if (fSendFreeTransactions && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE) {
-                    // Not enough fee: enough priority?
-                    double dPriorityNeeded = mempool.estimatePriority(nTxConfirmTarget);
-                    // Not enough mempool history to estimate: use hard-coded AllowFree.
-                    if (dPriorityNeeded <= 0 && AllowFree(dPriority))
-                        break;
-
-                    // Small enough, and priority high enough, to send for free
-                    if (dPriorityNeeded > 0 && dPriority >= dPriorityNeeded)
-                        break;
-                }
 
                 CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(nBytes, nTxConfirmTarget, mempool));
 
