@@ -4414,6 +4414,9 @@ int CMerkleTx::GetDepthInMainChain(const CBlockIndex*& pindexRet, bool enableIX)
 		}
 	}
 
+	if (nResult == 0 && !mempool.exists(GetHash()))
+		return -1; // Not in chain, not in mempool
+
 	if (enableIX) {
 		if (nResult < 6) {
 			int signatures = GetTransactionLockSignatures();
