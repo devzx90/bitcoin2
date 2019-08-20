@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
+// Copyright (c) 2017-2019 The Bitcoin 2 developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -260,7 +261,7 @@ void CObfuscationPool::ProcessMessageObfuscation(CNode* pfrom, std::string& strC
 
             {
                 LOCK(cs_main);
-                if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL, false, true)) {
+                if (!AcceptableInputs(mempool, state, CTransaction(tx), NULL)) {
                     LogPrintf("dsi -- transaction not valid! \n");
                     errorID = ERR_INVALID_TX;
                     pfrom->PushMessage("dssu", sessionID, GetState(), GetEntriesCount(), MASTERNODE_REJECTED, errorID);
@@ -587,7 +588,7 @@ void CObfuscationPool::CheckFinalTransaction()
         LogPrint("obfuscation", "Transaction 2: %s\n", txNew.ToString());
 
         // See if the transaction is valid
-        if (!txNew.AcceptToMemoryPool(false, true, true)) {
+        if (!txNew.AcceptToMemoryPool()) {
             LogPrintf("CObfuscationPool::Check() - CommitTransaction : Error: Transaction not valid\n");
             SetNull();
 
@@ -730,7 +731,7 @@ void CObfuscationPool::ChargeFees()
                 CWalletTx wtxCollateral = CWalletTx(pwalletMain, txCollateral);
 
                 // Broadcast
-                if (!wtxCollateral.AcceptToMemoryPool(true)) {
+                if (!wtxCollateral.AcceptToMemoryPool()) {
                     // This must not fail. The transaction has already been signed and recorded.
                     LogPrintf("CObfuscationPool::ChargeFees() : Error: Transaction not valid");
                 }
@@ -750,7 +751,7 @@ void CObfuscationPool::ChargeFees()
                     CWalletTx wtxCollateral = CWalletTx(pwalletMain, v.collateral);
 
                     // Broadcast
-                    if (!wtxCollateral.AcceptToMemoryPool(false)) {
+                    if (!wtxCollateral.AcceptToMemoryPool()) {
                         // This must not fail. The transaction has already been signed and recorded.
                         LogPrintf("CObfuscationPool::ChargeFees() : Error: Transaction not valid");
                     }
@@ -787,7 +788,7 @@ void CObfuscationPool::ChargeRandomFees()
                 CWalletTx wtxCollateral = CWalletTx(pwalletMain, txCollateral);
 
                 // Broadcast
-                if (!wtxCollateral.AcceptToMemoryPool(true)) {
+                if (!wtxCollateral.AcceptToMemoryPool()) {
                     // This must not fail. The transaction has already been signed and recorded.
                     LogPrintf("CObfuscationPool::ChargeRandomFees() : Error: Transaction not valid");
                 }
@@ -994,7 +995,7 @@ bool CObfuscationPool::IsCollateralValid(const CTransaction& txCollateral)
     {
         LOCK(cs_main);
         CValidationState state;
-        if (!AcceptableInputs(mempool, state, txCollateral, true, NULL)) {
+        if (!AcceptableInputs(mempool, state, txCollateral, NULL)) {
             if (fDebug) LogPrintf("CObfuscationPool::IsCollateralValid - didn't pass IsAcceptable\n");
             return false;
         }
@@ -1185,7 +1186,7 @@ void CObfuscationPool::SendObfuscationDenominate(std::vector<CTxIn>& vin, std::v
                 MilliSleep(50);
                 continue;
             }
-            if (!AcceptableInputs(mempool, state, CTransaction(tx), false, NULL, false, true)) {
+            if (!AcceptableInputs(mempool, state, CTransaction(tx), NULL)) {
                 LogPrintf("dsi -- transaction not valid! %s \n", tx.ToString());
                 UnlockCoins();
                 SetNull();

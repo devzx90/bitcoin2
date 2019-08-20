@@ -10,7 +10,7 @@
 #include "pow.h"
 #include "uint256.h"
 #include "accumulators.h"
-
+#include "spork.h"
 #include <stdint.h>
 
 #include <boost/thread.hpp>
@@ -257,6 +257,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nMoneySupply = diskindex.nMoneySupply;
                 pindexNew->nFlags = diskindex.nFlags;
                 pindexNew->nStakeModifier = diskindex.nStakeModifier;
+				if (pindexNew->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) pindexNew->nStakeModifierV2 = diskindex.nStakeModifierV2;
                 pindexNew->prevoutStake = diskindex.prevoutStake;
                 pindexNew->nStakeTime = diskindex.nStakeTime;
                 pindexNew->hashProofOfStake = diskindex.hashProofOfStake;

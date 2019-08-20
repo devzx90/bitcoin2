@@ -2489,14 +2489,6 @@ https://www.transifex.com/bitcoin2-project/bitcoin2-project-translations</transl
         <translation>Recomendado</translation>
     </message>
     <message>
-        <source>Send as zero-fee transaction if possible</source>
-        <translation>Enviar como uma transação com taxa zero se possível</translation>
-    </message>
-    <message>
-        <source>(confirmation may take longer)</source>
-        <translation>(confirmação pode demorar mais)</translation>
-    </message>
-    <message>
         <source>Confirm the send action</source>
         <translation>Confirma a ação de envio</translation>
     </message>

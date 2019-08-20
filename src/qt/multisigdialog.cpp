@@ -736,7 +736,7 @@ void MultisigDialog::commitMultisigTx()
         if (!fHaveMempool && !fHaveChain) {
             // push to local node and sync with wallets
             CValidationState state;
-            if (!AcceptToMemoryPool(mempool, state, tx, false, NULL, !fOverrideFees)) {
+            if (!AcceptToMemoryPool(mempool, state, tx, NULL, !fOverrideFees)) {
                 if (state.IsInvalid())
                     throw runtime_error(strprintf("Transaction rejected - %i: %s", state.GetRejectCode(), state.GetRejectReason()));
                 else

@@ -174,17 +174,10 @@ private:
         // We need to guess why the transaction was included in a block-- either
         // because it is high-priority or because it has sufficient fees.
         bool sufficientFee = (feeRate > minRelayFee);
-        bool sufficientPriority = AllowFree(dPriority);
         const char* assignedTo = "unassigned";
-        if (sufficientFee && !sufficientPriority && CBlockAverage::AreSane(feeRate, minRelayFee)) {
+        if (sufficientFee && CBlockAverage::AreSane(feeRate, minRelayFee)) {
             history[nBlocksTruncated].RecordFee(feeRate);
             assignedTo = "fee";
-        } else if (sufficientPriority && !sufficientFee && CBlockAverage::AreSane(dPriority)) {
-            history[nBlocksTruncated].RecordPriority(dPriority);
-            assignedTo = "priority";
-        } else {
-            // Neither or both fee and priority sufficient to get confirmed:
-            // don't know why they got confirmed.
         }
         LogPrint("estimatefee", "Seen TX confirm: %s : %s fee/%g priority, took %d blocks\n",
             assignedTo, feeRate.ToString(), dPriority, nBlocksAgo);

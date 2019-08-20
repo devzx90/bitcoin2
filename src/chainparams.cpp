@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2017-2018 The Bitcoin 2 developers
+// Copyright (c) 2017-2019 The Bitcoin 2 developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -62,14 +62,17 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
 	(1390, uint256("318e54323519a7d35f8d5b6c1a515b03722f9464f3bcacc819b6124a59ba0b21"))
 	(2244, uint256("9889988d627880d89d61b635b7bc47f1807586926cdd72ef440f887d4f4d81a6"))
 	(6436, uint256("8bb42ae275c6b7de44e38a94dc4c674e94773f6cdf567b3315ce0934c850d101"))
-	(129786, uint256("d7e8ec1d12c7e945b4f8bb682197177640f436309eabd6b4559ed44afb73a83f"));
+	(129786, uint256("d7e8ec1d12c7e945b4f8bb682197177640f436309eabd6b4559ed44afb73a83f"))
+	(554450, uint256("4f059f53ec53736e47620b0ef1f36956e0d4a9050d7d1fc125571726ed8992a6"))
+	(625053, uint256("16167d70bd11524560179b7bd474e85d50124930e7b27e4e107c6048c915ea32"))
+	(628729, uint256("6cba37f16a00e0b9d853dc220c2b88ab5b53217fcc268aabe79d9c18c4b62093"));
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-	1532577930, // * UNIX timestamp of last checkpoint block. obtained by: date +%s.
-	260505,    // * total number of transactions between genesis and last checkpoint
+	1564829522, // * UNIX timestamp of last checkpoint block. obtained by: date +%s.
+	1276591,    // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
-	2880        // * estimated number of transactions per day after checkpoint. 2 transactions per minute = 2880
+	2960        // * estimated number of transactions per day after checkpoint. 2 transactions per minute = 2880
 };
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
@@ -127,7 +130,6 @@ public:
         nTargetTimespan = 60;
         nTargetSpacing = 60;  // 1 minute
         nMaturity = 100;
-        nMasternodeCountDrift = 20;
         nMaxMoneyOut = 21000000 * COIN; // This is the maximum supply.
 
         /** Height or Time Based Activations **/
@@ -179,7 +181,7 @@ public:
         fHeadersFirstSyncingActive = false;
 
         nPoolMaxTransactions = 3;
-		strSporkKey = "0475d8b895b80516025a2f33d647551d9688ff16f620e0035132d29ea2fc9c7e4b2c3e80a2938f4595c60f52909d0bd8659b5cadc838425aced67081a8570b8e50";//"042F8BDE4D1A07209355B4A7250A5C5128E88B84BDDC619AB7CBA8D569B240EFE4D8AC222636E5E3D6D4DBA9DDA6C9C426F788271BAB0D6840DCA87D3AA6AC62D6"; //"15FWA7rK3CFFGyn1ELrx8rbBRYhFGLpfwx";
+		strSporkKey = "0475d8b895b80516025a2f33d647551d9688ff16f620e0035132d29ea2fc9c7e4b2c3e80a2938f4595c60f52909d0bd8659b5cadc838425aced67081a8570b8e50";
         strObfuscationPoolDummyAddress = "1CzYXueWh2cT3p9LZRVQZvKmJsPijdiTV";
         nStartMasternodePayments = 1519330596; // 22nd of February 2018
 
@@ -190,14 +192,9 @@ public:
 			"f8e8df6f98ffa4fb1b90f8c8dceb41a5b02722e692fc89bcb0a4a4959907e1293c05db682c0ffe070fe2bfebe78546cd934b741079390da0b14ec95346f30f3add4e54aa548794"
 			"9c34a491a46c77060cf810321e8b83fe5bbd0b1101f3b202ade8f89c948a917639b01cb8dc5cdcb7629c4a6dc50118e24e01730dbb7d81a496ede24a185779af3d41d7213fcaeb6"
 			"3c1905f246732bbe432331914bae730108f2a88f1bec5368184435b782be6f9ad427db01a5";
-			/*PIVX: "25195908475657893494027183240048398571429282126204032027777137836043662020707595556264018525880784"
-            "4069182906412495150821892985591491761845028084891200728449926873928072877767359714183472702618963750149718246911"
-            "6507761337985909570009733045974880842840179742910064245869181719511874612151517265463228221686998754918242243363"
-            "7259085141865462043576798423387184774447920739934236584823824281198163815010674810451660377306056201619676256133"
-            "8441436038339044149526344321901146575444541784240209246165157233507787077498171257724679629263863563732899121548"
-            "31438167899885040445364023527381951378636564391212010397122822120720357";*/
-        nMaxZerocoinSpendsPerTransaction = 17; // Was 7 in PIVX. Assume about 20kb each
-        nMinZerocoinMintFee = 100000; // higher fee required for zerocoin mints. 0.001 BTC2. Was 10x more in PIVX but supply of PIVX is higher too.
+
+        nMaxZerocoinSpendsPerTransaction = 17; // Assume about 20kb each
+        nMinZerocoinMintFee = 100000; // higher fee required for zerocoin mints. 0.001 BTC2.
         nMintRequiredConfirmations = 20; //the maximum amount of confirmations until accumulated in 19
         nRequiredAccumulation = 1;
         nDefaultSecurityLevel = 100; //full security level for accumulators
@@ -235,16 +232,10 @@ public:
         nTargetSpacing = 60;
         nLastPOWBlock = 200;
         nMaturity = 15;
-        nMasternodeCountDrift = 4;
         nModifierUpdateBlock = 1391;
         nMaxMoneyOut = 21000000 * COIN;
         nZerocoinStartHeight = 1391;
         nZerocoinStartTime = 1519330596;
-        //nBlockEnforceSerialRange = 1; //Enforce serial range starting this block
-        /*nBlockRecalculateAccumulators = 9908000; //Trigger a recalculation of accumulators
-        nBlockFirstFraudulent = 9891737; //First block that bad serials emerged
-        nBlockLastGoodCheckpoint = 9891730; //Last valid accumulator checkpoint
-        nBlockEnforceInvalidUTXO = 9902850;*/ //Start enforcing the invalid UTXO's
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1518621005;

@@ -47,45 +47,42 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 		return bnNew.GetCompact();
 	}
 	/////////////
-
-	int nHeightFirst = pindexLast->nHeight - 10;
-	if (nHeightFirst <= Params().LAST_POW_BLOCK())
-	{
-		// Re-target every block.
-		nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
-	}
+	
+	if (pindexLast->nHeight + 1 == GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) nActualTimespan = 2000; // Reduce difficulty for a smoother transition to new staking protocol.
 	else
 	{
+		int nHeightFirst = pindexLast->nHeight - 10;
+
 		// Re-target every 10 blocks.
 		if (pindexLast->nHeight % 10 != 1) return pindexLast->nBits;
-		
+
 		CBlockIndex* pindexFirst = pindexLast->pprev;
 		while (pindexFirst->nHeight > nHeightFirst) {
 			pindexFirst = pindexFirst->pprev;
 		}
 		assert(pindexFirst);
+
 		nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
 
 		nActualTimespan /= 10;
+
+		// Limit adjustment step
+	
+		if (nActualTimespan < 30) nActualTimespan = 30;
+		else if (nActualTimespan > 120) nActualTimespan = 120;
 	}
 
-	// Limit adjustment step
-	if (nActualTimespan < 30) nActualTimespan = 30;
-	else if (nActualTimespan > 120) nActualTimespan = 120;
-	
 	// Retarget
 	uint256 bnNew;
 	
 	bnNew.SetCompact(pindexLast->nBits);
-
+	
 	if (bnNew == Params().ProofOfWorkLimit() && nActualTimespan >= nTargetSpacing) return bnNew.GetCompact();
 	
 	bnNew /= nTargetSpacing;
 	bnNew *= nActualTimespan;
 
 	if (bnNew > Params().ProofOfWorkLimit()) bnNew = Params().ProofOfWorkLimit();
-	//if (pindexLast->nHeight < Params().LAST_POW_BLOCK() + 2 && bnNew.GetCompact() > 469827583U) bnNew = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // PoS Starting difficulty can't be too low.
-
 
 	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
 

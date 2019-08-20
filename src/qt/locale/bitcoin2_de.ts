@@ -3210,14 +3210,6 @@ Bitte haben Sie Geduld...</translation>
         <translation>Empfohlen</translation>
     </message>
     <message>
-        <source>Send as zero-fee transaction if possible</source>
-        <translation>Sende als Null-Gebühr Transaction, wenn möglich</translation>
-    </message>
-    <message>
-        <source>(confirmation may take longer)</source>
-        <translation>(Bestätigung kann länger dauern)</translation>
-    </message>
-    <message>
         <source>Confirm the send action</source>
         <translation>Bestätige die Sendeaktion</translation>
     </message>

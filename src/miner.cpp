@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2017-2018 The BTC2 developers
+// Copyright (c) 2017-2019 The Bitcoin 2 developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -31,6 +31,7 @@
 #include <boost/tuple/tuple.hpp>
 
 using namespace std;
+unsigned int LastHashedBlockHeight = 0, LastHashedBlockTime = 0;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -138,8 +139,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
     // Minimum block size you want to create; block will be filled with free transactions
     // until there are no more or the block reaches this size:
-    unsigned int nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
-    nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
+    //unsigned int nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
+    //nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
 
     // Collect memory pool transactions into the block
     CAmount nFees = 0;
@@ -175,7 +176,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             for (const CTxIn& txin : tx.vin) {
                 //zerocoinspend has special vin
                 if (tx.IsZerocoinSpend()) {
-                    nTotalIn = tx.GetZerocoinSpent();
+                    nTotalIn += tx.GetZerocoinSpent();
                     // PIVX v.3.0.6 just had break; here.
                     continue;
                 }
@@ -246,9 +247,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         uint64_t nBlockSize = 1000;
         uint64_t nBlockTx = 0;
         int nBlockSigOps = 100;
-        bool fSortedByFee = (nBlockPrioritySize <= 0);
 
-        TxPriorityCompare comparer(fSortedByFee);
+		// TODO: Remove priority calculations completely and just sort by fee.
+
+        TxPriorityCompare comparer(true); // fSortedByFee true
         std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
 
         vector<CBigNum> vBlockSerials;
@@ -273,22 +275,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             if (nBlockSigOps + nTxSigOps >= nMaxBlockSigOps)
                 continue;
 
-            // Skip free transactions if we're past the minimum block size:
-            const uint256& hash = tx.GetHash();
-            double dPriorityDelta = 0;
-            CAmount nFeeDelta = 0;
-            mempool.ApplyDeltas(hash, dPriorityDelta, nFeeDelta);
-            if (!tx.IsZerocoinSpend() && fSortedByFee && (dPriorityDelta <= 0) && (nFeeDelta <= 0) && (feeRate < ::minRelayTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
+            // Skip free and too low fee transactions
+            if (!tx.IsZerocoinSpend() && (feeRate < ::minRelayTxFee))
                 continue;
-
-            // Prioritise by fee once past the priority size or we run out of high-priority
-            // transactions:
-            if (!fSortedByFee &&
-                ((nBlockSize + nTxSize >= nBlockPrioritySize) || !AllowFree(dPriority))) {
-                fSortedByFee = true;
-                comparer = TxPriorityCompare(fSortedByFee);
-                std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
-            }
 
             if (!view.HaveInputs(tx))
                 continue;
@@ -329,7 +318,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             // policy here, but we still have to ensure that the block we
             // create only contains transactions that are valid in new blocks.
             CValidationState state;
-            if (!CheckInputs(tx, state, view, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true))
+            if (!CheckInputs(tx, state, view, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true, NULL, Params().Zerocoin_StartHeight()))
                 continue;
 
             CTxUndo txundo;
@@ -353,6 +342,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
 
             // Add transactions that depend on this one to the priority queue
+			const uint256& hash = tx.GetHash();
             if (mapDependers.count(hash)) {
                 BOOST_FOREACH (COrphan* porphan, mapDependers[hash]) {
                     if (!porphan->setDependsOn.empty()) {
@@ -367,8 +357,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         }
 
         nLastBlockTx = nBlockTx;
+		if(nLastBlockSize != nBlockSize) LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         nLastBlockSize = nBlockSize;
-        LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
+        
 
         // Compute final coinbase transaction.
         if (!fProofOfStake)
@@ -395,14 +386,15 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 			if (nSearchTime >= nLastCoinStakeSearchTime)
 			{
 				unsigned int nTxNewTime = 0;
-
-				if (pwallet->CreateCoinStake(*pwallet, pblock->nBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime, nFees))
+				
+				if (pwallet->CreateCoinStake(*pwallet, pblock->nBits, txCoinStake, nTxNewTime, nFees))
 				{
 					pblock->nTime = nTxNewTime;
 					pblock->vtx[0].vout[0].SetEmpty();
 					pblock->vtx[1] = CTransaction(txCoinStake);
 					fStakeFound = true;
 				}
+				
 				nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
 				nLastCoinStakeSearchTime = nSearchTime;
 			}
@@ -410,11 +402,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 			if (!fStakeFound) return NULL;
 
 			pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
-			//pblocktemplate->vTxFees[0] = -nFees; // PIVX didn't have this line for PoS.
 		}
 
         // Fill in header
-		LogPrint("masternode", "pblock->hashPrevBlock = pindexPrev->GetBlockHash();\n");
         pblock->hashPrevBlock = pindexPrev->GetBlockHash();
 
         if(!fProofOfStake) UpdateTime(pblock, pindexPrev);
@@ -531,37 +521,40 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
     //control the amount of times the client will check for mintable coins
     static bool fMintableCoins = false;
-    static int nMintableLastCheck = 0;
-
-    if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
-    {
-        nMintableLastCheck = GetTime();
-        fMintableCoins = pwallet->MintableCoins();
-    }
+    static int nMintableLastCheckHeight = 0;
 
     while (fGenerateBitcoins || fProofOfStake)
 	{
         if (fProofOfStake)
 		{
             if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
-                MilliSleep(5000);
+                MilliSleep(10000);
                 continue;
             }
 
 			while (chainActive.Tip()->nTime < 1519096403 || (Params().MiningRequiresPeers() && vNodes.empty()) || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || (Params().MiningRequiresPeers() && !masternodeSync.IsSynced())) {
                 nLastCoinStakeSearchInterval = 0;
                 MilliSleep(5000);
-                if (!fGenerateBitcoins && !fProofOfStake)
-                    continue;
+				if (!fGenerateBitcoins && !fProofOfStake)
+					continue;
+
+				if (nMintableLastCheckHeight < chainActive.Tip()->nHeight) // Check once per block.
+				{
+					nMintableLastCheckHeight = chainActive.Tip()->nHeight;
+					fMintableCoins = pwallet->MintableCoins();
+				}
             }
 
-            if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
+			if (LastHashedBlockHeight == chainActive.Tip()->nHeight) // see if bestblock has been hashed yet
             {
-                if (GetTime() - mapHashedBlocks[chainActive.Tip()->nHeight] < max(pwallet->nHashInterval, (unsigned int)1)) // wait half of the nHashDrift with max wait of 3 minutes
-                {
-                    MilliSleep(5000);
-                    continue;
-                }
+				unsigned int nMaxHashDivNow = (GetAdjustedTime() + nMaxStakingFutureDrift) / nStakeInterval;
+				unsigned int nPreviousHashDiv = LastHashedBlockTime / nStakeInterval;
+				if(nMaxHashDivNow <= nPreviousHashDiv)
+				{
+					// Sleep only 1 sec at a time, in case a new block comes in or we can hash again.
+					MilliSleep(1000);
+					continue;
+				}
             }
         }
 

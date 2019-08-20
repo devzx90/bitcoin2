@@ -225,10 +225,6 @@ bool CalculateAccumulatorCheckpoint(int nHeight, uint256& nCheckpoint, Accumulat
         nCheckpoint = mapAccumulators.GetCheckpoint();
 	LogPrint("masternode", "CalculateAccumulatorCheckpoint -  done. return true\n");
 
-
-	// PIVX v.3.0.6: make sure that these values are databased because reorgs may have deleted the checksums from DB
-	DatabaseChecksums(mapAccumulators);
-
     LogPrint("zero", "%s checkpoint=%s\n", __func__, nCheckpoint.GetHex());
     return true;
 }
