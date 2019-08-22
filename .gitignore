@@ -125,3 +125,11 @@ qa/pull-tester/test.*/*
 .idea
 CMakeLists.txt
 cmake-build-debug
+*.sln
+*.vcxproj
+src/Bitcoin 2.vcxproj.filters
+src/Bitcoin 2.vcxproj.user
+src/.vs/Bitcoin 2/v16/Browse.VC.db
+src/.vs/Bitcoin 2/v16/Browse.VC.opendb
+src/.vs/Bitcoin 2/v16/.suo
+*.ipch
