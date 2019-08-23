@@ -33,18 +33,24 @@ bool CMasternodeSync::IsSynced()
 bool CMasternodeSync::IsBlockchainSynced()
 {
     static int64_t timenow = GetTime();
+	
+	if (fImporting || fReindex)
+	{
+		LogPrint("masternode", "CMasternodeSync::IsBlockchainSynced() false. - fImporting or fReindex is true.\n");
+		return false;
+	}
 
-    if (fImporting || fReindex) return false;
-
-    TRY_LOCK(cs_main, lockMain);
-    if (!lockMain) return false;
+	LOCK(cs_main);
 
     CBlockIndex* pindex = chainActive.Tip();
     if (pindex == NULL) return false;
 
 	// If last block received 1+ hour ago then consider us not synced.
     if (pindex->nTime + 60 * 60 < timenow && ((pindex->nHeight != 1390 && pindex->nHeight != 1391) || timenow > 1522368000)) 
-        return false;
+	{
+		LogPrint("masternode", "CMasternodeSync::IsBlockchainSynced() false. last block received 1+ hour ago.\n");
+		return false;
+	}
 
     return true;
 }

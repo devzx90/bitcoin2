@@ -328,7 +328,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, unsigne
 	int nHeightStart = chainActive.Height();
 
 	int HashingStart = 0;
-	if (TimePastDifference > 1 && LastHashedBlockHeight != chainActive.Tip()->nHeight)
+	if (TimePastDifference > 1 && LastHashedBlockHeight != nHeightStart)
 	{
 		int nFactor = TimePastDifference / nStakeInterval;
 		HashingStart -= nFactor * nStakeInterval; // This makes it try past times too.
@@ -422,7 +422,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
     int nHeightStart = chainActive.Height();
 	
 	unsigned int HashingEnd = nMaxStakingFutureDrift;
-	if(TimePastDifference > 1 && LastHashedBlockHeight != chainActive.Tip()->nHeight) HashingEnd += TimePastDifference - 1; // This makes it try past times too.
+	if(TimePastDifference > 1 && LastHashedBlockHeight != chainActive.Height()) HashingEnd += TimePastDifference - 1; // This makes it try past times too.
 
 	for (unsigned int i = 0; i < HashingEnd; ++i) //iterate the hashing
 	{
