@@ -3743,14 +3743,9 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
         }
 
         // ppcoin: compute stake modifier
-		if (pindexNew->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
-		{
-			pindexNew->nStakeModifierV2 = ComputeStakeModifierV2(pindexNew->pprev, block.vtx[1].vin[0].prevout.hash);
-		}
-		else
+		if (pindexNew->nHeight < GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
 		{
 			uint64_t nStakeModifier = 0;
-			uint256 nStakeModifier2 = 0;
 			bool fGeneratedStakeModifier = false;
 			if (!ComputeNextStakeModifier(pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
 				LogPrintf("AddToBlockIndex() : ComputeNextStakeModifier() failed \n");
