@@ -4336,21 +4336,12 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 						return error("%s: double spent coinstake input inside block", __func__);
 					}
 				}
-
-				if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
-				{
-					if (!tx.IsCoinBase() && !in.scriptSig.IsZerocoinSpend())
-					{
-						const CCoins* coins = aCoinsCache.AccessCoins(in.prevout.hash);
-						if (coins && coins->nHeight < Params().Zerocoin_StartHeight()) return error("%s : FAILED for block %s", __func__, block.GetHash().GetHex());
-					}
-				}
 			}
 		}
 
 		// Check timestamp
 		if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && (block.GetBlockTime() % nStakeInterval != 0 || pindexPrev->GetBlockTime() > block.GetBlockTime() + nMaxPastTimeSecs))
-			return error("%s: timestamp invalid. block timestamp invalid: %d", __func__, block.GetBlockTime());
+			return error("%s: block timestamp invalid: %d", __func__, block.GetBlockTime());
 
 		// Check whether is a fork or not
 		if (isBlockFromFork)
@@ -5532,12 +5523,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         // We use certain sporks during IBD, so check to see if they are
         // available. If not, ask the first peer connected for them.
-        bool fMissingSporks = !pSporkDB->SporkExists(SPORK_13_STAKING_PROTOCOL_2) &&
-				!pSporkDB->SporkExists(SPORK_14_NEW_PROTOCOL_ENFORCEMENT) &&
-                !pSporkDB->SporkExists(SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2) &&
-                !pSporkDB->SporkExists(SPORK_16_ZEROCOIN_MAINTENANCE_MODE);
-
-		if (fMissingSporks || !fRequestedSporksIDB) {
+		if (!pSporkDB->SporkExists(SPORK_13_STAKING_PROTOCOL_2)
+		|| !pSporkDB->SporkExists(SPORK_14_NEW_PROTOCOL_ENFORCEMENT)
+		//|| !pSporkDB->SporkExists(SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2)
+		|| !pSporkDB->SporkExists(SPORK_16_ZEROCOIN_MAINTENANCE_MODE)
+		|| !fRequestedSporksIDB) {
 			LogPrintf("asking peer for sporks\n");
 			pfrom->PushMessage("getsporks");
 			fRequestedSporksIDB = true;
