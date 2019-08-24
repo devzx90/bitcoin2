@@ -538,7 +538,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 				if (!fGenerateBitcoins && !fProofOfStake)
 					continue;
 
-				if (nMintableLastCheckHeight < chainActive.Tip()->nHeight) // Check once per block.
+				if (!fMintableCoins && nMintableLastCheckHeight < chainActive.Tip()->nHeight) // Check once per block.
 				{
 					nMintableLastCheckHeight = chainActive.Tip()->nHeight;
 					fMintableCoins = pwallet->MintableCoins();
