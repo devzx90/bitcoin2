@@ -2867,9 +2867,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 REJECT_INVALID, "bad-txns-BIP30");
     }
 
-	// Set proof-of-stake hash modifier v2
-	if(pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) pindex->nStakeModifierV2 = ComputeStakeModifierV2(pindex->pprev, block.vtx[1].vin[0].prevout.hash);
-
 	LogPrint("masternode", "CCheckQueueControl<CScriptCheck> control\n");
     CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
 
@@ -3751,6 +3748,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
 				LogPrintf("AddToBlockIndex() : ComputeNextStakeModifier() failed \n");
 			pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
 		}
+		else pindexNew->nStakeModifierV2 = ComputeStakeModifierV2(pindexNew->pprev, block.vtx[1].vin[0].prevout.hash);
         
         /*pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
         if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
@@ -4305,7 +4303,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
 	if(block.IsProofOfStake())
 	{
-		LOCK(cs_main);
+		//LOCK(cs_main); Assertlockheld already called.
 
 		// Blocks arrives in order, so if prev block is not the tip then we are on a fork.
 		// Extra info: duplicated blocks are skipping these checks, so we don't have to worry about those here.

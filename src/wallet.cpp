@@ -44,7 +44,7 @@ bool bSpendZeroConfChange = true;
 bool bdisableSystemnotifications = false; // Those bubbles can be annoying and slow down the UI when you get lots of trx
 bool fPayAtLeastCustomFee = true;
 
-extern unsigned int nMaxStakingFutureDrift, LastHashedBlockHeight, LastHashedBlockTime;
+extern unsigned int nMaxStakingFutureDrift, LastHashedBlockHeight, LastHashedBlockTime, nStakeInterval;
 
 /** 
  * Fees smaller than this (in duffs) are considered zero fee (for transaction creation)
@@ -3069,8 +3069,9 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
     }
 
 	LastHashedBlockHeight = chainActive.Tip()->nHeight;
-	LastHashedBlockTime = nTxNewTime; // store a time stamp of the max attempted hash's time stamp on this block.
-	if(!StakingV2) LastHashedBlockTime += nMaxStakingFutureDrift;
+	// store a time stamp of the max attempted hash's time stamp on this block.
+	LastHashedBlockTime = nTxNewTime + nMaxStakingFutureDrift; 
+	if(StakingV2) LastHashedBlockTime = LastHashedBlockTime - (LastHashedBlockTime % nStakeInterval);
 
     if (nCredit == 0 || nCredit > nBalance - nReserveBalance) return false;
 

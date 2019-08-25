@@ -545,16 +545,17 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 				}
             }
 
-			if (LastHashedBlockHeight == chainActive.Tip()->nHeight) // see if bestblock has been hashed yet
+			while(LastHashedBlockHeight == chainActive.Tip()->nHeight) // see if bestblock has been hashed yet
             {
 				unsigned int nMaxHashDivNow = (GetAdjustedTime() + nMaxStakingFutureDrift) / nStakeInterval;
 				unsigned int nPreviousHashDiv = LastHashedBlockTime / nStakeInterval;
-				if(nMaxHashDivNow <= nPreviousHashDiv)
+				if (nMaxHashDivNow <= nPreviousHashDiv)
 				{
 					// Sleep only 1 sec at a time, in case a new block comes in or we can hash again.
 					MilliSleep(1000);
 					continue;
 				}
+				else break;
             }
         }
 
@@ -582,7 +583,6 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                 continue;
             }
 
-            LogPrintf("CPUMiner : proof-of-stake block was signed %s \n", pblock->GetHash().ToString().c_str());
             SetThreadPriority(THREAD_PRIORITY_NORMAL);
             ProcessBlockFound(pblock, *pwallet, reservekey);
             SetThreadPriority(THREAD_PRIORITY_LOWEST);

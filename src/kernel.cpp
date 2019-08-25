@@ -316,28 +316,32 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, unsigne
 	}
 
 	bool fSuccess = false;
-	static int LastLogTime = 0;
 	// nTimeTx starts as GetAdjustedTime when creating a new block.
 	nTimeTx = nTimeTx - (nTimeTx % nStakeInterval); // Round it to the proper staking interval.
 	unsigned int nTryTime = 0;
-	int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
-	int64_t TimePastDifference2 = nTimeTx - ActualMedianTimePast; 
-	int64_t TimePastDifference = nTimeTx - chainActive.Tip()->GetBlockTime() + nMaxPastTimeSecs - 1;
-	if (TimePastDifference > TimePastDifference2) TimePastDifference = TimePastDifference2;
-
 	int nHeightStart = chainActive.Height();
+	int HashingStart;
 
-	int HashingStart = 0;
-	if (TimePastDifference > 1 && LastHashedBlockHeight != nHeightStart)
+	if(LastHashedBlockHeight != nHeightStart)
 	{
-		int nFactor = TimePastDifference / nStakeInterval;
-		HashingStart -= nFactor * nStakeInterval; // This makes it try past times too.
+		int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
+		int64_t TimePastDifference2 = nTimeTx - ActualMedianTimePast; 
+		int64_t TimePastDifference = nTimeTx - chainActive.Tip()->GetBlockTime() + nMaxPastTimeSecs - 1;
+		if (TimePastDifference > TimePastDifference2) TimePastDifference = TimePastDifference2;
+
+		if (TimePastDifference > 1)
+		{
+			int nFactor = TimePastDifference / nStakeInterval;
+			HashingStart = -nFactor * nStakeInterval; // This makes it try past times too.
+		}
+		else HashingStart = 0;
 	}
-	if (LastLogTime < nTimeTx)
+	else
 	{
-		LogPrintf("CheckStakeKernelHashV2(): HashingStart=%d nTimeTx=%d\n", HashingStart, nTimeTx);
-		LastLogTime = nTimeTx;
+		// Set the HashingStart so that we're only trying previously untested times.
+		HashingStart = LastHashedBlockTime - nTimeTx + nStakeInterval;
 	}
+
 	for (int i = HashingStart; i < nMaxStakingFutureDrift; i += nStakeInterval) //iterate the hashing
 	{
 		//new block came in, move on
@@ -359,7 +363,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, unsigne
 
 		fSuccess = true; // if we make it this far then we have successfully created a stake hash
 		nTimeTx = nTryTime;
-		LogPrintf("CheckStakeKernelHashV2(): Success. nStakeModifierV2=%s nTimeBlockFrom=%d prevout.hash=%s prevout.n=%d nTimeTx=%u\n", pindexPrev->nStakeModifierV2.ToString().c_str(), nTimeBlockFrom, prevout.hash.ToString().c_str(), prevout.n, nTimeTx);
+		//LogPrintf("CheckStakeKernelHashV2(): Success. nStakeModifierV2=%s nTimeBlockFrom=%d prevout.hash=%s prevout.n=%d nTimeTx=%u\n", pindexPrev->nStakeModifierV2.ToString().c_str(), nTimeBlockFrom, prevout.hash.ToString().c_str(), prevout.n, nTimeTx);
 		break;
 	}
 
