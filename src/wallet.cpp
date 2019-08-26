@@ -2189,6 +2189,7 @@ bool CWallet::MintableCoins()
     vector<COutput> vCoins;
     AvailableCoins(vCoins, true);
 
+	int64_t time = GetAdjustedTime();
     for (const COutput& out : vCoins) {
         int64_t nTxTime = out.tx->GetTxTime();
         if (out.tx->IsZerocoinSpend()) {
@@ -2197,7 +2198,7 @@ bool CWallet::MintableCoins()
             nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
         }
 
-        if (GetAdjustedTime() - nTxTime > nStakeMinAge && out.tx->GetDepthInMainChain() >= Params().COINBASE_MATURITY())
+        if (time - nTxTime > nStakeMinAge && out.tx->GetDepthInMainChain() >= Params().COINBASE_MATURITY())
             return true;
     }
 
@@ -2975,6 +2976,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
     CAmount nCredit = 0;
     CScript scriptPubKeyKernel;
 	bool StakingV2 = (chainActive.Height() + 1 >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2));
+	unsigned int chainTime = chainActive.Tip()->GetMedianTimePast();
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
 	{
@@ -3010,7 +3012,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, CMu
 			fKernelFound = false; // Set it back to false for now in case error checks fail.
 
             //Double check that this will pass time requirements
-            if (nTxNewTime <= chainActive.Tip()->GetMedianTimePast()) {
+            if (nTxNewTime <= chainTime) {
                 LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
                 continue;
             }
