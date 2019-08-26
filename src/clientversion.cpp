@@ -75,7 +75,7 @@ const std::string CLIENT_NAME("Bitcoin 2 Core");
 #endif
 #endif
 
-const std::string CLIENT_BUILD(BUILD_DESC CLIENT_VERSION_SUFFIX);
+const std::string CLIENT_BUILD(BUILD_DESC);
 const std::string CLIENT_DATE(BUILD_DATE);
 
 static std::string FormatVersion(int nVersion)
@@ -88,10 +88,11 @@ static std::string FormatVersion(int nVersion)
 
 std::string FormatFullVersion()
 {
-	if (CLIENT_VERSION_REVISION == 0 && CLIENT_VERSION_BUILD == 0)
+	if (CLIENT_VERSION_BUILD == 0)
 	{
 		std::ostringstream convert;
-		convert << CLIENT_VERSION_MAJOR << '.' << CLIENT_VERSION_MINOR;
+		if (CLIENT_VERSION_REVISION == 0) convert << CLIENT_VERSION_MAJOR << '.' << CLIENT_VERSION_MINOR;
+		else convert << CLIENT_VERSION_MAJOR << '.' << CLIENT_VERSION_MINOR << '.' << CLIENT_VERSION_REVISION;
 		return convert.str();
 	}
     return CLIENT_BUILD;
