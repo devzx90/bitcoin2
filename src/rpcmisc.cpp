@@ -138,10 +138,8 @@ UniValue getinfo(const UniValue& params, bool fHelp)
 #endif
     obj.push_back(Pair("relayfee", ValueFromAmount(::minRelayTxFee.GetFeePerK())));
     bool nStaking = false;
-    if (LastHashedBlockHeight == chainActive.Tip()->nHeight)
-        nStaking = true;
-    else if (LastHashedBlockHeight == chainActive.Tip()->nHeight && nLastCoinStakeSearchInterval)
-        nStaking = true;
+    if (LastHashedBlockHeight == chainActive.Tip()->nHeight) nStaking = true;
+
     obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
     return obj;
@@ -561,10 +559,7 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp)
     obj.push_back(Pair("mnsync", masternodeSync.IsSynced()));
 
     bool nStaking = false;
-	if (LastHashedBlockHeight == chainActive.Tip()->nHeight)
-		nStaking = true;
-	else if (LastHashedBlockHeight == chainActive.Tip()->nHeight && nLastCoinStakeSearchInterval)
-		nStaking = true;
+	if (LastHashedBlockHeight == chainActive.Tip()->nHeight) nStaking = true;
     obj.push_back(Pair("staking status", nStaking));
 
     return obj;

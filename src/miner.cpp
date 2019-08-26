@@ -61,7 +61,6 @@ public:
 
 uint64_t nLastBlockTx = 0;
 uint64_t nLastBlockSize = 0;
-int64_t nLastCoinStakeSearchInterval = 0;
 
 // We want to sort transactions by priority and fee rate, so:
 typedef boost::tuple<double, CFeeRate, const CTransaction*> TxPriority;
@@ -159,7 +158,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         // This vector will be sorted into a priority queue:
         vector<TxPriority> vecPriority;
         vecPriority.reserve(mempool.mapTx.size());
-		CFeeRate ActualMinRelayTxFee(MINRELAYFEE - 1);
+		CFeeRate ActualMinRelayTxFee(MINRELAYFEE - 1); // -1 to help mitigate rounding errors.
         for (map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin();
              mi != mempool.mapTx.end(); ++mi) {
             const CTransaction& tx = mi->second.GetTx();
@@ -373,31 +372,21 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 		else
 		{
 			// ppcoin: if coinstake available add coinstake tx
-			static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
-
 			boost::this_thread::interruption_point();
 			pblock->nTime = GetAdjustedTime();
 			CBlockIndex* pindexPrev = chainActive.Tip();
 
 			pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
 			CMutableTransaction txCoinStake;
-			int64_t nSearchTime = pblock->nTime; // search to current time
 			bool fStakeFound = false;
-
-			if (nSearchTime >= nLastCoinStakeSearchTime)
+			unsigned int nTxNewTime = 0;
+				
+			if (pwallet->CreateCoinStake(*pwallet, pblock->nBits, txCoinStake, nTxNewTime, nFees))
 			{
-				unsigned int nTxNewTime = 0;
-				
-				if (pwallet->CreateCoinStake(*pwallet, pblock->nBits, txCoinStake, nTxNewTime, nFees))
-				{
-					pblock->nTime = nTxNewTime;
-					pblock->vtx[0].vout[0].SetEmpty();
-					pblock->vtx[1] = CTransaction(txCoinStake);
-					fStakeFound = true;
-				}
-				
-				nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
-				nLastCoinStakeSearchTime = nSearchTime;
+				pblock->nTime = nTxNewTime;
+				pblock->vtx[0].vout[0].SetEmpty();
+				pblock->vtx[1] = CTransaction(txCoinStake);
+				fStakeFound = true;
 			}
 
 			if (!fStakeFound) return NULL;
@@ -534,7 +523,6 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
             }
 
 			while (chainActive.Tip()->nTime < 1519096403 || (Params().MiningRequiresPeers() && vNodes.empty()) || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || (Params().MiningRequiresPeers() && !masternodeSync.IsSynced())) {
-                nLastCoinStakeSearchInterval = 0;
                 MilliSleep(5000);
 				if (!fGenerateBitcoins && !fProofOfStake)
 					continue;
