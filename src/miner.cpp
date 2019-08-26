@@ -159,6 +159,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         // This vector will be sorted into a priority queue:
         vector<TxPriority> vecPriority;
         vecPriority.reserve(mempool.mapTx.size());
+		CFeeRate ActualMinRelayTxFee(MINRELAYFEE - 1);
         for (map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin();
              mi != mempool.mapTx.end(); ++mi) {
             const CTransaction& tx = mi->second.GetTx();
@@ -276,7 +277,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 continue;
 
             // Skip free and too low fee transactions
-            if (!tx.IsZerocoinSpend() && (feeRate < ::minRelayTxFee))
+            if (!tx.IsZerocoinSpend() && (feeRate < ActualMinRelayTxFee))
                 continue;
 
             if (!view.HaveInputs(tx))

@@ -57,6 +57,8 @@ class CValidationState;
 struct CBlockTemplate;
 struct CNodeStateStats;
 
+#define MINRELAYFEE 3000 // Cannot be lower than 1! Needs to be a nice round number, otherwise rounding errors can occur which cause problems. Check with amount.cpp
+
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
 static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 4000000;
 static const unsigned int DEFAULT_BLOCK_MIN_SIZE = 0;

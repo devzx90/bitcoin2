@@ -90,7 +90,7 @@ int64_t nReserveBalance = 0;
 /** Fees smaller than this (in duffs) are considered zero fee (for relaying and mining)
 	satoshis-per-1,000-bytes
  */
-CFeeRate minRelayTxFee = CFeeRate(3200);
+CFeeRate minRelayTxFee = CFeeRate(MINRELAYFEE);
 
 CTxMemPool mempool(::minRelayTxFee);
 
