@@ -1,6 +1,6 @@
 UNIX BUILD NOTES
 ====================
-Some notes on how to build Bitcoin 2 Core in Unix.
+Some notes on how to build Bitcoin 2 Core in Unix. Ubuntu Bionic recommended for building.
 
 Note
 ---------------------
@@ -78,7 +78,7 @@ Build requirements:
 
     sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
 
-Now, you can either build from self-compiled [depends](/depends/README.md) or install the required dependencies:
+Now, you can either build from self-compiled [depends](/depends/README.md) (tested to work) or install the required dependencies (not fully tested):
 
     sudo apt-get install libssl-dev libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev
 
