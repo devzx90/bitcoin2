@@ -788,7 +788,7 @@ bool MultisigDialog::createRedeemScript(int m, vector<string> vKeys, CScript& re
                 CPubKey vchPubKey;
                 if (!pwalletMain->GetPubKey(keyID, vchPubKey))
                     throw runtime_error(
-                        strprintf("no full public key for address %s", keyString));
+                        strprintf("no full public key for address %s. The owner can obtain it with the validateaddress command.", keyString));
                 if (!vchPubKey.IsFullyValid()){
                     string sKey = keyString.empty()?"(empty)":keyString;
                     throw runtime_error(" Invalid public key: " + sKey );

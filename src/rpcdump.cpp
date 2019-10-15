@@ -204,7 +204,6 @@ UniValue importaddress(const UniValue& params, bool fHelp)
 		if (IsValidAddress)
 		{
 			string thePublicAddress = address.ToString();
-			if(thePublicAddress[0] != '1') throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin 2 address or script");
 			int result = ScanTX(thePublicAddress);
 			if (result == -1) throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Still downloading initial blocks. Please wait for it to finish first.");
 			else if (result == 1) return NullUniValue;
