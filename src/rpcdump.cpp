@@ -125,7 +125,6 @@ UniValue importprivkey(const UniValue& params, bool fHelp)
     CKeyID vchAddress = pubkey.GetID();
     {
 		thePublicAddress = CBitcoinAddress(vchAddress).ToString();
-		if (thePublicAddress[0] != '1') throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin 2 address or script");
 
 		int result = ScanTX(thePublicAddress, params.size() > 3);
 		if (result == -1) throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Still downloading initial blocks. Please wait for it to finish first.");
