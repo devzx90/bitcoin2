@@ -84,7 +84,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 	if (bnNew > Params().ProofOfWorkLimit()) bnNew = Params().ProofOfWorkLimit();
 
-	LogPrintf("difficulty: %u\n", bnNew.GetCompact());
+	//LogPrintf("difficulty: %u\n", bnNew.GetCompact());
 
 	return bnNew.GetCompact();
 }
