@@ -50,7 +50,7 @@ extern unsigned int nMaxStakingFutureDrift, LastHashedBlockHeight, LastHashedBlo
  * Fees smaller than this (in duffs) are considered zero fee (for transaction creation)
  * Override with -mintxfee
  */
-CFeeRate CWallet::minTxFee = CFeeRate(3200);
+CFeeRate CWallet::minTxFee = CFeeRate(3000);
 int64_t nStartupTime = GetAdjustedTime();
 
 /** @defgroup mapWallet
