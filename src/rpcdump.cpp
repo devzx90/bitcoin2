@@ -283,18 +283,6 @@ UniValue importwallet(const UniValue& params, bool fHelp)
             continue;
         }
 
-		thePublicAddress = CBitcoinAddress(keyid).ToString();
-		if (thePublicAddress[0] != '1') {
-			fGood = false;
-			continue;
-		}
-
-		int result = ScanTX(thePublicAddress, true);
-		if (result != 0) {
-			fGood = false;
-			continue;
-		}
-
         int64_t nTime = DecodeDumpTime(vstr[1]);
         std::string strLabel;
         bool fLabel = true;
@@ -310,7 +298,7 @@ UniValue importwallet(const UniValue& params, bool fHelp)
                 fLabel = true;
             }
         }
-        LogPrintf("Importing %s...\n", thePublicAddress);
+
         if (!pwalletMain->AddKeyPubKey(key, pubkey)) {
             fGood = false;
             continue;

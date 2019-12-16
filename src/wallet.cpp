@@ -2155,6 +2155,10 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
             continue;
 
+		// Minimum staking input is 1 CENT
+		if (out.tx->vout[out.i].nValue < CENT)
+			continue;
+
         //if zerocoinspend, then use the block time
         int64_t nTxTime = out.tx->GetTxTime();
         if (out.tx->IsZerocoinSpend()) {
