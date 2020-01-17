@@ -123,32 +123,52 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 	pblocktemplate->vTxFees.push_back(-1);   // updated at end
 	pblocktemplate->vTxSigOps.push_back(-1); // updated at end	
 
-	// NOTE: PIVX had coinstake call here, they burn transaction fees.
-
-    // Largest block you're willing to create:
-    unsigned int nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
-    // Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
-    unsigned int nBlockMaxSizeNetwork = MAX_BLOCK_SIZE_CURRENT;
-    nBlockMaxSize = std::max((unsigned int)1000, std::min((nBlockMaxSizeNetwork - 1000), nBlockMaxSize));
-
-    // How much of the block should be dedicated to high-priority transactions,
-    // included regardless of the fees they pay
-    unsigned int nBlockPrioritySize = GetArg("-blockprioritysize", DEFAULT_BLOCK_PRIORITY_SIZE);
-    nBlockPrioritySize = std::min(nBlockMaxSize, nBlockPrioritySize);
-
-    // Minimum block size you want to create; block will be filled with free transactions
-    // until there are no more or the block reaches this size:
-    //unsigned int nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
-    //nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
-
-    // Collect memory pool transactions into the block
     CAmount nFees = 0;
+	boost::this_thread::interruption_point();
+	CBlockIndex* pindexPrev;
+	int nHeight;
+	{
+		LOCK(cs_main);
+		pindexPrev = chainActive.Tip();
+		nHeight = pindexPrev->nHeight + 1;
+		pblock->nBits = GetNextWorkRequired(pindexPrev);
+	}
+
+	CMutableTransaction txCoinStake;
+	CAmount nCredit;
+	if (fProofOfStake)
+	{
+		unsigned int nTxNewTime = 0;
+		nCredit = pwallet->CreateCoinStake(*pwallet, pblock->nBits, txCoinStake, nTxNewTime);
+		if (nCredit != 0)
+		{
+			pblock->nTime = nTxNewTime;
+			pblock->vtx[0].vout[0].SetEmpty();
+		}
+		else
+		{
+			pblock->vtx.clear();
+			pblocktemplate->vTxFees.clear();
+			pblocktemplate->vTxSigOps.clear();
+			return NULL;
+		}
+	}
+
+	// Largest block you're willing to create:
+	unsigned int nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
+	// Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
+	unsigned int nBlockMaxSizeNetwork = MAX_BLOCK_SIZE_CURRENT;
+	nBlockMaxSize = std::max((unsigned int)1000, std::min((nBlockMaxSizeNetwork - 1000), nBlockMaxSize));
+
+	// How much of the block should be dedicated to high-priority transactions,
+	// included regardless of the fees they pay
+	unsigned int nBlockPrioritySize = GetArg("-blockprioritysize", DEFAULT_BLOCK_PRIORITY_SIZE);
+	nBlockPrioritySize = std::min(nBlockMaxSize, nBlockPrioritySize);
 
     {
         LOCK2(cs_main, mempool.cs);
 
-        CBlockIndex* pindexPrev = chainActive.Tip();
-        const int nHeight = pindexPrev->nHeight + 1;
+		// Collect memory pool transactions into the block
         CCoinsViewCache view(pcoinsTip);
         // Priority order to process transactions
         list<COrphan> vOrphan; // list memory doesn't move
@@ -206,13 +226,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                     nTotalIn += mempool.mapTx[txin.prevout.hash].GetTx().vout[txin.prevout.n].nValue;
                     continue;
                 }
-
-                //Check for invalid/fraudulent inputs. They shouldn't make it through mempool, but check anyways.
-                /*if (mapInvalidOutPoints.count(txin.prevout)) {
-                    LogPrintf("%s : found invalid input %s in tx %s", __func__, txin.prevout.ToString(), tx.GetHash().ToString());
-                    fMissingInputs = true;
-                    break;
-                }*/
 
                 const CCoins* coins = view.AccessCoins(txin.prevout.hash);
                 assert(coins);
@@ -359,48 +372,38 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         nLastBlockTx = nBlockTx;
 		if(nLastBlockSize != nBlockSize) LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         nLastBlockSize = nBlockSize;
-        
 
         // Compute final coinbase transaction.
         if (!fProofOfStake)
 		{
 			txNew.vout[0].nValue = GetBlockValue(nHeight) + nFees;
-			txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
 			pblock->vtx[0] = txNew;
 			pblocktemplate->vTxFees[0] = -nFees; 
         }
+		// Compute the reward and sign the coin stake. This part has to be done after adding transactions.
 		else
 		{
-			// ppcoin: if coinstake available add coinstake tx
-			boost::this_thread::interruption_point();
-			pblock->nTime = GetAdjustedTime();
-			CBlockIndex* pindexPrev = chainActive.Tip();
-
-			pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
-			CMutableTransaction txCoinStake;
-			bool fStakeFound = false;
-			unsigned int nTxNewTime = 0;
-				
-			if (pwallet->CreateCoinStake(*pwallet, pblock->nBits, txCoinStake, nTxNewTime, nFees))
+			if (!pwallet->FinishCoinStake(txCoinStake, nCredit + nFees))
 			{
-				pblock->nTime = nTxNewTime;
-				pblock->vtx[0].vout[0].SetEmpty();
-				pblock->vtx[1] = CTransaction(txCoinStake);
-				fStakeFound = true;
+				mempool.clear();
+				return NULL;
 			}
 
-			if (!fStakeFound) return NULL;
-
-			pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
+			pblock->vtx[1] = CTransaction(txCoinStake);
 		}
+
+		pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
 
         // Fill in header
         pblock->hashPrevBlock = pindexPrev->GetBlockHash();
 
-        if(!fProofOfStake) UpdateTime(pblock, pindexPrev);
-		LogPrint("masternode", "GetNextWorkRequired\n");
-        if(!Params().AllowMinDifficultyBlocks() || fProofOfStake) pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
-		LogPrint("masternode", "pblock->nNonce = 0;\n");
+		if (!fProofOfStake)
+		{
+			UpdateTime(pblock, pindexPrev);
+
+			if (!Params().AllowMinDifficultyBlocks()) pblock->nBits = GetNextWorkRequired(pindexPrev);
+		}
+
         pblock->nNonce = 0;
         uint256 nCheckpoint = 0;
         AccumulatorMap mapAccumulators;
@@ -409,8 +412,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             LogPrintf("%s: failed to get accumulator checkpoint\n", __func__);
         }
         pblock->nAccumulatorCheckpoint = nCheckpoint;
-		LogPrint("masternode", "pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(\n");
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
+
+		if (chainActive.Height() >= nHeight)
+		{
+			// Someone else created a block and height changed meanwhile, best abandon this block.
+			mempool.clear();
+			return NULL; 
+		}
 
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
