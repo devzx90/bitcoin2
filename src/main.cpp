@@ -2142,7 +2142,7 @@ int64_t GetBlockValue(int nHeight)
 	}
 	else nSubsidy = 0;
 
-	
+
 
     return nSubsidy;
 }
@@ -2174,7 +2174,7 @@ bool IsInitialBlockDownload()
     static bool lockIBDState = false;
     if (lockIBDState)
         return false;
-    bool state = (chainActive.Height() < pindexBestHeader->nHeight - 24 * 6 || 
+    bool state = (chainActive.Height() < pindexBestHeader->nHeight - 24 * 6 ||
                   pindexBestHeader->GetBlockTime() < GetTime() - 6 * 60 * 60); // ~144 blocks or 6 hours behind -> 2 x fork detection time
     if (!state)
         lockIBDState = true;
@@ -3749,7 +3749,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
 			pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
 		}
 		else pindexNew->nStakeModifierV2 = ComputeStakeModifierV2(pindexNew->pprev, block.vtx[1].vin[0].prevout.hash);
-        
+
         /*pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
         if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
             LogPrintf("AddToBlockIndex() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, boost::lexical_cast<std::string>(nStakeModifier));*/
@@ -4008,7 +4008,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 		  if (nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && block.GetBlockTime() % nStakeInterval != 0)
 			  return state.Invalid(error("CheckBlock() : block timestamp invalid:%d", block.GetBlockTime()),
 				  REJECT_INVALID, "time-invalid");
-          
+
           // It is entirely possible that we don't have enough data and this could fail
           // (i.e. the block could indeed be valid). Store the block for later consideration
           // but issue an initial reject message.
@@ -4066,7 +4066,7 @@ bool CheckWork(const CBlock block, CBlockIndex* const pindexPrev)
     if (pindexPrev == NULL)
         return error("%s : null pindexPrev for block %s", __func__, block.GetHash().ToString().c_str());
 
-    unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev, &block);
+    unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev);
 
     if (block.IsProofOfWork() && (pindexPrev->nHeight + 1 <= 68589)) {
         double n1 = ConvertBitsToDouble(block.nBits);
@@ -4539,7 +4539,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 					// UpdateState will return false if the node is attacking us or update the score and return true.
 					nodeStatus = nodestate->nodeBlocks.updateState(state, nodeStatus);
 					int nDoS = 0;
-					if (state.IsInvalid(nDoS)) { 
+					if (state.IsInvalid(nDoS)) {
 						if (nDoS > 0) // This adds only 1 point to his misbehavior score.
 							Misbehaving(pfrom->GetId(), nDoS);
 						nodeStatus = false;
@@ -4554,7 +4554,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
     if (!ActivateBestChain(state, pblock, checked))
         return error("%s : ActivateBestChain failed", __func__);
-	
+
     if (!fLiteMode) {
         if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
             obfuScationPool.NewBlock();
