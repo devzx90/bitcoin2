@@ -16,7 +16,7 @@
 #include <math.h>
 
 
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast)
 {
 	// Bigger difficulty number means less work.
     if (pindexLast == NULL || pindexLast->nHeight <= Params().LAST_POW_BLOCK()) {
