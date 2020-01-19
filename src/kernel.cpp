@@ -1,7 +1,7 @@
 /* @flow */
 // Copyright (c) 2012-2013 The PPCoin developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2017-2019 The Bitcoin 2 developers
+// Copyright (c) 2017-2020 The Bitcoin 2 developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -335,7 +335,6 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, unsigne
 		HashingStart = LastHashedBlockTime - nTimeTx + nStakeInterval;
 	}
 
-
 	CHashWriter HashStart(SER_GETHASH, 0);
 	HashStart << pindexPrev->nStakeModifierV2 << nTimeBlockFrom << prevout.hash << prevout.n;
 
@@ -358,8 +357,6 @@ bool CheckStakeKernelHashV2(unsigned int nBits, CBlockIndex* pindexPrev, unsigne
 		if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTarget))
 			continue;
 		
-		//if(i < 0) LogPrintf("CheckStakeKernelHashv2(): Successful stake with a %d seconds past time.\n", i);
-
 		fSuccess = true; // if we make it this far then we have successfully created a stake hash
 		nTimeTx = nTryTime;
 		//LogPrintf("CheckStakeKernelHashV2(): Success. nStakeModifierV2=%s nTimeBlockFrom=%d prevout.hash=%s prevout.n=%d nTimeTx=%u\n", pindexPrev->nStakeModifierV2.ToString().c_str(), nTimeBlockFrom, prevout.hash.ToString().c_str(), prevout.n, nTimeTx);
@@ -416,39 +413,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock& blockFrom, const CTr
 		return stakeTargetHit(hashProofOfStake, nValueIn, bnTarget);
 	}
 
-    bool fSuccess = false;
-    unsigned int nTryTime = 0;
-	int64_t ActualMedianTimePast = chainActive.Tip()->GetMedianTimePast();
-	int64_t TimePastDifference = nTimeTx - ActualMedianTimePast; // nTimeTx starts as GetAdjustedTime when creating a new block.
-	if(nTimeTx % 60 == 0) LogPrintf("CheckStakeKernelHash(): TimePastDifference=%d\n", TimePastDifference);
-	if (TimePastDifference > 100) TimePastDifference = 100; // 162 - 230+
-    int nHeightStart = chainActive.Height();
-	
-	unsigned int HashingEnd = nMaxStakingFutureDrift;
-	if(TimePastDifference > 1 && LastHashedBlockHeight != chainActive.Height()) HashingEnd += TimePastDifference - 1; // This makes it try past times too.
-
-	for (unsigned int i = 0; i < HashingEnd; ++i) //iterate the hashing
-	{
-		//new block came in, move on
-		if (chainActive.Height() != nHeightStart)
-			break;
-
-		//hash this iteration
-		nTryTime = nTimeTx + nMaxStakingFutureDrift - i;
-		if (i > nMaxStakingFutureDrift && (nTryTime < nTimeBlockFrom || nTimeBlockFrom + nStakeMinAge > nTryTime)) continue; // Don't try with unacceptable times.
-
-		hashProofOfStake = stakeHash(nTryTime, ss, prevout.n, prevout.hash, nTimeBlockFrom);
-
-		// if stake hash does not meet the target then continue to next iteration
-		if (!stakeTargetHit(hashProofOfStake, nValueIn, bnTarget))
-			continue;
-
-		fSuccess = true; // if we make it this far then we have successfully created a stake hash
-		nTimeTx = nTryTime;
-		break;
-	}
-
-    return fSuccess;
+    return false;
 }
 
 // Check kernel hash target and coinstake signature
