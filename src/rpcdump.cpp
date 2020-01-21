@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2017-2019 The Bitcoin 2 developers
+// Copyright (c) 2017-2020 The Bitcoin 2 developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -334,9 +334,10 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp)
         throw runtime_error(
             "dumpprivkey \"bitcoin2address\"\n"
             "\nReveals the private key corresponding to 'bitcoin2address'.\n"
-            "Then the importprivkey can be used with this output\n"
+            "Then the importprivkey can be used with this output.\n"
+			"\nWARNING! DO NOT GIVE THE RESULT TO ANYONE. DEVS NEVER ASK FOR THIS.\n"
             "\nArguments:\n"
-            "1. \"bitcoin2address\"   (string, required) The bitcoin2 address for the private key\n"
+            "1. \"bitcoin2address\"   (string, required) The Bitcoin 2 address for the private key\n"
             "\nResult:\n"
             "\"key\"                (string) The private key\n"
             "\nExamples:\n" +
@@ -359,13 +360,14 @@ UniValue dumpprivkey(const UniValue& params, bool fHelp)
     return CBitcoinSecret(vchSecret).ToString();
 }
 
-
+bool g_HasGUI = false;
 UniValue dumpwallet(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
             "dumpwallet \"filename\"\n"
             "\nDumps all wallet keys in a human-readable format.\n"
+			"\nWARNING! DO NOT GIVE THE RESULT TO ANYONE. DEVS NEVER ASK FOR THIS.\n"
             "\nArguments:\n"
             "1. \"filename\"    (string, required) The filename\n"
             "\nExamples:\n" +
@@ -376,7 +378,10 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     ofstream file;
-    file.open(params[0].get_str().c_str());
+	std::string aFileName = params[0].get_str();
+	if (g_HasGUI) aFileName += "_ThisIsYourWallet.txt";
+
+    file.open(aFileName);
     if (!file.is_open())
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Cannot open wallet dump file");
 
@@ -394,7 +399,7 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
     std::sort(vKeyBirth.begin(), vKeyBirth.end());
 
     // produce output
-    file << strprintf("# Wallet dump created by Bitcoin2 %s (%s)\n", CLIENT_BUILD, CLIENT_DATE);
+    file << strprintf("# Wallet dump created by Bitcoin 2 %s (%s)\n", CLIENT_BUILD, CLIENT_DATE);
     file << strprintf("# * Created on %s\n", EncodeDumpTime(GetTime()));
     file << strprintf("# * Best block at time of backup was %i (%s),\n", chainActive.Height(), chainActive.Tip()->GetBlockHash().ToString());
     file << strprintf("#   mined on %s\n", EncodeDumpTime(chainActive.Tip()->GetBlockTime()));

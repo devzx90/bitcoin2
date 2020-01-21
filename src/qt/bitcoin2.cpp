@@ -73,6 +73,8 @@ Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
 Q_DECLARE_METATYPE(bool*)
 Q_DECLARE_METATYPE(CAmount)
 
+extern bool g_HasGUI;
+
 static void InitMessage(const std::string& message)
 {
     LogPrintf("init message: %s\n", message);
@@ -494,6 +496,8 @@ WId BitcoinApplication::getMainWinId() const
     return window->winId();
 }
 
+
+
 #ifndef BITCOIN_QT_TEST
 int main(int argc, char* argv[])
 {
@@ -628,6 +632,8 @@ int main(int argc, char* argv[])
 
     // Load GUI settings from QSettings
     app.createOptionsModel();
+
+	g_HasGUI = true;
 
     // Subscribe to global signals from core
     uiInterface.InitMessage.connect(InitMessage);
