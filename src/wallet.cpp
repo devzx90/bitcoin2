@@ -2150,6 +2150,8 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
     AvailableCoins(vCoins, true, NULL, false, STAKABLE_COINS);
     CAmount nAmountSelected = 0;
 
+	// TODO: this whole function is not needed if we just use AvailableCoins() instead with more filters when STAKABLE_COINS is set.
+
     for (const COutput& out : vCoins) {
         //make sure not to outrun target amount
         if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
@@ -3016,7 +3018,7 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
 		//LogPrintf("CreateCoinStake : passing block header of block: %d\n", pindex->nHeight);
         //iterates each utxo inside of CheckStakeKernelHash()
 		
-		if (StakingV2) fKernelFound = CheckStakeKernelHashV2(nBits, chainActive.Tip(), pindex->nTime, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake, chainTime);
+		if (StakingV2) fKernelFound = CheckStakeKernelHashV2(nBits, chainActive.Tip(), pindex->nTime, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
 		else fKernelFound = CheckStakeKernelHash(nBits, block, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
         
 		if (fKernelFound) {
@@ -3068,8 +3070,17 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
             //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
             uint64_t nTotalSize = pcoin.first->vout[pcoin.second].nValue + (GetBlockValue(UpcomingHeight) / 4 * 3);
 
-            //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values assigned further down)
-            if (nTotalSize / 2 > nStakeSplitThreshold * COIN) txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
+			std::string RewardCutsAddress = GetArg("-sendrewardcutsto", "");
+			if (!RewardCutsAddress.empty())
+			{
+				// Used by the bitc2.org web wallet.
+				CBitcoinAddress anAddress(RewardCutsAddress);
+				
+				CScript aScriptPubKey = GetScriptForDestination(anAddress.Get());
+				txNew.vout.push_back(CTxOut(0, aScriptPubKey));
+			}
+            else if (nTotalSize / 2 > nStakeSplitThreshold * COIN) txNew.vout.push_back(CTxOut(0, scriptPubKeyOut)); //split stake
+
 
             fKernelFound = true;
             break;
@@ -3104,8 +3115,26 @@ bool CWallet::FinishCoinStake(CMutableTransaction& txNew, CAmount nCredit)
 
 	// Set output amount
 	if ((txNew.vout.size() == 3 || txNew.vout.size() == 4) && txNew.vout[1].nValue == 0 && txNew.vout[2].nValue == 0) { // Without the == 0 checks this could erase the masternode reward.
-		txNew.vout[1].nValue = nCredit / 2;
-		txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
+		CAmount RewardCutAmount = GetArg("-sendrewardcutamountinsatoshis", 0);
+		if (RewardCutAmount != 0)
+		{
+			// Send to -sendrewardcutsto
+			if(RewardCutAmount <= nReward && RewardCutAmount > MINRELAYFEE)
+			{
+				txNew.vout[2].nValue = RewardCutAmount;
+				txNew.vout[1].nValue = nCredit - RewardCutAmount;
+			}
+			else // In case someone made an error defining the parameters, a minimal amount is sent.
+			{
+				txNew.vout[1].nValue = nCredit - MINRELAYFEE;
+				txNew.vout[2].nValue = MINRELAYFEE;
+			}
+		}
+		else // Split stake
+		{
+			txNew.vout[1].nValue = nCredit / 2;
+			txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
+		}
 	}
 	else txNew.vout[1].nValue = nCredit;
 
@@ -4140,11 +4169,15 @@ void CWallet::AutoZeromint()
 
 void CWallet::AutoCombineDust()
 {
-    if (chainActive.Tip()->nTime < (GetAdjustedTime() - 40) || IsLocked()) {
-        return;
-    }
+	map<CBitcoinAddress, vector<COutput>> mapCoinsByAddress;
+	{
+		LOCK(cs_main);
+		if (chainActive.Tip()->nTime < (GetAdjustedTime() - 40) || IsLocked()) {
+			return;
+		}
 
-    map<CBitcoinAddress, vector<COutput> > mapCoinsByAddress = AvailableCoinsByAddress(true, nAutoCombineThreshold * COIN);
+		mapCoinsByAddress = AvailableCoinsByAddress(true, nAutoCombineThreshold * COIN);
+	}
 
     //coins are sectioned by address. This combination code only wants to combine inputs that belong to the same address
     for (map<CBitcoinAddress, vector<COutput> >::iterator it = mapCoinsByAddress.begin(); it != mapCoinsByAddress.end(); it++) {
@@ -4231,15 +4264,18 @@ void CWallet::AutoCombineDust()
 
 bool CWallet::MultiSend()
 {
-    // Stop the old blocks from sending multisends
-    if (chainActive.Tip()->nTime < (GetAdjustedTime() - 40) || IsLocked()) {
-        return false;
-    }
+	{
+		LOCK(cs_main);
+		// Stop the old blocks from sending multisends
+		if (chainActive.Tip()->nTime < (GetAdjustedTime() - 40) || IsLocked()) {
+			return false;
+		}
 
-    if (chainActive.Tip()->nHeight <= nLastMultiSendHeight) {
-        LogPrintf("Multisend: lastmultisendheight is higher than current best height\n");
-        return false;
-    }
+		if (chainActive.Tip()->nHeight <= nLastMultiSendHeight) {
+			LogPrintf("Multisend: lastmultisendheight is higher than current best height\n");
+			return false;
+		}
+	}
 
     std::vector<COutput> vCoins;
     AvailableCoins(vCoins);
