@@ -3573,10 +3573,11 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
 
     CBlockIndex* pindexNewTip = NULL;
     CBlockIndex* pindexMostWork = NULL;
+	bool fInitialDownload;
+	uint256 hashNewTip;
     do {
         boost::this_thread::interruption_point();
 
-        bool fInitialDownload;
 		bool blocks_connected = false;
         while (true) {
 			LOCK(cs_main);
@@ -3599,7 +3600,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
 			}
 
             pindexNewTip = chainActive.Tip();
-            fInitialDownload = IsInitialBlockDownload();
+            
             break;
         }
 
@@ -3608,17 +3609,9 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
         // When we reach this point, we switched to a new tip (stored in pindexNewTip).
 
         // Notifications/callbacks that can run without cs_main
+		fInitialDownload = IsInitialBlockDownload();
         if (!fInitialDownload) {
-            uint256 hashNewTip = pindexNewTip->GetBlockHash();
-
-            // Relay inventory, but don't relay old inventory during initial block download. NOTE: Dash and BTC don't do this anymore.
-            /*int nBlockEstimate = Checkpoints::GetTotalBlocksEstimate();
-            {
-                LOCK(cs_vNodes);
-                BOOST_FOREACH (CNode* pnode, vNodes)
-                    if (chainActive.Height() > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : nBlockEstimate))
-                        pnode->PushInventory(CInv(MSG_BLOCK, hashNewTip));
-            }*/
+            hashNewTip = pindexNewTip->GetBlockHash();
 
             // Notify external listeners about the new tip.
             // Note: uiInterface, should switch main signals.
@@ -3626,6 +3619,21 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
             GetMainSignals().UpdatedBlockTip(pindexNewTip);
         }
     } while (pindexMostWork != pindexNewTip);
+
+	// Relay the tip block, but don't relay old inventory during initial block download. NOTE: Dash and BTC do this differently.
+	if (!fInitialDownload)
+	{
+		int nBlockEstimate = Checkpoints::GetTotalBlocksEstimate();
+		{
+			LOCK2(cs_main, cs_vNodes);
+
+			for (CNode* node : vNodes) {
+				if (pindexNewTip->nHeight >= (node->nStartingHeight != -1 ? node->nStartingHeight : nBlockEstimate))
+					node->PushInventory(CInv(MSG_BLOCK, hashNewTip));
+			}
+		}
+	}
+
     CheckBlockIndex();
 
     // Write changes periodically to disk, after relay.
@@ -3633,8 +3641,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
         return false;
     }
 
-	// CANT BE UNCOMMENTED WITHOUT SAFETY CHECKS: LogPrint("masternode", "%s finished. balance: %d. chainActive.Height(): %d. nChainWork: %s\n", __func__, pwalletMain ? pwalletMain->GetBalance() : 0, chainActive.Height(), chainActive.Tip()->nChainWork.ToString());
-    return true;
+	return true;
 }
 
 bool InvalidateBlock(CValidationState& state, CBlockIndex* pindex)
