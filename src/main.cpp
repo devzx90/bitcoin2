@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2017-2019 The Bitcoin 2 developers
+// Copyright (c) 2017-2020 The Bitcoin 2 developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -64,7 +64,7 @@ CCriticalSection cs_main;
 
 BlockMap mapBlockIndex;
 map<uint256, uint256> mapProofOfStake;
-set<pair<COutPoint, unsigned int> > setStakeSeen;
+//set<pair<COutPoint, unsigned int> > setStakeSeen; unused.
 
 CChain chainActive;
 CBlockIndex* pindexBestHeader = NULL;
@@ -1496,18 +1496,30 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
             vInOutPoints.insert(txin.prevout);
     }
 
-    if (tx.IsCoinBase()) {
+    if (tx.IsCoinBase())
+	{
         if (tx.vin[0].scriptSig.size() < 2 || tx.vin[0].scriptSig.size() > 150)
             return state.DoS(100, error("CheckTransaction() : coinbase script size=%d", tx.vin[0].scriptSig.size()),
                 REJECT_INVALID, "bad-cb-length");
-    } else if (fZerocoinActive && tx.IsZerocoinSpend()) {
+    }
+	else if (fZerocoinActive && tx.IsZerocoinSpend())
+	{
         if(tx.vin.size() < 1 || static_cast<int>(tx.vin.size()) > Params().Zerocoin_MaxSpendsPerTransaction())
             return state.DoS(10, error("CheckTransaction() : Zerocoin Spend has more than allowed txin's"), REJECT_INVALID, "bad-zerocoinspend");
-    } else {
+    }
+	else
+	{
         BOOST_FOREACH (const CTxIn& txin, tx.vin)
             if (txin.prevout.IsNull() && (fZerocoinActive && !txin.scriptSig.IsZerocoinSpend()))
                 return state.DoS(10, error("CheckTransaction() : prevout is null"),
                     REJECT_INVALID, "bad-txns-prevout-null");
+
+		if (tx.IsCoinStake())
+		{
+			if (tx.vout.size() > 10) // Allow stake output to be split to maximum 10 recipients.
+				return state.DoS(100, error("CheckTransaction() : coinstake size=%d", tx.vout.size()),
+					REJECT_INVALID, "bad-stake-length");
+		}
     }
 
     return true;
@@ -1644,12 +1656,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
                         *pfMissingInputs = true;
                     return false;
                 }
-
-                //Check for invalid/fraudulent inputs
-               /* if (!ValidOutPoint(txin.prevout, chainActive.Height())) {
-                    return state.Invalid(error("%s : tried to spend invalid input %s in tx %s", __func__, txin.prevout.ToString(),
-                                                tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
-                }*/
             }
 
             // are the actual inputs available?
@@ -2941,14 +2947,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 			else if (!view.HaveInputs(tx, 0)) return state.DoS(100, error("ConnectBlock() : inputs missing/spent"), REJECT_INVALID, "bad-txns-inputs-missingorspent");
 
-            // Check that the inputs are not marked as invalid/fraudulent
-            /*for (CTxIn in : tx.vin) {
-                if (!ValidOutPoint(in.prevout, pindex->nHeight)) {
-                    return state.DoS(100, error("%s : tried to spend invalid input %s in tx %s", __func__, in.prevout.ToString(),
-                                  tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
-                }
-            }*/
-
             // Add in sigops done by pay-to-script-hash inputs;
             // this is to prevent a "rogue miner" from creating
             // an incredibly-expensive-to-validate block.
@@ -3483,12 +3481,11 @@ static void PruneBlockIndexCandidates()
  * Try to make some progress towards making pindexMostWork the active block.
  * pblock is either NULL or a pointer to a CBlock corresponding to pindexMostWork.
  */
-static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMostWork, CBlock* pblock, bool fAlreadyChecked)
+static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMostWork, CBlock* pblock, bool &fInvalidFound, bool fAlreadyChecked)
 {
     AssertLockHeld(cs_main);
     if (pblock == NULL)
         fAlreadyChecked = false;
-    bool fInvalidFound = false;
     const CBlockIndex* pindexOldTip = chainActive.Tip();
     const CBlockIndex* pindexFork = chainActive.FindFork(pindexMostWork);
 
@@ -3523,7 +3520,7 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
                 if (state.IsInvalid()) {
                     // The block violates a consensus rule.
                     if (!state.CorruptionPossible())
-                        InvalidChainFound(vpindexToConnect.back());
+                        InvalidChainFound(vpindexToConnect.front());
                     state = CValidationState();
                     fInvalidFound = true;
                     fContinue = false;
@@ -3559,6 +3556,19 @@ static bool ActivateBestChainStep(CValidationState& state, CBlockIndex* pindexMo
  */
 bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChecked)
 {
+	// Note that while we're often called here from ProcessNewBlock, this is
+	// far from a guarantee. Things in the P2P/RPC will often end up calling
+	// us in the middle of ProcessNewBlock - do not assume pblock is set
+	// sanely for performance or correctness!
+	AssertLockNotHeld(cs_main);
+
+	// ActivateBestChain maintains a fair degree of expensive-to-calculate internal state
+	// because this function periodically releases cs_main so that it does not lock up other threads for too long
+	// during large connects - and to allow for e.g. the callback queue to drain
+	// we use m_cs_chainstate to enforce mutual exclusion so that only one caller may execute this function at a time
+	static CCriticalSection m_cs_chainstate;
+	LOCK(m_cs_chainstate);
+
 	// CANT BE UNCOMMENTED WITHOUT SAFETY CHECKS: LogPrint("masternode", "%s started. balance: %d. chainActive.Height(): %d. nChainWork: %s\n", __func__, pwalletMain ? pwalletMain->GetBalance() : 0, chainActive.Height(), chainActive.Tip()->nChainWork.ToString());
 
     CBlockIndex* pindexNewTip = NULL;
@@ -3567,52 +3577,55 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
         boost::this_thread::interruption_point();
 
         bool fInitialDownload;
+		bool blocks_connected = false;
         while (true) {
-            TRY_LOCK(cs_main, lockMain);
-            if (!lockMain) {
-                MilliSleep(50);
-                continue;
-            }
+			LOCK(cs_main);
 
             pindexMostWork = FindMostWorkChain();
 
             // Whether we have anything to do at all.
             if (pindexMostWork == NULL || pindexMostWork == chainActive.Tip())
-                return true;
+                break;
 
-            if (!ActivateBestChainStep(state, pindexMostWork, pblock && pblock->GetHash() == pindexMostWork->GetBlockHash() ? pblock : NULL, fAlreadyChecked))
+			bool fInvalidFound = false;
+            if (!ActivateBestChainStep(state, pindexMostWork, pblock && pblock->GetHash() == pindexMostWork->GetBlockHash() ? pblock : NULL, fInvalidFound, fAlreadyChecked))
                 return false;
+
+			blocks_connected = true;
+
+			if (fInvalidFound) {
+				// Wipe cache, we may need another branch now.
+				pindexMostWork = NULL;
+			}
 
             pindexNewTip = chainActive.Tip();
             fInitialDownload = IsInitialBlockDownload();
             break;
         }
+
+		if (!blocks_connected) return true;
+
         // When we reach this point, we switched to a new tip (stored in pindexNewTip).
 
         // Notifications/callbacks that can run without cs_main
         if (!fInitialDownload) {
             uint256 hashNewTip = pindexNewTip->GetBlockHash();
-            // Relay inventory, but don't relay old inventory during initial block download. NOTE: Dash doesn't do this anymore.
-            int nBlockEstimate = Checkpoints::GetTotalBlocksEstimate();
+
+            // Relay inventory, but don't relay old inventory during initial block download. NOTE: Dash and BTC don't do this anymore.
+            /*int nBlockEstimate = Checkpoints::GetTotalBlocksEstimate();
             {
                 LOCK(cs_vNodes);
                 BOOST_FOREACH (CNode* pnode, vNodes)
                     if (chainActive.Height() > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : nBlockEstimate))
                         pnode->PushInventory(CInv(MSG_BLOCK, hashNewTip));
-            }
+            }*/
+
             // Notify external listeners about the new tip.
             // Note: uiInterface, should switch main signals.
             uiInterface.NotifyBlockTip(hashNewTip);
             GetMainSignals().UpdatedBlockTip(pindexNewTip);
-
-            /* PIVX only:
-            unsigned size = GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION);
-            // If the size is over 1 MB notify external listeners, and it is within the last 5 minutes
-            if (size > MAX_BLOCK_SIZE_LEGACY && pblock->GetBlockTime() > GetAdjustedTime() - 300) {
-                uiInterface.NotifyBlockSize(static_cast<int>(size), hashNewTip);
-            }*/
         }
-    } while (pindexMostWork != chainActive.Tip());
+    } while (pindexMostWork != pindexNewTip);
     CheckBlockIndex();
 
     // Write changes periodically to disk, after relay.
@@ -3711,9 +3724,8 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
     pindexNew->nSequenceId = 0;
     BlockMap::iterator mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
 
-    //mark as PoS seen
-    if (pindexNew->IsProofOfStake())
-        setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
+    //mark as PoS seen. unused
+    //if (pindexNew->IsProofOfStake()) setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
     pindexNew->phashBlock = &((*mi).first);
     BlockMap::iterator miPrev = mapBlockIndex.find(block.hashPrevBlock);
@@ -3733,26 +3745,33 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
             LogPrintf("AddToBlockIndex() : SetStakeEntropyBit() failed \n");
 
         // ppcoin: record proof-of-stake hash value
-        if (pindexNew->IsProofOfStake()) {
-            if (!mapProofOfStake.count(hash))
-                LogPrintf("AddToBlockIndex() : hashProofOfStake not found in map \n");
-            pindexNew->hashProofOfStake = mapProofOfStake[hash];
-        }
+        /*if (pindexNew->IsProofOfStake()) {
+			if (!mapProofOfStake.count(hash))
+			{
+				// If this logging gets triggered, stop using mapProofOfStake.erase(hash) below.
+				LogPrintf("AddToBlockIndex() : hashProofOfStake not found in map.\n");
+				if (!CheckProofOfStake(block, pindexNew->pprev, pindexNew->hashProofOfStake)) {
+					return error("%s: proof of stake check failed", __func__);
+				}
+			}
+			else
+			{
+				pindexNew->hashProofOfStake = mapProofOfStake[hash];
+				mapProofOfStake.erase(hash); // Save memory now that it has been added to block index.
+			}
+            
+        }*/
 
         // ppcoin: compute stake modifier
-		if (pindexNew->nHeight < GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
-		{
-			uint64_t nStakeModifier = 0;
-			bool fGeneratedStakeModifier = false;
-			if (!ComputeNextStakeModifier(pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
-				LogPrintf("AddToBlockIndex() : ComputeNextStakeModifier() failed \n");
-			pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
-		}
-		else pindexNew->nStakeModifierV2 = ComputeStakeModifierV2(pindexNew->pprev, block.vtx[1].vin[0].prevout.hash);
-
-        /*pindexNew->nStakeModifierChecksum = GetStakeModifierChecksum(pindexNew);
-        if (!CheckStakeModifierCheckpoints(pindexNew->nHeight, pindexNew->nStakeModifierChecksum))
-            LogPrintf("AddToBlockIndex() : Rejected by stake modifier checkpoint height=%d, modifier=%s \n", pindexNew->nHeight, boost::lexical_cast<std::string>(nStakeModifier));*/
+  		if (pindexNew->nHeight < GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
+  		{
+  			uint64_t nStakeModifier = 0;
+  			bool fGeneratedStakeModifier = false;
+  			if (!ComputeNextStakeModifier(pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
+  				LogPrintf("AddToBlockIndex() : ComputeNextStakeModifier() failed \n");
+  			pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
+  		}
+  		else pindexNew->nStakeModifierV2 = ComputeStakeModifierV2(pindexNew->pprev, block.vtx[1].vin[0].prevout.hash);
     }
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew);
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
@@ -3984,9 +4003,8 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                 }
             }
         }
-    } else {
-        LogPrintf("CheckBlock() : skipping transaction locking checks\n");
     }
+	else LogPrint("debug", "%s: skipping swiftTX locking checks.\n", __func__);
 
     // masternode payments
     if (block.IsProofOfStake())
@@ -4083,13 +4101,11 @@ bool CheckWork(const CBlock block, CBlockIndex* const pindexPrev)
 
     if (block.IsProofOfStake()) {
         uint256 hashProofOfStake = 0;
-        uint256 hash = block.GetHash();
 
         if(!CheckProofOfStake(block, pindexPrev, hashProofOfStake)) {
 			return error("%s: proof of stake check failed", __func__);
         }
-        if(!mapProofOfStake.count(hash)) // add to mapProofOfStake
-            mapProofOfStake.insert(make_pair(hash, hashProofOfStake));
+        //mapProofOfStake[block.GetHash()] = hashProofOfStake; // add to mapProofOfStake
     }
 
     return true;
@@ -4221,7 +4237,8 @@ bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
             //If this "invalid" block is an exact match from the checkpoints, then reconsider it
-            if (pindex && Checkpoints::CheckBlock(pindex->nHeight - 1, block.hashPrevBlock, true)) {
+			// Commented because checkpoint blocks shouldn't ever end up being marked as invalid. If you uncomment this, cs_main needs to be unlocked before calling ActivateBestChain
+            /*if (pindex && Checkpoints::CheckBlock(pindex->nHeight - 1, block.hashPrevBlock, true)) {
                 LogPrintf("%s : Reconsidering block %s height %d\n", __func__, pindexPrev->GetBlockHash().GetHex(), pindexPrev->nHeight);
                 CValidationState statePrev;
                 ReconsiderBlock(statePrev, pindexPrev);
@@ -4229,7 +4246,7 @@ bool AcceptBlockHeader(const CBlock& block, CValidationState& state, CBlockIndex
                     ActivateBestChain(statePrev);
                     return true;
                 }
-            }
+            }*/
 
             return state.DoS(100, error("%s : prev block height=%d hash=%s is invalid, unable to add block %s", __func__, pindexPrev->nHeight, block.hashPrevBlock.GetHex(), block.GetHash().GetHex()),
                              REJECT_INVALID, "bad-prevblk");
@@ -4264,6 +4281,8 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
             //If this "invalid" block is an exact match from the checkpoints, then reconsider it
+			// Commented because checkpoint blocks shouldn't ever end up being marked as invalid. cs_main needs to be unlocked before calling ActivateBestChain
+			/*
             if (Checkpoints::CheckBlock(pindexPrev->nHeight, block.hashPrevBlock, true)) {
                 LogPrintf("%s : Reconsidering block %s height %d\n", __func__, pindexPrev->GetBlockHash().GetHex(), pindexPrev->nHeight);
                 CValidationState statePrev;
@@ -4272,7 +4291,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
                     ActivateBestChain(statePrev);
                     return true;
                 }
-            }
+            }*/
             return state.DoS(100, error("%s : prev block %s is invalid, unable to add block %s", __func__, block.hashPrevBlock.GetHex(), block.GetHash().GetHex()),
                              REJECT_INVALID, "bad-prevblk");
         }
@@ -4402,9 +4421,13 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 					// Coins not available
 					return error("%s: coin stake inputs already spent in main chain", __func__);
 				}
-				else if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2) && (nHeight - coin->nHeight) < Params().COINBASE_MATURITY()) {
-					// Staked coins immature
-					return error("%s: coin stake inputs immature.", __func__);
+				else if (pindex->nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2))
+				{
+					if ((nHeight - coin->nHeight) < Params().COINBASE_MATURITY())
+					{
+						// Staked coins immature
+						return error("%s: coin stake inputs immature.", __func__);
+					}
 				}
 			}
 		}
@@ -4493,7 +4516,9 @@ void CBlockIndex::BuildSkip()
 
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
-    if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
+    if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL)
+	{
+		LOCK(cs_main);
         //  check if the prev block is one of our previous blocks, if not then request sync and return false
         BlockMap::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
         if (mi == mapBlockIndex.end()) {
@@ -4505,7 +4530,6 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
 	// Preliminary checks
 	int64_t nStartTime = GetTimeMillis();
-	LogPrint("masternode", "ProcessNewBlock - CheckBlock\n");
 	bool checked = CheckBlock(*pblock, state);
 
 	// NovaCoin: check proof-of-stake block signature
@@ -4513,7 +4537,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 		return error("ProcessNewBlock() : bad proof-of-stake block signature");
 
     {
-        LOCK(cs_main);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
+        LOCK(cs_main);
 
         MarkBlockAsReceived(pblock->GetHash());
         if (!checked) {
@@ -4686,9 +4710,8 @@ CBlockIndex* InsertBlockIndex(uint256 hash)
         throw runtime_error("LoadBlockIndex() : new CBlockIndex failed");
     mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
 
-    //mark as PoS seen
-    if (pindexNew->IsProofOfStake())
-        setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
+    //mark as PoS seen. unused
+    //if (pindexNew->IsProofOfStake()) setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
 
     pindexNew->phashBlock = &((*mi).first);
 
@@ -4907,7 +4930,6 @@ bool LoadBlockIndex(string& strError)
 
 bool InitBlockIndex()
 {
-    LOCK(cs_main);
     // Check whether we're already initialized
     if (chainActive.Genesis() != NULL)
         return true;
@@ -4925,21 +4947,25 @@ bool InitBlockIndex()
             unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
             CDiskBlockPos blockPos;
             CValidationState state;
-            if (!FindBlockPos(state, blockPos, nBlockSize + 8, 0, block.GetBlockTime()))
-                return error("LoadBlockIndex() : FindBlockPos failed");
-			LogPrintf("...WriteBlockToDisk\n");
-            if (!WriteBlockToDisk(block, blockPos))
-                return error("LoadBlockIndex() : writing genesis block to disk failed");
-			LogPrintf("...AddToBlockIndex\n");
-            CBlockIndex* pindex = AddToBlockIndex(block);
-			LogPrintf("...ReceivedBlockTransactions\n");
-            if (!ReceivedBlockTransactions(block, state, pindex, blockPos))
-                return error("LoadBlockIndex() : genesis block not accepted");
+			{
+				LOCK(cs_main);
+				if (!FindBlockPos(state, blockPos, nBlockSize + 8, 0, block.GetBlockTime()))
+					return error("LoadBlockIndex() : FindBlockPos failed");
+				LogPrintf("...WriteBlockToDisk\n");
+				if (!WriteBlockToDisk(block, blockPos))
+					return error("LoadBlockIndex() : writing genesis block to disk failed");
+				LogPrintf("...AddToBlockIndex\n");
+				CBlockIndex* pindex = AddToBlockIndex(block);
+				LogPrintf("...ReceivedBlockTransactions\n");
+				if (!ReceivedBlockTransactions(block, state, pindex, blockPos))
+					return error("LoadBlockIndex() : genesis block not accepted");
+			}
 			LogPrintf("...ActivateBestChain\n");
             if (!ActivateBestChain(state, &block))
                 return error("LoadBlockIndex() : genesis block cannot be activated");
             // Force a chainstate write so that when we VerifyDB in a moment, it doesnt check stale data
 			LogPrintf("...FlushStateToDisk\n");
+
             return FlushStateToDisk(state, FLUSH_STATE_ALWAYS);
         } catch (std::runtime_error& e) {
             return error("LoadBlockIndex() : failed to initialize block database: %s", e.what());
@@ -6092,20 +6118,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 			else
 			{
 				LogPrint("net", "%s : Already processed block %s, skipping ProcessNewBlock()\n", __func__, block.GetHash().GetHex());
-
-				// Check if that block is newer than our newest block. If so, call ActivateBestChain(), just in case.
-				CBlockIndex* pindex = chainActive.Tip();
-				if (pindex == NULL) return false;
-				if (block.nTime > pindex->nTime + nMaxStakingFutureDrift)
-				{
-					static int64_t LastActivateBestChainCallTime = 0;
-					int64_t aCurrentTime = GetTime();
-					if(LastActivateBestChainCallTime + 60 < aCurrentTime) // This variable ensures that ActivateBestChain isn't called too often by this. At least 60 seconds need to pass between calls by this.
-					{
-						ActivateBestChain(state, &block);
-						LastActivateBestChainCallTime = aCurrentTime;
-					}
-				}
 			}
         }
     }
