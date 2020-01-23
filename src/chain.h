@@ -169,9 +169,9 @@ public:
 	uint256 nStakeModifierV2;
 
     //unsigned int nStakeModifierChecksum; // checksum of index; in-memory only
-    COutPoint prevoutStake;
-    unsigned int nStakeTime;
-    uint256 hashProofOfStake;
+    //COutPoint prevoutStake;
+    //unsigned int nStakeTime;
+    //uint256 hashProofOfStake;
     int64_t nMint;
     int64_t nMoneySupply;
 
@@ -211,8 +211,8 @@ public:
         nStakeModifier = 0;
 		nStakeModifierV2 = uint256();
         //nStakeModifierChecksum = 0;
-        prevoutStake.SetNull();
-        nStakeTime = 0;
+        //prevoutStake.SetNull();
+        //nStakeTime = 0;
 
         nVersion = 0;
         hashMerkleRoot = uint256();
@@ -252,16 +252,17 @@ public:
         nStakeModifier = 0;
 		nStakeModifierV2 = uint256();
         //nStakeModifierChecksum = 0;
-        hashProofOfStake = uint256();
+        //hashProofOfStake = uint256();
 
         if (block.IsProofOfStake()) {
             SetProofOfStake();
-            prevoutStake = block.vtx[1].vin[0].prevout;
-            nStakeTime = block.nTime;
-        } else {
-            prevoutStake.SetNull();
-            nStakeTime = 0;
+            //prevoutStake = block.vtx[1].vin[0].prevout;
+			//nStakeTime = block.nTime;
         }
+		/*else {
+            prevoutStake.SetNull();
+			nStakeTime = 0;
+        }*/
     }
     
 
@@ -471,13 +472,18 @@ public:
         READWRITE(nStakeModifier);
 		if (nHeight >= GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) READWRITE(nStakeModifierV2);
         if (IsProofOfStake()) {
-            READWRITE(prevoutStake);
+			// TODO: Remove this whole section. prevoutStake and nStakeTime are useless, just kept for now to preserve blockindex file format validity.
+			COutPoint prevoutStake;
+			prevoutStake.SetNull();
+            READWRITE(prevoutStake); 
+			unsigned int nStakeTime = 0;
             READWRITE(nStakeTime);
-        } else {
+        }
+		/*else {
             const_cast<CDiskBlockIndex*>(this)->prevoutStake.SetNull();
             const_cast<CDiskBlockIndex*>(this)->nStakeTime = 0;
             const_cast<CDiskBlockIndex*>(this)->hashProofOfStake = uint256();
-        }
+        }*/
 
         // block header
         READWRITE(this->nVersion);
