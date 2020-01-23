@@ -470,15 +470,15 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 {
     //LogPrintf("%s\n", pblock->ToString());
-	if(chainActive.Tip()->nHeight > Params().LAST_POW_BLOCK()) LogPrintf("generated %s\n", FormatMoney(pblock->vtx[1].vout[1].nValue));
-	else LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
 
     // Found a solution
     {
         LOCK(cs_main);
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            return error("Bitcoin2Miner : generated block is stale");
+            return error("Bitcoin 2 Miner : generated block is stale");
     }
+
+	LogPrintf("generated %s\n", FormatMoney(pblock->vtx[1].vout[1].nValue));
 
     // Remove key from key pool
     reservekey.KeepKey();
