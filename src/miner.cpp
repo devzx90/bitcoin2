@@ -497,9 +497,11 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     if (!ProcessNewBlock(state, NULL, pblock))
         return error("Bitcoin2Miner : ProcessNewBlock, block not accepted");
 	LogPrint("masternode", "ProcessBlockFound - for (CNode* node : vNodes) {\n");
-    for (CNode* node : vNodes) {
-        node->PushInventory(CInv(MSG_BLOCK, pblock->GetHash()));
-    }
+
+	LOCK(cs_vNodes);
+	for (CNode* node : vNodes) {
+		node->PushInventory(CInv(MSG_BLOCK, pblock->GetHash()));
+	}
 	LogPrint("masternode", "ProcessBlockFound - done. return true\n");
     return true;
 }
