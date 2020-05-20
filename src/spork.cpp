@@ -60,7 +60,7 @@ void LoadSporksFromDB()
 
 void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (fLiteMode) return; //disable all obfuscation/masternode related functionality
+    if (fLiteMode || chainActive.Tip() == NULL) return; //disable all obfuscation/masternode related functionality
 
     if (strCommand == "spork") {
         //LogPrintf("ProcessSpork::spork\n");
@@ -68,11 +68,17 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
         CSporkMessage spork;
         vRecv >> spork;
 
-        if (chainActive.Tip() == NULL) return;
-
         // Ignore spork messages about unknown/deleted sporks
         std::string strSpork = sporkManager.GetSporkNameByID(spork.nSporkID);
         if (strSpork == "Unknown") return;
+
+		if (spork.nTimeSigned > GetAdjustedTime() * 60 * 60) {
+			LOCK(cs_main);
+			LogPrintf("%s -- ERROR: too far into the future\n", __func__);
+			Misbehaving(pfrom->GetId(), 100);
+			return;
+		}
+
 
         uint256 hash = spork.GetHash();
         if (mapSporksActive.count(spork.nSporkID)) {
@@ -87,14 +93,15 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
         LogPrintf("spork - new %s ID %d Time %d bestHeight %d\n", hash.ToString(), spork.nSporkID, spork.nValue, chainActive.Tip()->nHeight);
 
         if (!sporkManager.CheckSignature(spork)) {
+			LOCK(cs_main);
             LogPrintf("spork - invalid signature\n");
             Misbehaving(pfrom->GetId(), 100);
             return;
         }
 
-        mapSporks[hash] = spork;
-        mapSporksActive[spork.nSporkID] = spork;
-        sporkManager.Relay(spork);
+		mapSporks[hash] = spork;
+		mapSporksActive[spork.nSporkID] = spork;
+		sporkManager.Relay(spork);
 
         // Bitcoin2: add to spork database.
         pSporkDB->WriteSpork(spork.nSporkID, spork);
@@ -254,6 +261,7 @@ bool CSporkManager::SetPrivKey(std::string strPrivKey)
         LogPrintf("CSporkManager::SetPrivKey - Successfully initialized as spork signer\n");
         return true;
     } else {
+		strMasterPrivKey = "";
         return false;
     }
 }
