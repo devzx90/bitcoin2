@@ -3006,17 +3006,12 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
 			}
 		}
 
-        // Read block header
-        CBlockHeader block = pindex->GetBlockHeader();
-
         bool fKernelFound = false;
         uint256 hashProofOfStake = 0;
         COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
         nTxNewTime = GetAdjustedTime();
-		//LogPrintf("CreateCoinStake : passing block header of block: %d\n", pindex->nHeight);
-        //iterates each utxo inside of CheckStakeKernelHash()
-		
-		fKernelFound = CheckStakeKernelHashV2(nBits, chainActive.Tip(), pindex->nTime, *pcoin.first, prevoutStake, nTxNewTime, false, hashProofOfStake);
+
+		fKernelFound = CheckStakeKernelHashV2(nBits, chainActive.Tip()->nStakeModifierV2, chainTime, pindex->nTime, pcoin.first->vout[prevoutStake.n].nValue, prevoutStake, nTxNewTime, false, hashProofOfStake);
         
 		if (fKernelFound) {
 			fKernelFound = false; // Set it back to false for now in case error checks fail.
@@ -3087,7 +3082,8 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
 
 	LastHashedBlockHeight = CurrentHeight;
 	// store a time stamp of the max attempted hash's time stamp on this block.
-	LastHashedBlockTime = nTxNewTime + nMaxStakingFutureDrift - (LastHashedBlockTime % nStakeInterval);
+	LastHashedBlockTime = nTxNewTime + nMaxStakingFutureDrift;
+	LastHashedBlockTime -= LastHashedBlockTime % nStakeInterval;
 
     if (nCredit == 0 || CurrentHeight != chainActive.Height()) return 0;
 
