@@ -63,8 +63,6 @@ using namespace libzerocoin;
 CCriticalSection cs_main;
 
 BlockMap mapBlockIndex;
-map<uint256, uint256> mapProofOfStake;
-//set<pair<COutPoint, unsigned int> > setStakeSeen; unused.
 
 CChain chainActive;
 CBlockIndex* pindexBestHeader = NULL;
@@ -3600,7 +3598,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
 			}
 
             pindexNewTip = chainActive.Tip();
-            
+
             break;
         }
 
@@ -3766,7 +3764,7 @@ CBlockIndex* AddToBlockIndex(const CBlock& block)
 				pindexNew->hashProofOfStake = mapProofOfStake[hash];
 				mapProofOfStake.erase(hash); // Save memory now that it has been added to block index.
 			}
-            
+
         }*/
 
         // ppcoin: compute stake modifier
