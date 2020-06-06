@@ -315,13 +315,14 @@ bool CheckStakeKernelHashV2(unsigned int nBits, uint256& StakeModifierV2, unsign
 	if(LastHashedBlockHeight != nHeightStart)
 	{
 		int64_t TimePastDifference2 = nTimeTx - nChainTime;
-		int64_t TimePastDifference = nTimeTx - chainActive.Tip()->GetBlockTime() + nMaxPastTimeSecs - 1;
+		int64_t TimePastDifference = nTimeTx - chainActive.Tip()->GetBlockTime() + nMaxPastTimeSecs;
 		if (TimePastDifference > TimePastDifference2) TimePastDifference = TimePastDifference2;
 
 		if (TimePastDifference > 1)
 		{
 			int nFactor = TimePastDifference / nStakeInterval;
 			HashingStart = -nFactor * nStakeInterval; // This makes it try past times too.
+			if (nTimeTx + HashingStart <= nChainTime) HashingStart += nStakeInterval; // can't try that far past.
 		}
 		else HashingStart = 0;
 	}
