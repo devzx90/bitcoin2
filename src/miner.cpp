@@ -517,7 +517,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     RenameThread("BTC2-miner");
 
     // Each thread has its own key and counter
-    CReserveKey reservekey(pwallet);
+	CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
 
     //control the amount of times the client will check for mintable coins
@@ -567,7 +567,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         if (!pindexPrev)
             continue;
 
-        unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake));
+        unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlock(CScript(), pwallet, fProofOfStake)); // PoW: CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake)
         if (!pblocktemplate.get())
             continue;
 
