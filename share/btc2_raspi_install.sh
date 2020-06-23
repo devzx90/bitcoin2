@@ -65,7 +65,7 @@ echo -e "#######################################################################
 echo ""
 
 cd /usr/local/bin
-sudo wget https://github.com/BITC2/bitcoin2/releases/download/2.2.2/bitcoin2-2.2.2-arm-linux-gnueabihf.tar.gz
+sudo wget https://github.com/BITC2/bitcoin2/releases/download/2.2.4/bitcoin2-2.2.4-arm-linux-gnueabihf.tar.gz
 echo ""
 echo -e "\e[92mDone...\e[0m"
 sleep 1
@@ -75,7 +75,7 @@ echo -e "\e[1m##################################################################
 echo "              INSTALLING BITCOIN 2 CORE WALLET in /usr/local/bin/"
 echo -e "################################################################################\e[0m"
 echo ""
-sudo tar -zxvf bitcoin2-2.2.2-arm-linux-gnueabihf.tar.gz
+sudo tar -zxvf bitcoin2-2.2.4-arm-linux-gnueabihf.tar.gz
 sudo mv -f bitcoin2-bin/* /usr/local/bin
 sudo rm -rf bitcoin2-bin/
 echo ""
@@ -142,9 +142,9 @@ echo -e "     \e[31m\e[1m\e[5m/!\ IT MAY TAKE A LONG TIME /!\ DON'T TURN OFF YOU
 echo -e "\e[1m################################################################################\e[0m"
 echo ""
 
-wget https://www.bitc2.org/snapshot-August-23-2019.zip
-unzip snapshot-August-23-2019.zip
-rm snapshot-August-23-2019.zip
+wget https://www.bitc2.org/snapshot-January-23-2020.zip
+unzip snapshot-January-23-2020.zip
+rm snapshot-January-23-2020.zip
 rm ReadMe.txt
 echo ""
 echo -e "\e[92mDone...\e[0m"
