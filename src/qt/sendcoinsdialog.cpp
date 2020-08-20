@@ -349,11 +349,23 @@ void SendCoinsDialog::send(QList<SendCoinsRecipient> recipients, QString strFee,
 
     CAmount txFee = currentTransaction.getTransactionFee();
     QString questionString = tr("Are you sure you want to send?");
-    questionString.append("<br /><br />%1");
+
+	// Check for multisig or segwit address in case of accidents.
+	for (SendCoinsRecipient& aRecipient : recipients)
+	{
+		if (aRecipient.address[0] == '3')
+		{
+			questionString.append("<br /><br /><span style='color:#FF0000; font-weight: bold; font-size: 1.5em;'>WARNING!</span> Normal BTC2 addresses start with 1.<br />You are probably making a mistake trying to send to a BTC address which would result in coins lost.<br />Cancel if you are not sure.");
+			break;
+		}
+	}
+
+	questionString.append("<br /><br />%1");
 
     if (txFee > 0) {
         // append fee string if a fee is required
         questionString.append("<hr /><span style='color:#aa0000;'>");
+
         questionString.append(BitcoinUnits::formatHtmlWithUnit(model->getOptionsModel()->getDisplayUnit(), txFee));
         questionString.append("</span> ");
         questionString.append(tr("are added as transaction fee"));

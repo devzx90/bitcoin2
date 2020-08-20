@@ -81,7 +81,7 @@ std::string DecodeDumpString(const std::string& str)
 
 UniValue importprivkey(const UniValue& params, bool fHelp)
 {
-    if (fHelp || params.size() < 1 || params.size() > 3)
+    if (fHelp || params.size() < 1 || params.size() > 4)
         throw runtime_error(
             "importprivkey \"bitcoin2privkey\" ( \"label\" rescan )\n"
             "\nAdds a private key (as returned by dumpprivkey) to your wallet and returns the public address.\n"
