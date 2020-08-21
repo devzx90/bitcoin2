@@ -2161,13 +2161,7 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
 		if (out.tx->vout[out.i].nValue < CENT)
 			continue;
 
-        //if zerocoinspend, then use the block time
-        int64_t nTxTime = out.tx->GetTxTime();
-        if (out.tx->IsZerocoinSpend()) {
-            if (!out.tx->IsInMainChain())
-                continue;
-            nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
-        }
+        int64_t nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
 
         //check for min age
         if (GetAdjustedTime() - nTxTime < nStakeMinAge || nTxTime < 1522240800)
