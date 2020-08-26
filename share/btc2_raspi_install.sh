@@ -129,7 +129,7 @@ echo "server=1" >> bitcoin2.conf
 echo "daemon=1" >> bitcoin2.conf
 echo "logtimestamps=1" >> bitcoin2.conf
 echo "upnp=1" >> bitcoin2.conf
-echo "maxconnections=16" >> bitcoin2.conf
+echo "maxconnections=256" >> bitcoin2.conf
 sleep 1
 echo ""
 echo -e "\e[92mDone...\e[0m"
@@ -142,9 +142,9 @@ echo -e "     \e[31m\e[1m\e[5m/!\ IT MAY TAKE A LONG TIME /!\ DON'T TURN OFF YOU
 echo -e "\e[1m################################################################################\e[0m"
 echo ""
 
-wget https://www.bitc2.org/snapshot-January-23-2020.zip
-unzip snapshot-January-23-2020.zip
-rm snapshot-January-23-2020.zip
+wget https://www.bitc2.org/Snapshot_latest.zip
+unzip Snapshot_latest.zip
+rm Snapshot_latest.zip
 rm ReadMe.txt
 echo ""
 echo -e "\e[92mDone...\e[0m"
