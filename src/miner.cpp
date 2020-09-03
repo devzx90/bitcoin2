@@ -92,8 +92,6 @@ void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
 
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)
 {
-    CReserveKey reservekey(pwallet);
-
     // Create new block
     unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
     if (!pblocktemplate.get())
@@ -404,7 +402,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 			if (!Params().AllowMinDifficultyBlocks()) pblock->nBits = GetNextWorkRequired(pindexPrev);
 		}
 
-        pblock->nNonce = 0;
+        pblock->nNonce = GetRand(1000000000) + 100; // + 100 to avoid < 100 being generated.
         uint256 nCheckpoint = 0;
         AccumulatorMap mapAccumulators;
 
@@ -467,7 +465,7 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
     return CreateNewBlock(scriptPubKey, pwallet, fProofOfStake);
 }
 
-bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
+bool ProcessBlockFound(CBlock* pblock, CWallet& wallet)
 {
     //LogPrintf("%s\n", pblock->ToString());
 
@@ -479,9 +477,6 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     }
 
 	LogPrintf("generated %s\n", FormatMoney(pblock->vtx[1].vout[1].nValue));
-
-    // Remove key from key pool
-    reservekey.KeepKey();
 
     // Track how many getdata requests this block gets
     {
@@ -497,6 +492,9 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     if (!ProcessNewBlock(state, NULL, pblock))
         return error("Bitcoin2Miner : ProcessNewBlock, block not accepted");
 	LogPrint("masternode", "ProcessBlockFound - for (CNode* node : vNodes) {\n");
+
+	// PoW: Remove key from key pool
+	//reservekey.KeepKey();
 
 	LOCK(cs_vNodes);
 	for (CNode* node : vNodes) {
@@ -516,8 +514,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("BTC2-miner");
 
-    // Each thread has its own key and counter
-	CReserveKey reservekey(pwallet);
+    // Each thread has its own counter
     unsigned int nExtraNonce = 0;
 
     //control the amount of times the client will check for mintable coins
@@ -584,7 +581,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
             }
 
             SetThreadPriority(THREAD_PRIORITY_NORMAL);
-            ProcessBlockFound(pblock, *pwallet, reservekey);
+            ProcessBlockFound(pblock, *pwallet);
             SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
             continue;
@@ -609,7 +606,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                     SetThreadPriority(THREAD_PRIORITY_NORMAL);
                     //LogPrintf("BitcoinMiner:\n");
                     //LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex(), hashTarget.GetHex());
-                    ProcessBlockFound(pblock, *pwallet, reservekey);
+                    ProcessBlockFound(pblock, *pwallet);
                     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
                     // In regression test mode, stop mining after a block is found. This
