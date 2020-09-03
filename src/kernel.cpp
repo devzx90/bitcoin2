@@ -68,7 +68,7 @@ bool CheckStakeKernelHashV3(unsigned int nBits, uint256& StakeModifierV2, uint64
 		ss << StakeModifierV2 << prevout.hash << nStakeModifier << prevout.n << nTimeTx;
 		hashProofOfStake = ss.GetHash();
 		bool TargetMet = stakeTargetHit(hashProofOfStake, theValueIn, bnTarget);
-		if (!TargetMet) LogPrintf("CheckStakeKernelHashV2() failed: nStakeModifierV2=%s nStakeModifier=%d prevout.hash=%s prevout.n=%d nTimeTx=%u\n", StakeModifierV2.ToString().c_str(), nStakeModifier, prevout.hash.ToString().c_str(), prevout.n, nTimeTx);
+		if (!TargetMet) LogPrintf("CheckStakeKernelHashV3() failed: nStakeModifierV2=%s nStakeModifier=%d prevout.hash=%s prevout.n=%d nTimeTx=%u\n", StakeModifierV2.ToString().c_str(), nStakeModifier, prevout.hash.ToString().c_str(), prevout.n, nTimeTx);
 		return TargetMet;
 	}
 
@@ -270,7 +270,7 @@ bool CheckProofOfStake(const CBlock& block, CBlockIndex* pindexPrev, uint256& ha
 		if (NewHeight >= REWARDFORK_BLOCK)
 		{
 			uint64_t nStakeModifier;
-			if(!CalculateStakeModifierV3(nStakeModifier, pindexPrev)) error("CheckProofOfStake() : CalculateStakeModifierV3 failed. pindexPrev->nHeight=%u\n", pindexPrev->nHeight);
+			if(!CalculateStakeModifierV3(nStakeModifier, pindexPrev)) return error("CheckProofOfStake() : CalculateStakeModifierV3 failed. pindexPrev->nHeight=%u\n", pindexPrev->nHeight);
 
 			if (!CheckStakeKernelHashV3(block.nBits, pindexPrev->nStakeModifierV2, nStakeModifier, blockprev.GetBlockTime(), txPrev.vout[txin.prevout.n].nValue, txin.prevout, nTime, true, hashProofOfStake))
 				return error("CheckProofOfStake() : INFO: check kernel failed on coinstake v3 %s, pindexPrev->nHeight=%u, hashProof=%s \n", tx.GetHash().ToString().c_str(), pindexPrev->nHeight, hashProofOfStake.ToString().c_str());
