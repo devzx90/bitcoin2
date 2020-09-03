@@ -26,8 +26,36 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast)
 	int64_t nTargetSpacing = 60;
 	int64_t nActualTimespan;
 
-	////////// Old, version 2.0.0
-	if (pindexLast->nHeight < 6538) // CheckWork() will pass Block 6538 and earlier to this old version.
+	////////// Current algo. Retarget every block.
+	if (pindexLast->nHeight + 1 >= REWARDFORK_BLOCK)
+	{
+		const int64_t& nTargetTimespan = 30 * 60;
+
+		if (pindexLast->nHeight + 1 == REWARDFORK_BLOCK) nActualTimespan = 300; // Reduce difficulty for a smoother transition to new staking protocol.
+		else
+		{
+			nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
+			if (nActualTimespan < 0) nActualTimespan = 1;
+			else if (nActualTimespan > nTargetSpacing * 10) nActualTimespan = nTargetSpacing * 10;
+		}
+
+		uint256 bnNew;
+		bnNew.SetCompact(pindexLast->nBits);
+
+		if (bnNew == Params().ProofOfWorkLimit() && nActualTimespan >= nTargetSpacing) return bnNew.GetCompact();
+
+		int64_t nInterval = nTargetTimespan / nTargetSpacing;
+		bnNew *= ((nInterval - 1) * nTargetSpacing + nActualTimespan + nActualTimespan);
+		bnNew /= ((nInterval + 1) * nTargetSpacing);
+
+		if (bnNew == 0 || bnNew > Params().ProofOfWorkLimit()) bnNew = Params().ProofOfWorkLimit();
+
+		LogPrint("stake", "Difficulty: %u at height: %d\n", bnNew.GetCompact(), pindexLast->nHeight + 1);
+
+		return bnNew.GetCompact();
+	}
+	////////// Old versions are below:
+	else if (pindexLast->nHeight < 6538) // CheckWork() will pass Block 6538 and earlier to this old version.
 	{
 		nActualTimespan = pindexLast->GetBlockTime() - pindexLast->pprev->GetBlockTime();
 		if (nActualTimespan < 30) nActualTimespan = 30;
@@ -46,9 +74,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast)
 
 		return bnNew.GetCompact();
 	}
-	/////////////
-	
-	if (pindexLast->nHeight + 1 == GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) nActualTimespan = 2000; // Reduce difficulty for a smoother transition to new staking protocol.
+	else if (pindexLast->nHeight + 1 == GetSporkValue(SPORK_13_STAKING_PROTOCOL_2)) nActualTimespan = 2000; // Reduce difficulty for a smoother transition to new staking protocol.
 	else
 	{
 		int nHeightFirst = pindexLast->nHeight - 10;
