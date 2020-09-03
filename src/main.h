@@ -160,6 +160,7 @@ extern bool fLargeWorkForkFound;
 extern bool fLargeWorkInvalidChainFound;
 
 extern unsigned int nStakeMinAge, nStakeInterval, nMaxStakingFutureDrift;
+extern const int nMaxStakingFutureDriftv3;
 extern int64_t nReserveBalance;
 
 extern std::map<uint256, int64_t> mapRejectedBlocks;

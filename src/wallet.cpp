@@ -2947,7 +2947,7 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
         return error("CreateCoinStake : invalid reserve balance amount");
 
     if (nBalance <= nReserveBalance)
-        return false;
+        return 0;
 
     // presstab HyperStake - Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
     static std::set<pair<const CWalletTx*, unsigned int> > setStakeCoins;
@@ -2957,7 +2957,7 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
 		LogPrintf("CreateCoinStake(): Updating setStakeCoins.\n");
         setStakeCoins.clear();
         if (!SelectStakeCoins(setStakeCoins, nBalance - nReserveBalance))
-            return false;
+            return 0;
 
         nLastStakeSetUpdate = GetTime();
 		LogPrintf("CreateCoinStake(): Updated setStakeCoins. New size: %u\n", setStakeCoins.size());
@@ -2966,20 +2966,33 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
     if (setStakeCoins.empty())
 	{
 		//MilliSleep(50000);
-		return false;
+		return 0;
 	}
 
     CAmount nCredit = 0;
     
 	int CurrentHeight, UpcomingHeight;
 	unsigned int chainTime;
-
+	bool V3Staking = false;
+	uint64_t nStakeModifier;
+	CBlockIndex* pCurrentIndex;
 	{
 		LOCK(cs_main);
-		CurrentHeight = chainActive.Height();
+		pCurrentIndex = chainActive.Tip();
+		CurrentHeight = pCurrentIndex->nHeight;
 		UpcomingHeight = CurrentHeight + 1;
-		chainTime = chainActive.Tip()->GetMedianTimePast();
+		if (UpcomingHeight >= REWARDFORK_BLOCK)
+		{
+			V3Staking = true;
+			if (!CalculateStakeModifierV3(nStakeModifier, pCurrentIndex))
+			{
+				LogPrintf("CreateCoinStake : failed to CalculateStakeModifierV3 for UpcomingHeight: %d\n", UpcomingHeight);
+				return 0;
+			}
+		}
+		else chainTime = pCurrentIndex->GetMedianTimePast();
 	}
+
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
 	{
@@ -3005,16 +3018,36 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
         COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
         nTxNewTime = GetAdjustedTime();
 
-		fKernelFound = CheckStakeKernelHashV2(nBits, chainActive.Tip()->nStakeModifierV2, chainTime, pindex->nTime, pcoin.first->vout[prevoutStake.n].nValue, prevoutStake, nTxNewTime, false, hashProofOfStake);
+		if(V3Staking) fKernelFound = CheckStakeKernelHashV3(nBits, chainActive.Tip()->nStakeModifierV2, nStakeModifier, pindex->nTime, pcoin.first->vout[prevoutStake.n].nValue, prevoutStake, nTxNewTime, false, hashProofOfStake);
+		else fKernelFound = CheckStakeKernelHashV2(nBits, chainActive.Tip()->nStakeModifierV2, chainTime, pindex->nTime, pcoin.first->vout[prevoutStake.n].nValue, prevoutStake, nTxNewTime, false, hashProofOfStake);
         
 		if (fKernelFound) {
 			fKernelFound = false; // Set it back to false for now in case error checks fail.
 
             //Double check that this will pass time requirements
-            if (nTxNewTime <= chainTime) {
+            if (nTxNewTime <= chainTime || (V3Staking && nTxNewTime < pCurrentIndex->nTime)) {
                 LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
                 continue;
             }
+
+			if (V3Staking)
+			{
+				// Can accept at most 3 blocks with the same time stamp.
+				CBlockIndex* aBlockIndex = pCurrentIndex;
+				bool TooManyBlocksWithSameTimeStamp = true;
+				for (int i = 0; i < 3; ++i)
+				{
+					if (aBlockIndex->nTime < nTxNewTime)
+					{
+						TooManyBlocksWithSameTimeStamp = false;
+						break;
+					}
+					aBlockIndex = aBlockIndex->pprev;
+					if (!aBlockIndex) break;
+				}
+
+				if (TooManyBlocksWithSameTimeStamp) continue;
+			}
 
             // Found a kernel
             if (fDebug && GetBoolArg("-printcoinstake", false))
@@ -3026,14 +3059,14 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
             scriptPubKeyKernel = pcoin.first->vout[pcoin.second].scriptPubKey;
             if (!Solver(scriptPubKeyKernel, whichType, vSolutions)) {
                 LogPrintf("CreateCoinStake : failed to parse kernel\n");
-                break;
+				continue;
             }
             if (fDebug && GetBoolArg("-printcoinstake", false))
                 LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
             if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH) {
                 if (fDebug && GetBoolArg("-printcoinstake", false))
                     LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
-                break; // only support pay to public key and pay to address
+				continue; // only support pay to public key and pay to address
             }
             if (whichType == TX_PUBKEYHASH) // pay to address type
             {
@@ -3042,7 +3075,7 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
                 if (!keystore.GetKey(uint160(vSolutions[0]), key)) {
                     if (fDebug && GetBoolArg("-printcoinstake", false))
                         LogPrintf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
-                    break; // unable to find corresponding public key
+					continue; // unable to find corresponding public key
                 }
 
                 scriptPubKeyOut << key.GetPubKey() << OP_CHECKSIG;
@@ -3076,7 +3109,7 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
 
 	LastHashedBlockHeight = CurrentHeight;
 	// store a time stamp of the max attempted hash's time stamp on this block.
-	LastHashedBlockTime = nTxNewTime + nMaxStakingFutureDrift;
+	LastHashedBlockTime = nTxNewTime + (V3Staking ? nMaxStakingFutureDriftv3 : nMaxStakingFutureDrift);
 	LastHashedBlockTime -= LastHashedBlockTime % nStakeInterval;
 
     if (nCredit == 0 || CurrentHeight != chainActive.Height()) return 0;
@@ -3105,10 +3138,10 @@ bool CWallet::FinishCoinStake(CMutableTransaction& txNew, CAmount nCredit)
 		if (RewardCutAmount != 0)
 		{
 			// Send to -sendrewardcutsto
-			if(RewardCutAmount <= nReward && RewardCutAmount > MINRELAYFEE)
+			if(RewardCutAmount <= nReward && (RewardCutAmount > MINRELAYFEE || RewardCutAmount == 3)) // 3 is a special case that sends a third of the block reward amount.
 			{
-				txNew.vout[2].nValue = RewardCutAmount;
-				txNew.vout[1].nValue = nCredit - RewardCutAmount;
+				txNew.vout[2].nValue = (RewardCutAmount == 3 ? (nReward / RewardCutAmount) : RewardCutAmount);
+				txNew.vout[1].nValue = nCredit - txNew.vout[2].nValue;
 			}
 			else // In case someone made an error defining the parameters, a minimal amount is sent.
 			{
@@ -3129,7 +3162,7 @@ bool CWallet::FinishCoinStake(CMutableTransaction& txNew, CAmount nCredit)
 	if (nBytes >= DEFAULT_BLOCK_MAX_SIZE / 5) return error("CreateCoinStake : exceeded coinstake size limit");
 
 	// Sign
-	if (!SignSignature(*this, scriptPubKeyKernel, txNew, 0)) return error("CreateCoinStake : failed to sign coinstake");
+	if (!SignSignature(*this, scriptPubKeyKernel, txNew, 0, SIGHASH_ALL)) return error("CreateCoinStake : failed to sign coinstake");
 
 	LogPrintf("Successfully generated coinstake.\n");
 	return true;
