@@ -2,6 +2,10 @@
 
 To build dependencies for the current arch+OS:
 
+    cd depends
+    sudo chmod +x config.guess
+    sudo chmod +x config.site.in
+    sudo chmod +x config.sub
     make
 
 To build for another arch/OS:
