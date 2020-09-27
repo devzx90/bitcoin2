@@ -22,13 +22,15 @@ Bitcoin 2 also implements Masternodes, which enable the Swift TX feature along w
 
 Bitcoin 2 uses a custom, secure Proof of Stake algorithm. Greatly reducing electricity use compared to Bitcoin. This also enables anyone to run the core software and create blocks, without needing a ASIC miner. A laptop is enough.
 
-Unlike Bitcoin, Bitcoin 2 supports truly anonymous transactions by using the Zerocoin Protocol. What zBTC2 provides is a protocol-level coin mixing service using zero knowledge proofs to sever the link between the sender and the receiver with 100% anonymity and untraceability. [Technical paper about zBTC2](https://www.bitc2.org/zBTC2-Bitcoin-2-Zerocoin-Protocol).
+Unlike Bitcoin, Bitcoin 2 supports truly anonymous transactions. What zBTC2 provides is a protocol-level coin mixing service using zero knowledge proofs to sever the link between the sender and the receiver with 100% anonymity and untraceability. [Technical paper about zBTC2](https://www.bitc2.org/zBTC2-Bitcoin-2-Zerocoin-Protocol).
 
 The Bitcoin 2 blockchain is currently only about 1.5 GB and yet the balances of Bitcoin as of block 507850 were recorded to it. Bitcoin 2 effectively has replay protection.
 
-Blocks are created around once per minute instead of once per 10 minutes, this means that transactions confirm faster. Bitcoin 2's mining/forging difficulty is adjusted every 10 blocks.
+Blocks are created around once per minute instead of once per 10 minutes, this means that transactions confirm faster. Bitcoin 2's mining/forging difficulty is adjusted every block.
 
-Bitcoin 2 does not support the Bech32 address format but other Bitcoin addresses are valid Bitcoin 2 addresses.
+Bitcoin 2 does not support Segwit or the Bech32 address format but other Bitcoin addresses are valid Bitcoin 2 addresses.
+
+[Block rewards structure](https://www.bitc2.org/bitcoin2-block-rewards)
 
 License
 -------

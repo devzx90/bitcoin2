@@ -1,6 +1,6 @@
 UNIX BUILD NOTES
 ====================
-Some notes on how to build Bitcoin 2 Core in Unix. Ubuntu Bionic recommended for building.
+Some notes on how to build Bitcoin 2 Core in Unix. Debian 10 recommended for building. There is a known linking issue when trying to compile with GUI (QT) using Ubuntu Bionic. But a binary built with a Debian 10 VM will work on Ubuntu Bionic.
 
 Note
 ---------------------
@@ -20,6 +20,12 @@ To Build
 ./configure
 make
 make install # optional
+
+# If you compiled depends yourself, you may want to run the following example configuration instead. (Replace "x86_64-pc-linux-gnu" with the directory's name that you created when you built the depends.):
+./autogen.sh
+CONFIG_SITE=$PWD/depends/x86_64-pc-linux-gnu/share/config.site ./configure --disable-tests --enable-upnp-default --enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests LDFLAGS=-static-libstdc++ CFLAGS="-O2" CXXFLAGS="-O2"
+
+make
 ```
 
 This will build bitcoin2-qt as well, if the dependencies are met.
