@@ -3603,7 +3603,7 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
             if (!ActivateBestChainStep(state, pindexMostWork, pblock && pblock->GetHash() == pindexMostWork->GetBlockHash() ? pblock : NULL, fInvalidFound, fAlreadyChecked))
                 return false;
 
-			pindexFork = chainActive.FindFork(pindexOldTip); // Returns the old tip/block on the new active chain.
+			pindexFork = chainActive.Tip()->nHeight < 1 ? NULL : chainActive.FindFork(pindexOldTip); // Returns the old tip/block on the new active chain.
 
 			if (fInvalidFound) {
 				// Wipe cache, we may need another branch now.
