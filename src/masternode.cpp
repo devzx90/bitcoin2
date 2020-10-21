@@ -20,23 +20,29 @@ std::map<int64_t, uint256> mapCacheBlockHashes;
 //Get the last hash that matches the modulus given. Processed in reverse order
 bool GetBlockHash(uint256& hash, int nBlockHeight)
 {
-    if (chainActive.Tip() == NULL) return false;
+	int tipHeight;
+	const CBlockIndex* tipIndex;
+	{
+		LOCK(cs_main);
+		tipIndex = chainActive.Tip();
+		if (!tipIndex) return false;
+		tipHeight = tipIndex->nHeight;
+	}
 
     if (nBlockHeight == 0)
-        nBlockHeight = chainActive.Tip()->nHeight;
+        nBlockHeight = tipHeight;
 
     if (mapCacheBlockHashes.count(nBlockHeight)) {
         hash = mapCacheBlockHashes[nBlockHeight];
         return true;
     }
 
-    const CBlockIndex* BlockLastSolved = chainActive.Tip();
-    const CBlockIndex* BlockReading = chainActive.Tip();
+    const CBlockIndex* BlockReading = tipIndex;
 
-    if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || chainActive.Tip()->nHeight + 1 < nBlockHeight) return false;
+    if (tipHeight == 0 || tipHeight + 1 < nBlockHeight) return false;
 
     int nBlocksAgo = 0;
-    if (nBlockHeight > 0) nBlocksAgo = (chainActive.Tip()->nHeight + 1) - nBlockHeight;
+    if (nBlockHeight > 0) nBlocksAgo = tipHeight + 1 - nBlockHeight;
     assert(nBlocksAgo >= 0);
 
     int n = 0;
@@ -163,8 +169,6 @@ bool CMasternode::UpdateFromNewBroadcast(CMasternodeBroadcast& mnb)
 //
 uint256 CMasternode::CalculateScore(int mod, int64_t nBlockHeight)
 {
-    if (chainActive.Tip() == NULL) return 0;
-
     uint256 hash = 0;
     uint256 aux = vin.prevout.hash + vin.prevout.n;
 
@@ -250,9 +254,13 @@ int64_t CMasternode::SecondsSincePayment()
 
 int64_t CMasternode::GetLastPaid()
 {
-    CBlockIndex* pindexPrev = chainActive.Tip();
-    if (pindexPrev == NULL) return false;
-
+	CBlockIndex* pindexPrev;
+	{
+		LOCK(cs_main);
+		pindexPrev = chainActive.Tip();
+		if (pindexPrev == NULL) return false;
+	}
+    
     CScript mnpayee;
     mnpayee = GetScriptForDestination(pubKeyCollateralAddress.GetID());
 
@@ -264,9 +272,7 @@ int64_t CMasternode::GetLastPaid()
     // use a deterministic offset to break a tie -- 2.5 minutes
     int64_t nOffset = hash.GetCompact(false) % 150;
 
-    if (chainActive.Tip() == NULL) return false;
-
-    const CBlockIndex* BlockReading = chainActive.Tip();
+    const CBlockIndex* BlockReading = pindexPrev;
 
     int nMnCount = mnodeman.CountEnabled() * 1.25;
     int n = 0;
@@ -474,14 +480,19 @@ bool CMasternodeBroadcast::CheckDefaultPort(std::string strService, std::string&
 
 int CMasternode::GetMasternodeInputAge()
 {
-	if (chainActive.Tip() == NULL) return 0;
+	CBlockIndex* pindex;
+	{
+		LOCK(cs_main);
+		pindex = chainActive.Tip();
+		if (pindex == NULL) return 0;
+	}
 
 	if (cacheInputAge == 0) {
 		cacheInputAge = GetInputAge(vin);
-		cacheInputAgeBlock = chainActive.Tip()->nHeight;
+		cacheInputAgeBlock = pindex->nHeight;
 	}
 
-	return cacheInputAge + (chainActive.Tip()->nHeight - cacheInputAgeBlock);
+	return cacheInputAge + (pindex->nHeight - cacheInputAgeBlock);
 }
 
 bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
@@ -693,7 +704,11 @@ CMasternodePing::CMasternodePing()
 CMasternodePing::CMasternodePing(CTxIn& newVin)
 {
     vin = newVin;
-    blockHash = chainActive[chainActive.Height() - 12]->GetBlockHash();
+
+	{
+		LOCK(cs_main);
+		blockHash = chainActive[chainActive.Height() - 12]->GetBlockHash();
+	}
     sigTime = GetAdjustedTime();
     vchSig = std::vector<unsigned char>();
 }
