@@ -2972,7 +2972,7 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
     CAmount nCredit = 0;
     
 	int CurrentHeight, UpcomingHeight;
-	unsigned int chainTime;
+	unsigned int chainTime = 0;
 	bool V3Staking = false;
 	uint64_t nStakeModifier;
 	CBlockIndex* pCurrentIndex;
