@@ -2972,8 +2972,6 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
     CAmount nCredit = 0;
     
 	int CurrentHeight, UpcomingHeight;
-	unsigned int chainTime = 0;
-	bool V3Staking = false;
 	uint64_t nStakeModifier;
 	CBlockIndex* pCurrentIndex;
 	{
@@ -2981,16 +2979,12 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
 		pCurrentIndex = chainActive.Tip();
 		CurrentHeight = pCurrentIndex->nHeight;
 		UpcomingHeight = CurrentHeight + 1;
-		if (UpcomingHeight >= REWARDFORK_BLOCK)
+
+		if (!CalculateStakeModifierV3(nStakeModifier, pCurrentIndex))
 		{
-			V3Staking = true;
-			if (!CalculateStakeModifierV3(nStakeModifier, pCurrentIndex))
-			{
-				LogPrintf("CreateCoinStake : failed to CalculateStakeModifierV3 for UpcomingHeight: %d\n", UpcomingHeight);
-				return 0;
-			}
+			LogPrintf("CreateCoinStake : failed to CalculateStakeModifierV3 for UpcomingHeight: %d\n", UpcomingHeight);
+			return 0;
 		}
-		else chainTime = pCurrentIndex->GetMedianTimePast();
 	}
 
 
@@ -3016,42 +3010,35 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
         bool fKernelFound = false;
         uint256 hashProofOfStake = 0;
         COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
-        nTxNewTime = GetAdjustedTime();
+        nTxNewTime = GetTime();
 
-		if(V3Staking) fKernelFound = CheckStakeKernelHashV3(nBits, chainActive.Tip()->nStakeModifierV2, nStakeModifier, pindex->nTime, pcoin.first->vout[prevoutStake.n].nValue, prevoutStake, nTxNewTime, false, hashProofOfStake);
-		else fKernelFound = CheckStakeKernelHashV2(nBits, chainActive.Tip()->nStakeModifierV2, chainTime, pindex->nTime, pcoin.first->vout[prevoutStake.n].nValue, prevoutStake, nTxNewTime, false, hashProofOfStake);
-        
+		fKernelFound = CheckStakeKernelHashV3(nBits, chainActive.Tip()->nStakeModifierV2, nStakeModifier, pindex->nTime, pcoin.first->vout[prevoutStake.n].nValue, prevoutStake, nTxNewTime, false, hashProofOfStake);
+
 		if (fKernelFound) {
 			fKernelFound = false; // Set it back to false for now in case error checks fail.
 
             //Double check that this will pass time requirements
-            if (nTxNewTime <= chainTime || (V3Staking && nTxNewTime < pCurrentIndex->nTime)) {
+            if (nTxNewTime < pCurrentIndex->nTime) {
                 LogPrintf("CreateCoinStake() : kernel found, but it is too far in the past \n");
                 continue;
             }
 
-			if (V3Staking)
-			{
-				// Can accept at most 3 blocks with the same time stamp.
-				CBlockIndex* aBlockIndex = pCurrentIndex;
-				bool TooManyBlocksWithSameTimeStamp = true;
-				for (int i = 0; i < 3; ++i)
-				{
-					if (aBlockIndex->nTime < nTxNewTime)
-					{
-						TooManyBlocksWithSameTimeStamp = false;
-						break;
-					}
-					aBlockIndex = aBlockIndex->pprev;
-					if (!aBlockIndex) break;
-				}
 
-				if (TooManyBlocksWithSameTimeStamp) continue;
+			// Can accept at most 3 blocks with the same time stamp.
+			CBlockIndex* aBlockIndex = pCurrentIndex;
+			bool TooManyBlocksWithSameTimeStamp = true;
+			for (int i = 0; i < 3; ++i)
+			{
+				if (aBlockIndex->nTime < nTxNewTime)
+				{
+					TooManyBlocksWithSameTimeStamp = false;
+					break;
+				}
+				aBlockIndex = aBlockIndex->pprev;
+				if (!aBlockIndex) break;
 			}
 
-            // Found a kernel
-            if (fDebug && GetBoolArg("-printcoinstake", false))
-                LogPrintf("CreateCoinStake : kernel found\n");
+			if (TooManyBlocksWithSameTimeStamp) continue;
 
             vector<valtype> vSolutions;
             txnouttype whichType;
@@ -3108,8 +3095,8 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
     }
 
 	LastHashedBlockHeight = CurrentHeight;
-	// store a time stamp of the max attempted hash's time stamp on this block.
-	LastHashedBlockTime = nTxNewTime + (V3Staking ? nMaxStakingFutureDriftv3 : nMaxStakingFutureDrift);
+	// store a timestamp of the max attempted hash's timestamp on this block.
+	LastHashedBlockTime = nTxNewTime + nMaxStakingFutureDriftv3;
 	LastHashedBlockTime -= LastHashedBlockTime % nStakeInterval;
 
     if (nCredit == 0 || CurrentHeight != chainActive.Height()) return 0;

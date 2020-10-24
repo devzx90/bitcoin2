@@ -144,66 +144,7 @@ bool CheckStakeKernelHashV2(unsigned int nBits, uint256& StakeModifierV2, unsign
 		return TargetMet;
 	}
 
-	bool fSuccess = false;
-	// nTimeTx starts as GetAdjustedTime when creating a new block.
-	int TimeRemainder = nTimeTx % nStakeInterval;
-	nTimeTx -= TimeRemainder; // Round it to the proper staking interval.
-	unsigned int nTryTime = 0;
-	int nHeightStart = chainActive.Height();
-	int HashingStart;
-
-	if(LastHashedBlockHeight != nHeightStart)
-	{
-		int64_t TimePastDifference2 = nTimeTx - nChainTime;
-		int64_t TimePastDifference = nTimeTx - chainActive.Tip()->GetBlockTime() + nMaxPastTimeSecs;
-		if (TimePastDifference > TimePastDifference2) TimePastDifference = TimePastDifference2;
-
-		if (TimePastDifference > 1)
-		{
-			int nFactor = TimePastDifference / nStakeInterval;
-			HashingStart = -nFactor * nStakeInterval; // This makes it try past times too.
-			if (nTimeTx + HashingStart <= nChainTime) HashingStart += nStakeInterval; // can't try that far past.
-		}
-		else HashingStart = 0;
-	}
-	else
-	{
-		// Set the HashingStart so that we're only trying previously untested times.
-		HashingStart = LastHashedBlockTime - nTimeTx + nStakeInterval;
-	}
-
-	CHashWriter HashStart(SER_GETHASH, 0);
-	HashStart << StakeModifierV2 << nTimeBlockFrom << prevout.hash << prevout.n;
-
-	int MaxTime = nMaxStakingFutureDrift + TimeRemainder;
-	for (int i = HashingStart; i < MaxTime; i += nStakeInterval) //iterate the hashing
-	{
-		//new block came in, move on
-		if (chainActive.Height() != nHeightStart)
-			break;
-
-		if (i > MaxTime) break;
-
-		//hash this iteration
-		nTryTime = nTimeTx + i;
-
-		CHashWriter ss(HashStart);
-		ss << nTryTime;
-		hashProofOfStake = ss.GetHash();
-
-		// if stake hash does not meet the target then continue to next iteration
-		if (!stakeTargetHit(hashProofOfStake, theValueIn, bnTarget))
-			continue;
-		
-		//if(i < 0) LogPrintf("CheckStakeKernelHashv2(): Successful stake with a %d seconds past time.\n", i); // This triggered during transition at least.
-
-		fSuccess = true; // if we make it this far then we have successfully created a stake hash
-		nTimeTx = nTryTime;
-		//LogPrintf("CheckStakeKernelHashV2(): Success. nStakeModifierV2=%s nTimeBlockFrom=%d prevout.hash=%s prevout.n=%d nTimeTx=%u\n", StakeModifierV2.ToString().c_str(), nTimeBlockFrom, prevout.hash.ToString().c_str(), prevout.n, nTimeTx);
-		break;
-	}
-
-	return fSuccess;
+	return false;
 }
 
 bool CalculateStakeModifierV3(uint64_t& nStakeModifier, const CBlockIndex* pindexPrev)
