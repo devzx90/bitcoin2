@@ -165,6 +165,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
     {
         LOCK2(cs_main, mempool.cs);
+		if (chainActive.Tip() != pindexPrev)
+		{
+			LogPrintf("CreateNewBlock(): Chain changed meanwhile, best abandon this block.\n");
+			return NULL;
+		}
 
 		// Collect memory pool transactions into the block
         CCoinsViewCache view(pcoinsTip);
@@ -177,8 +182,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         vector<TxPriority> vecPriority;
         vecPriority.reserve(mempool.mapTx.size());
 		CFeeRate ActualMinRelayTxFee(MINRELAYFEE - 1); // -1 to help mitigate rounding errors.
-        for (map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin();
-             mi != mempool.mapTx.end(); ++mi) {
+        for (map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin(); mi != mempool.mapTx.end(); ++mi)
+		{
             const CTransaction& tx = mi->second.GetTx();
             if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)){
                 continue;
@@ -386,13 +391,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 				mempool.clear();
 				return NULL;
 			}
-
+			LogPrintf("CreateNewBlock(): FinishCoinStake() success.\n");
 			pblock->vtx[1] = CTransaction(txCoinStake);
 		}
 
 		pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
 
         // Fill in header
+		LogPrintf("CreateNewBlock(): pblock->hashPrevBlock = pindexPrev->GetBlockHash();.\n");
         pblock->hashPrevBlock = pindexPrev->GetBlockHash();
 
 		if (!fProofOfStake)
@@ -402,23 +408,37 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 			if (!Params().AllowMinDifficultyBlocks()) pblock->nBits = GetNextWorkRequired(pindexPrev);
 		}
 
+		LogPrintf("CreateNewBlock(): pblock->nNonce = GetRand(1000000000) + 100;\n");
+		// Maybe fixed: Crashed between here and "AccumulatorCheckpoint calculated" when on a forked chain.
         pblock->nNonce = GetRand(1000000000) + 100; // + 100 to avoid < 100 being generated.
+		LogPrintf("CreateNewBlock(): uint256 nCheckpoint = 0;\n");
         uint256 nCheckpoint = 0;
-        AccumulatorMap mapAccumulators;
 
-        if(fZerocoinActive && !CalculateAccumulatorCheckpoint(nHeight, nCheckpoint, mapAccumulators)){
-            LogPrintf("%s: failed to get accumulator checkpoint\n", __func__);
+        if(fZerocoinActive)
+		{
+			AccumulatorMap mapAccumulators;
+			if (GetTime() > GetSporkValue(SPORK_16_ZEROCOIN_MAINTENANCE_MODE))
+			{
+				LogPrintf("CreateNewBlock(): nCheckpoint = chainActive[nHeight - 1]->nAccumulatorCheckpoint;\n");
+				nCheckpoint = chainActive[nHeight - 1]->nAccumulatorCheckpoint;
+			}
+			else if(!CalculateAccumulatorCheckpoint(nHeight, nCheckpoint, mapAccumulators))
+			{
+				LogPrintf("%s: failed to get accumulator checkpoint\n", __func__);
+				nCheckpoint = chainActive[nHeight - 1]->nAccumulatorCheckpoint;
+			}
         }
-        pblock->nAccumulatorCheckpoint = nCheckpoint;
+		LogPrintf("CreateNewBlock(): nAccumulatorCheckpoint calculated.\n");
+		pblock->nAccumulatorCheckpoint = nCheckpoint;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
 		if (chainActive.Height() >= nHeight)
 		{
-			// Someone else created a block and height changed meanwhile, best abandon this block.
+			LogPrintf("CreateNewBlock(): Someone else created a block and height changed meanwhile, best abandon this block.\n");
 			mempool.clear();
 			return NULL; 
 		}
-
+		LogPrintf("CreateNewBlock(): About to TestBlockValidity.\n");
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
             LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
@@ -467,7 +487,7 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet)
 {
-    //LogPrintf("%s\n", pblock->ToString());
+    LogPrintf("%s\n", pblock->ToString());
 
     // Found a solution
     {
@@ -489,6 +509,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet)
 
     // Process this block the same as if we had received it from another node
     CValidationState state;
+	LogPrint("masternode", "%s: calling ProcessNewBlock\n", __func__);
     if (!ProcessNewBlock(state, NULL, pblock))
         return error("Bitcoin2Miner : ProcessNewBlock, block not accepted");
 	LogPrint("masternode", "ProcessBlockFound - for (CNode* node : vNodes) {\n");
