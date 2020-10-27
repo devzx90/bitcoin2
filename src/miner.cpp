@@ -200,8 +200,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 //zerocoinspend has special vin
                 if (tx.IsZerocoinSpend()) {
                     nTotalIn += tx.GetZerocoinSpent();
-                    // PIVX v.3.0.6 just had break; here.
-                    continue;
+					break;
                 }
 
                 // Read prev transaction
@@ -409,7 +408,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 		}
 
 		LogPrintf("CreateNewBlock(): pblock->nNonce = GetRand(1000000000) + 100;\n");
-		// Maybe fixed: Crashed between here and "AccumulatorCheckpoint calculated" when on a forked chain.
         pblock->nNonce = GetRand(1000000000) + 100; // + 100 to avoid < 100 being generated.
 		LogPrintf("CreateNewBlock(): uint256 nCheckpoint = 0;\n");
         uint256 nCheckpoint = 0;
@@ -581,17 +579,20 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
         // Create new block
         //
         unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
-        CBlockIndex* pindexPrev = chainActive.Tip();
-        if (!pindexPrev)
-            continue;
 
         unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlock(CScript(), pwallet, fProofOfStake)); // PoW: CreateNewBlockWithKey(reservekey, pwallet, fProofOfStake)
         if (!pblocktemplate.get())
             continue;
 
         CBlock* pblock = &pblocktemplate->block;
-        IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+		CBlockIndex* pindexPrev;
+		{
+			LOCK(cs_main);
+			pindexPrev = chainActive.Tip();
+			if (!pindexPrev) continue;
+		}
 
+		IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
         //Stake miner main
         if (fProofOfStake) {
             LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
