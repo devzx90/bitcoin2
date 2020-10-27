@@ -42,6 +42,9 @@ static int64_t abs64(int64_t n)
 
 void AddTimeData(const CNetAddr& ip, int64_t nOffsetSample)
 {
+	static int64_t MaxTimeAdjustment = GetArg("-maxtimeadjustment", 70 * 60);
+	if (MaxTimeAdjustment < 1) return;
+
     LOCK(cs_nTimeOffset);
     // Ignore duplicates
     static set<CNetAddr> setKnown;
@@ -50,6 +53,22 @@ void AddTimeData(const CNetAddr& ip, int64_t nOffsetSample)
 
     // Add data
     static CMedianFilter<int64_t> vTimeOffsets(200, 0);
+
+	if (vTimeOffsets.size() > 5)
+	{
+		int64_t BiggestOffset = 0;
+
+		for (int64_t anOffset : vTimeOffsets.sorted())
+		{
+			if (anOffset > BiggestOffset) BiggestOffset = anOffset;
+		}
+
+		if (nOffsetSample > BiggestOffset + 5 || nOffsetSample > MaxTimeAdjustment)
+		{
+			LogPrintf("%s: ERROR: Offset Sample from %s rejected. samples %d, offset %d. Biggest offset: %d\n",__func__, ip.ToStringIP(), vTimeOffsets.size(), nOffsetSample, BiggestOffset);
+			return;
+		}
+	}
     vTimeOffsets.input(nOffsetSample);
     LogPrintf("Added time data, samples %d, offset %+d (%+d minutes)\n", vTimeOffsets.size(), nOffsetSample, nOffsetSample / 60);
 
@@ -72,18 +91,17 @@ void AddTimeData(const CNetAddr& ip, int64_t nOffsetSample)
     //
     if (vTimeOffsets.size() >= 5 && vTimeOffsets.size() % 2 == 1) {
         int64_t nMedian = vTimeOffsets.median();
-        std::vector<int64_t> vSorted = vTimeOffsets.sorted();
         // Only let other nodes change our time by so much
-        if (abs64(nMedian) < 70 * 60) {
+        if (abs64(nMedian) <= MaxTimeAdjustment) {
             nTimeOffset = nMedian;
         } else {
             nTimeOffset = 0;
 
-            static bool fDone;
+            static bool fDone = false;
             if (!fDone) {
                 // If nobody has a time different than ours but within 5 minutes of ours, give a warning
                 bool fMatch = false;
-                BOOST_FOREACH (int64_t nOffset, vSorted)
+				for (int64_t nOffset : vTimeOffsets.sorted())
                     if (nOffset != 0 && abs64(nOffset) < 5 * 60)
                         fMatch = true;
 
@@ -96,11 +114,7 @@ void AddTimeData(const CNetAddr& ip, int64_t nOffsetSample)
                 }
             }
         }
-        if (fDebug) {
-            BOOST_FOREACH (int64_t n, vSorted)
-                LogPrintf("%+d  ", n);
-            LogPrintf("|  ");
-        }
+
         LogPrintf("nTimeOffset = %+d  (%+d minutes)\n", nTimeOffset, nTimeOffset / 60);
     }
 }
