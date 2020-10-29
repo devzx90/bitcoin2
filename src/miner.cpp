@@ -524,9 +524,6 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet)
 }
 
 bool fGenerateBitcoins = false;
-
-// ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
-
 void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 {
     LogPrintf("BTC2Miner started\n");

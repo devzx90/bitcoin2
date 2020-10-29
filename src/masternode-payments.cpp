@@ -433,6 +433,7 @@ bool CMasternodePayments::AddWinningMasternode(CMasternodePaymentWinner& winnerI
 
 bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 {
+	LogPrint("masternode", "%s - LOCK(cs_vecPayments); int nMaxSignatures = 0;\n", __func__);
     LOCK(cs_vecPayments);
 
     int nMaxSignatures = 0;
@@ -441,7 +442,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
     std::string strPayeesPossible = "";
 
     CAmount nReward = GetBlockValue(nBlockHeight);
-
+	LogPrint("masternode", "%s - if (IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT))\n", __func__);
     if (IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
         // Get a stable number of masternodes by ignoring newly activated (< 8000 sec old) masternodes
         nMasternode_Drift_Count = mnodeman.stable_size();
@@ -456,12 +457,18 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
     CAmount requiredMasternodePayment = GetMasternodePayment(nBlockHeight, nReward, nMasternode_Drift_Count);
 
     //require at least 6 signatures
+	LogPrint("masternode", "%s - BOOST_FOREACH (CMasternodePayee& payee, vecPayments)\n", __func__);
     BOOST_FOREACH (CMasternodePayee& payee, vecPayments)
         if (payee.nVotes >= nMaxSignatures && payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED)
             nMaxSignatures = payee.nVotes;
 
     // if we don't have at least 6 signatures on a payee, approve whichever is the longest chain
-    if (nMaxSignatures < MNPAYMENTS_SIGNATURES_REQUIRED) return true;
+    if (nMaxSignatures < MNPAYMENTS_SIGNATURES_REQUIRED)
+	{
+		LogPrint("masternode", "%s - nMaxSignatures (=%d) < MNPAYMENTS_SIGNATURES_REQUIRED. Return true.\n", __func__, nMaxSignatures);
+		return true;
+	}
+	LogPrint("masternode", "%s - BOOST_FOREACH (CTxOut out, txNew.vout) {\n", __func__);
 
     BOOST_FOREACH (CMasternodePayee& payee, vecPayments) {
         bool found = false;
@@ -475,21 +482,12 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
         }
 
         if (payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED) {
+			LogPrint("masternode", "%s - payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED\n", __func__);
             if (found) return true;
-
-            CTxDestination address1;
-            ExtractDestination(payee.scriptPubKey, address1);
-            CBitcoinAddress address2(address1);
-
-            if (strPayeesPossible == "") {
-                strPayeesPossible += address2.ToString();
-            } else {
-                strPayeesPossible += "," + address2.ToString();
-            }
         }
     }
 
-    LogPrint("masternode","CMasternodePayments::IsTransactionValid - Missing required payment of %s to %s\n", FormatMoney(requiredMasternodePayment).c_str(), strPayeesPossible.c_str());
+    LogPrint("masternode","CMasternodePayments::IsTransactionValid - Missing required payment of %d to a correct destination.\n", requiredMasternodePayment);
     return false;
 }
 
@@ -527,6 +525,7 @@ std::string CMasternodePayments::GetRequiredPaymentsString(int nBlockHeight)
 
 bool CMasternodePayments::IsTransactionValid(const CTransaction& txNew, int nBlockHeight)
 {
+	LogPrint("masternode", "%s - LOCK(cs_mapMasternodeBlocks);\n", __func__);
     LOCK(cs_mapMasternodeBlocks);
 
     if (mapMasternodeBlocks.count(nBlockHeight)) {
