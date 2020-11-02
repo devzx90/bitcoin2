@@ -1532,7 +1532,6 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, CValidationS
 					REJECT_INVALID, "bad-stake-length");
 		}
     }
-
     return true;
 }
 
@@ -1675,7 +1674,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
             }
 
             // are the actual inputs available?
-			if (!view.HaveInputs(tx, Params().Zerocoin_StartHeight()))
+            if (!view.HaveInputs(tx, Params().Zerocoin_StartHeight()))
                 return state.Invalid(error("AcceptToMemoryPool : inputs already spent"),
                     REJECT_DUPLICATE, "bad-txns-inputs-spent");
 
@@ -1840,12 +1839,6 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
                         *pfMissingInputs = true;
                     return false;
                 }
-
-                // check for invalid/fraudulent inputs
-               /* if (!ValidOutPoint(txin.prevout, chainActive.Height())) {
-                    return state.Invalid(error("%s : tried to spend invalid input %s in tx %s", __func__, txin.prevout.ToString(),
-                                                tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-inputs");
-                }*/
             }
 
             // are the actual inputs available?
@@ -1976,10 +1969,10 @@ int ScanTX(const string &theAddress, bool QuickScan)
 {
 	int returnvalue = 0;
 	int n = Params().Zerocoin_StartHeight();
-	if (n > chainActive.Height()) return -1;
 
 	{
 		LOCK2(cs_main, pwalletMain->cs_wallet);
+		if (n > chainActive.Height()) return -1;
 
 		if (HasTX(102, n, theAddress, QuickScan))
 		{
@@ -2164,8 +2157,8 @@ int64_t GetBlockValue(int nHeight)
 		else
 		{
 			nSubsidy = CENT * 80;
-			if (chainActive[nHeight - 1]->nMoneySupply + nSubsidy > Params().MaxMoneyOut()) nSubsidy = 0;
-			else if (nHeight >= REWARDFORK_BLOCK)
+
+			if (nHeight >= REWARDFORK_BLOCK)
 			{
 				const int BlocksPerMonth = 43200;
 				const int NextChange = BlocksPerMonth * 3 + REWARDFORK_BLOCK; // ~3 months after REWARDFORK_BLOCK, rewards start going down by 1 CENT per ~month until the reward is 0.2.
@@ -2176,11 +2169,14 @@ int64_t GetBlockValue(int nHeight)
 					if (nSubsidy < CENT * 20) nSubsidy = CENT * 20; // Minimum reward of 0.2 BTC2 per block applies ~22 months after REWARDFORK_BLOCK. 
 				}
 			}
+
+			{
+				LOCK(cs_main);
+				if (chainActive[nHeight - 1]->nMoneySupply + nSubsidy > Params().MaxMoneyOut()) return 0;
+			}
 		}
 	}
 	else nSubsidy = 0;
-
-
 
     return nSubsidy;
 }
@@ -2379,7 +2375,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
 
         // This doesn't trigger the DoS code on purpose; if it did, it would make it easier
         // for an attacker to attempt to split the network.
-        if (!inputs.HaveInputs(tx, Hcheck))
+        if (!inputs.HaveInputs(tx, Hcheck)) // cs_main is held.
             return state.Invalid(error("CheckInputs() : %s inputs unavailable", tx.GetHash().ToString()));
 
         // While checking, GetBestBlock() refers to the parent block.
@@ -2757,6 +2753,7 @@ bool RecalculateBTC2Supply(int nHeightStart)
 bool ReindexAccumulators(list<uint256>& listMissingCheckpoints, string& strError)
 {
     // Bitcoin2: recalculate Accumulator Checkpoints that failed to database properly
+	LOCK(cs_main);
     if (!listMissingCheckpoints.empty() && chainActive.Height() >= Params().Zerocoin_StartHeight()) {
         //uiInterface.InitMessage(_("Calculating missing accumulators..."));
         LogPrintf("%s : finding missing checkpoints\n", __func__);
@@ -4078,10 +4075,11 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
 			// Bitcoin 2
 			LogPrint("masternode", "%s - if (nHeight (= %d) >= StakingProtocol2Height.\n", __func__, nHeight);
+
 			if (nHeight >= StakingProtocol2Height && block.GetBlockTime() % nStakeInterval != 0)
 				return state.DoS(100, error("CheckBlock(): block timestamp invalid:%d", block.GetBlockTime()), REJECT_INVALID, "time-invalid");
 
-			if (pindexPrev->nHeight >= REWARDFORK_BLOCK || nHeight >= REWARDFORK_BLOCK)
+			if (nHeight >= REWARDFORK_BLOCK)
 			{
 				if(block.GetBlockTime() > (BiggerTime + nMaxStakingFutureDriftv3))
 				return state.DoS(10, error("CheckBlock(): block timestamp too far in the future: %d", block.GetBlockTime()), REJECT_INVALID, "time-too-new");
@@ -4091,7 +4089,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 			// but issue an initial reject message.
 			// The case also exists that the sending peer could not have enough data to see
 			// that this block is invalid, so don't issue an outright ban.
-			if (nHeight != 0 && !IsInitialBlockDownload()) {
+			LogPrint("masternode", "%s - if (nHeight != 0 && !IsInitialBlockDownload()\n", __func__);
+			if (nHeight > 1300 && !IsInitialBlockDownload()) {
+				LogPrint("masternode", "%s - if (!IsBlockPayeeValid(block, nHeight)) {\n", __func__);
 				if (!IsBlockPayeeValid(block, nHeight)) {
 					mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
 					return state.DoS(0, error("CheckBlock() : Couldn't find masternode payment"),
@@ -4195,13 +4195,17 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     // Check timestamp against prev
 	if (nHeight >= REWARDFORK_BLOCK)
 	{
+		int64_t BiggerTime = GetAdjustedTime();
+		if (GetTime() > BiggerTime) BiggerTime = GetTime();
+
+		// Double-check for bad timestamp. First check is at CheckBlock, but can't rely on that to know the block height in every possible case.
+		if (block.GetBlockTime() % nStakeInterval != 0) return state.DoS(100, error("CheckBlock(): block timestamp invalid:%d", block.GetBlockTime()), REJECT_INVALID, "time-invalid");
+
+		if (block.GetBlockTime() > (BiggerTime + nMaxStakingFutureDriftv3)) return state.DoS(10, error("CheckBlock(): block timestamp too far in the future: %d", block.GetBlockTime()), REJECT_INVALID, "time-too-new");
+
 		LogPrint("masternode", "%s - Check timestamp against prev\n", __func__);
 		if(block.GetBlockTime() < pindexPrev->nTime) return state.Invalid(error("%s : block's timestamp is too early", __func__), REJECT_INVALID, "time-too-old");
 		
-		int64_t BiggerTime = GetAdjustedTime();
-		if (GetTime() > BiggerTime) BiggerTime = GetTime();
-		if(block.GetBlockTime() > BiggerTime + nMaxStakingFutureDriftv3) return state.Invalid(error("CheckBlock() : block timestamp too far in the future"), REJECT_INVALID, "time-too-new");
-
 		// Can accept at most 3 blocks with the same time stamp.
 		CBlockIndex* aBlockIndex = pindexPrev;
 		bool TooManyBlocksWithSameTimeStamp = true;
@@ -4239,13 +4243,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
         return state.DoS(1, error("%s : forked chain older than last checkpoint (height %d)", __func__, nHeight));
 
 	LogPrint("masternode", "%s - return true\n", __func__);
-    // Reject block.nVersion=1 blocks when 95% (75% on testnet) of the network has upgraded:
-    /*if (block.nVersion < 2 &&
-        CBlockIndex::IsSuperMajority(2, pindexPrev, Params().RejectBlockOutdatedMajority())) {
-        return state.Invalid(error("%s : rejected nVersion=1 block", __func__),
-            REJECT_OBSOLETE, "bad-version");
-    }
-
+    /*
     // Reject block.nVersion=2 blocks when 95% (75% on testnet) of the network has upgraded:
     if (block.nVersion < 3 && CBlockIndex::IsSuperMajority(3, pindexPrev, Params().RejectBlockOutdatedMajority())) {
         return state.Invalid(error("%s : rejected nVersion=2 block", __func__),
