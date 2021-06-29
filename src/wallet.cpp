@@ -3096,7 +3096,7 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
 
 	LastHashedBlockHeight = CurrentHeight;
 	// store a timestamp of the max attempted hash's timestamp on this block.
-	LastHashedBlockTime = nTxNewTime + nMaxStakingFutureDriftv3;
+	LastHashedBlockTime = GetTime() + nMaxStakingFutureDriftv3;
 	LastHashedBlockTime -= LastHashedBlockTime % nStakeInterval;
 
     if (nCredit == 0 || CurrentHeight != chainActive.Height()) return 0;

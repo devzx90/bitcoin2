@@ -72,7 +72,7 @@ bool CheckStakeKernelHashV3(unsigned int nBits, uint256& StakeModifierV2, uint64
 		return TargetMet;
 	}
 
-	// nTimeTx starts as GetAdjustedTime when creating a new block.
+	// nTimeTx starts as GetTime when creating a new block.
 	int TimeRemainder = nTimeTx % nStakeInterval;
 	nTimeTx -= TimeRemainder; // Round it to the proper staking interval.
 	unsigned int nTryTime = 0;

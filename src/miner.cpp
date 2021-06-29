@@ -560,7 +560,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
 			while(LastHashedBlockHeight == chainActive.Tip()->nHeight) // see if bestblock has been hashed yet
             {
-				unsigned int nMaxHashDivNow = (GetAdjustedTime() + nMaxStakingFutureDrift) / nStakeInterval;
+				unsigned int nMaxHashDivNow = (GetTime() + nMaxStakingFutureDriftv3) / nStakeInterval;
 				unsigned int nPreviousHashDiv = LastHashedBlockTime / nStakeInterval;
 				if (nMaxHashDivNow <= nPreviousHashDiv)
 				{
