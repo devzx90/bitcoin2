@@ -2987,6 +2987,7 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
 		}
 	}
 
+	unsigned int StartTime = GetTime();
 
     BOOST_FOREACH (PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setStakeCoins)
 	{
@@ -3096,8 +3097,8 @@ CAmount CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, 
 
 	LastHashedBlockHeight = CurrentHeight;
 	// store a timestamp of the max attempted hash's timestamp on this block.
-	LastHashedBlockTime = GetTime() + nMaxStakingFutureDriftv3;
-	LastHashedBlockTime -= LastHashedBlockTime % nStakeInterval;
+	LastHashedBlockTime = StartTime + nMaxStakingFutureDriftv3;
+	// Don't use anymore. LastHashedBlockTime -= (LastHashedBlockTime % nStakeInterval);
 
     if (nCredit == 0 || CurrentHeight != chainActive.Height()) return 0;
 

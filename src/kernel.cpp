@@ -89,15 +89,15 @@ bool CheckStakeKernelHashV3(unsigned int nBits, uint256& StakeModifierV2, uint64
 	if (LastHashedBlockHeight != nHeightStart) HashingStart = PreviousBlockTime - nTimeTx;
 	else
 	{
-		// Set the HashingStart so that we're only trying previously untested times
-		HashingStart = LastHashedBlockTime - nTimeTx + nStakeInterval;
+		// Set the HashingStart so that we're mostly trying previously untested times
+		HashingStart = nStakeInterval;
 	}
 
 	CHashWriter HashStart(SER_GETHASH, 0);
 	HashStart << StakeModifierV2 << prevout.hash << nStakeModifier << prevout.n;
 
 	int MaxTime = nMaxStakingFutureDriftv3 + TimeRemainder;
-	for (int i = HashingStart; i < MaxTime; i += nStakeInterval) //iterate the hashing
+	for (int i = HashingStart; i <= MaxTime; i += nStakeInterval) //iterate the hashing
 	{
 		if (i > MaxTime || chainActive.Height() != nHeightStart) return false; //new block came in, move on
 
