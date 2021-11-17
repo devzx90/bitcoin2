@@ -21,18 +21,13 @@ This feature is not supported in versions of Windows prior to Windows 10 or on W
 Full instructions to install WSL are available on the above link. To install WSL on Windows 10 with Fall Creators Update installed (version >= 16215.0) do the following:
 
 1. Enable the Windows Subsystem for Linux feature
-
 - Open the Windows Features dialog (`OptionalFeatures.exe`)
 - Enable 'Windows Subsystem for Linux'
 - Click 'OK' and restart if necessary
-
 1. Install Ubuntu
-
 - Open Microsoft Store and search for "Ubuntu 18.04" or use [this link](https://www.microsoft.com/store/productId/9N9TNGVNDL3Q)
 - Click Install
-
 1. Complete Installation
-
 - Open a cmd prompt and type "Ubuntu1804"
 - Create a new UNIX user account (this is a separate account from your Windows account)
 
@@ -48,7 +43,6 @@ First, install the general dependencies:
 sudo apt update
 sudo apt upgrade
 sudo apt install build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git
-
 ```
 
 A host toolchain (`build-essential`) is necessary because some dependency packages (such as `protobuf`) need to build host utilities that are used in the build process.
@@ -59,7 +53,6 @@ If you want to build the windows installer with `make deploy` you need [NSIS](ht
 
 ```
 sudo apt install nsis
-
 ```
 
 Acquire the source in the usual way:
@@ -67,7 +60,6 @@ Acquire the source in the usual way:
 ```
 git clone https://github.com/BITC2/bitcoin2.git
 cd bitcoin2
-
 ```
 
 ## Building for 64-bit Windows
@@ -76,14 +68,12 @@ The first step is to install the mingw-w64 cross-compilation tool chain:
 
 ```
 sudo apt install g++-mingw-w64-x86-64
-
 ```
 
 Ubuntu Bionic 18.04 [1](https://github.com/bitcoin/bitcoin/blob/master/doc/build-windows.md#footnote1):
 
 ```
 sudo update-alternatives --config x86_64-w64-mingw32-g++ # Set the default mingw32 g++ compiler option to posix.
-
 ```
 
 Once the toolchain is installed the build steps are common:
@@ -94,13 +84,14 @@ Build using:
 
 ```
 PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
+sudo bash -c "echo 0 > /proc/sys/fs/binfmt_misc/status" # Disable WSL support for Win32 applications.
 cd depends
 make HOST=x86_64-w64-mingw32
 cd ..
 ./autogen.sh # not required when building from tarball
 CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/
 make
-
+sudo bash -c "echo 1 > /proc/sys/fs/binfmt_misc/status" # Enable WSL support for Win32 applications.
 ```
 
 ## Depends system
@@ -113,14 +104,12 @@ After building using the Windows subsystem it can be useful to copy the compiled
 
 ```
 make install DESTDIR=/mnt/c/workspace/bitcoin2
-
 ```
 
 You can also create an installer using:
 
 ```
 make deploy
-
 ```
 
 ## Footnotes
