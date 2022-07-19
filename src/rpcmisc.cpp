@@ -66,14 +66,14 @@ UniValue getinfo(const UniValue& params, bool fHelp)
             "  \"moneysupply\" : \"supply\"       (numeric) The money supply when this block was added to the blockchain\n"
             "  \"zBTC2supply\" :\n"
             "  {\n"
-			"     \"0.05\" : n,            (numeric) supply of 0.05 zBTC2 denomination\n"
-			"     \"0.2\" : n,            (numeric) supply of 0.2 zBTC2 denomination\n"
-			"     \"1\" : n,           (numeric) supply of 1 zBTC2 denomination\n"
-			"     \"5\" : n,           (numeric) supply of 5 zBTC2 denomination\n"
-			"     \"20\" : n,          (numeric) supply of 20 zBTC2 denomination\n"
-			"     \"100\" : n,          (numeric) supply of 100 zBTC2 denomination\n"
-			"     \"500\" : n,         (numeric) supply of 500 zBTC2 denomination\n"
-			"     \"2000\" : n,         (numeric) supply of 2000 zBTC2 denomination\n"
+            "     \"0.05\" : n,            (numeric) supply of 0.05 zBTC2 denomination\n"
+            "     \"0.2\" : n,            (numeric) supply of 0.2 zBTC2 denomination\n"
+            "     \"1\" : n,           (numeric) supply of 1 zBTC2 denomination\n"
+            "     \"5\" : n,           (numeric) supply of 5 zBTC2 denomination\n"
+            "     \"20\" : n,          (numeric) supply of 20 zBTC2 denomination\n"
+            "     \"100\" : n,          (numeric) supply of 100 zBTC2 denomination\n"
+            "     \"500\" : n,         (numeric) supply of 500 zBTC2 denomination\n"
+            "     \"2000\" : n,         (numeric) supply of 2000 zBTC2 denomination\n"
             "     \"total\" : n,        (numeric) The total supply of all zBTC2 denominations\n"
             "  }\n"
             "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
@@ -119,10 +119,10 @@ UniValue getinfo(const UniValue& params, bool fHelp)
         return obj;
     }
 
-    obj.push_back(Pair("moneysupply",ValueFromAmount(chainActive.Tip()->nMoneySupply)));
+    obj.push_back(Pair("moneysupply", ValueFromAmount(chainActive.Tip()->nMoneySupply)));
     UniValue zbtc2Obj(UniValue::VOBJ);
     for (auto denom : libzerocoin::zerocoinDenomList) {
-        zbtc2Obj.push_back(Pair(to_string(denom * 0.01), ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * denom*CENT)));
+        zbtc2Obj.push_back(Pair(to_string(denom * 0.01), ValueFromAmount(chainActive.Tip()->mapZerocoinSupply.at(denom) * denom * CENT)));
     }
     zbtc2Obj.push_back(Pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
     obj.push_back(Pair("zBTC2supply", zbtc2Obj));
@@ -169,7 +169,7 @@ UniValue mnsync(const UniValue& params, bool fHelp)
             "  \"nCountFailures\": n,           (numeric) Number of failed syncs (total)\n"
             "  \"sumMasternodeList\": n,        (numeric) Number of MN list messages (total)\n"
             "  \"sumMasternodeWinner\": n,      (numeric) Number of MN winner messages (total)\n"
-           // "  \"sumBudgetItemProp\": n,        (numeric) Number of MN budget messages (total)\n"
+            // "  \"sumBudgetItemProp\": n,        (numeric) Number of MN budget messages (total)\n"
             //"  \"sumBudgetItemFin\": n,         (numeric) Number of MN budget finalization messages (total)\n"
             "  \"countMasternodeList\": n,      (numeric) Number of MN list messages (local)\n"
             "  \"countMasternodeWinner\": n,    (numeric) Number of MN winner messages (local)\n"
@@ -219,9 +219,10 @@ private:
 public:
     DescribeAddressVisitor(isminetype mineIn) : mine(mineIn) {}
 
-    UniValue operator()(const CNoDestination &dest) const { return UniValue(UniValue::VOBJ); }
+    UniValue operator()(const CNoDestination& dest) const { return UniValue(UniValue::VOBJ); }
 
-    UniValue operator()(const CKeyID &keyID) const {
+    UniValue operator()(const CKeyID& keyID) const
+    {
         UniValue obj(UniValue::VOBJ);
         CPubKey vchPubKey;
         obj.push_back(Pair("isscript", false));
@@ -233,7 +234,8 @@ public:
         return obj;
     }
 
-    UniValue operator()(const CScriptID &scriptID) const {
+    UniValue operator()(const CScriptID& scriptID) const
+    {
         UniValue obj(UniValue::VOBJ);
         obj.push_back(Pair("isscript", true));
         if (mine != ISMINE_NO) {
@@ -285,7 +287,7 @@ UniValue spork(const UniValue& params, bool fHelp)
         // SPORK VALUE
         int64_t nValue = params[1].get_int();
 
-        //broadcast new spork
+        // broadcast new spork
         if (sporkManager.UpdateSpork(nSporkID, nValue)) {
             return "success";
         } else {
@@ -559,7 +561,7 @@ UniValue getstakingstatus(const UniValue& params, bool fHelp)
     obj.push_back(Pair("mnsync", masternodeSync.IsSynced()));
 
     bool nStaking = false;
-	if (LastHashedBlockHeight == chainActive.Tip()->nHeight) nStaking = true;
+    if (LastHashedBlockHeight == chainActive.Tip()->nHeight) nStaking = true;
     obj.push_back(Pair("staking status", nStaking));
 
     return obj;

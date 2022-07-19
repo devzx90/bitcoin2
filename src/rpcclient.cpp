@@ -100,21 +100,22 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"setban", 2},
         {"setban", 3},
         {"spork", 1},
-       /* {"mnbudget", 3},
-        {"mnbudget", 4},
-        {"mnbudget", 6},
-        {"mnbudget", 8},
-        {"preparebudget", 2},
-        {"preparebudget", 3},
-        {"preparebudget", 5},
-        {"submitbudget", 2},
-        {"submitbudget", 3},
-        {"submitbudget", 5},
-        {"submitbudget", 7},*/
+        /* {"mnbudget", 3},
+         {"mnbudget", 4},
+         {"mnbudget", 6},
+         {"mnbudget", 8},
+         {"preparebudget", 2},
+         {"preparebudget", 3},
+         {"preparebudget", 5},
+         {"submitbudget", 2},
+         {"submitbudget", 3},
+         {"submitbudget", 5},
+         {"submitbudget", 7},*/
         // disabled until removal of the legacy 'masternode' command
         //{"startmasternode", 1},
-       // {"mnvoteraw", 1},
+        // {"mnvoteraw", 1},
         //{"mnvoteraw", 4},
+
         {"reservebalance", 0},
         {"reservebalance", 1},
         {"setstakesplitthreshold", 0},
@@ -134,8 +135,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
         {"exportzerocoins", 1},
         {"resetmintzerocoin", 0},
         {"getspentzerocoinamount", 1},
-        {"getfeeinfo", 0}
-    };
+        {"getfeeinfo", 0}};
 
 class CRPCConvertTable
 {
@@ -170,14 +170,14 @@ static CRPCConvertTable rpcCvtTable;
 UniValue ParseNonRFCJSONValue(const std::string& strVal)
 {
     UniValue jVal;
-    if (!jVal.read(std::string("[")+strVal+std::string("]")) ||
-        !jVal.isArray() || jVal.size()!=1)
-        throw runtime_error(string("Error parsing JSON:")+strVal);
+    if (!jVal.read(std::string("[") + strVal + std::string("]")) ||
+        !jVal.isArray() || jVal.size() != 1)
+        throw runtime_error(string("Error parsing JSON:") + strVal);
     return jVal[0];
 }
 
 /** Convert strings to command-specific RPC representation */
-UniValue RPCConvertValues(const std::string &strMethod, const std::vector<std::string> &strParams)
+UniValue RPCConvertValues(const std::string& strMethod, const std::vector<std::string>& strParams)
 {
     UniValue params(UniValue::VARR);
 
