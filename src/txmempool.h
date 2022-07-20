@@ -9,10 +9,13 @@
 
 #include <list>
 
+#include "addressindex.h"
 #include "amount.h"
 #include "coins.h"
 #include "primitives/transaction.h"
+#include "spentindex.h"
 #include "sync.h"
+
 
 class CAutoFile;
 
@@ -121,6 +124,16 @@ public:
     void setSanityCheck(bool _fSanityCheck) { fSanityCheck = _fSanityCheck; }
 
     bool addUnchecked(const uint256& hash, const CTxMemPoolEntry& entry);
+
+    void addAddressIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
+    bool getAddressIndex(std::vector<std::pair<uint160, int> > &addresses,
+                         std::vector<std::pair<CMempoolAddressDeltaKey, CMempoolAddressDelta> > &results);
+    bool removeAddressIndex(const uint256 txhash);
+
+    void addSpentIndex(const CTxMemPoolEntry &entry, const CCoinsViewCache &view);
+    bool getSpentIndex(CSpentIndexKey &key, CSpentIndexValue &value);
+    bool removeSpentIndex(const uint256 txhash);
+
     void remove(const CTransaction& tx, std::list<CTransaction>& removed, bool fRecursive = false);
     void removeCoinbaseSpends(const CCoinsViewCache* pcoins, unsigned int nMemPoolHeight);
     void removeConflicts(const CTransaction& tx, std::list<CTransaction>& removed);

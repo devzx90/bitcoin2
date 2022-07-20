@@ -302,6 +302,7 @@ static const CRPCCommand vRPCCommands[] =
         {"blockchain", "getbestblockhash", &getbestblockhash, true, false, false},
         {"blockchain", "getblockcount", &getblockcount, true, false, false},
         {"blockchain", "getblock", &getblock, true, false, false},
+        { "blockchain",         "getblockhashes",         &getblockhashes,         true  },
         {"blockchain", "getblockhash", &getblockhash, true, false, false},
         {"blockchain", "getblockheader", &getblockheader, false, false, false},
         {"blockchain", "getchaintips", &getchaintips, true, false, false},
@@ -368,6 +369,9 @@ static const CRPCCommand vRPCCommands[] =
         {"bitcoin2", "mnsync", &mnsync, true, true, false},
         {"bitcoin2", "spork", &spork, true, true, false},
         {"bitcoin2", "getpoolinfo", &getpoolinfo, true, true, false},
+
+
+
 #ifdef ENABLE_WALLET
         {"bitcoin2", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
 

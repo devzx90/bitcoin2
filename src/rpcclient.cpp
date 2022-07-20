@@ -116,6 +116,9 @@ static const CRPCConvertParam vRPCConvertParams[] =
         // {"mnvoteraw", 1},
         //{"mnvoteraw", 4},
 
+    { "getblockhashes", 0 },
+    { "getblockhashes", 1 },
+    
         {"reservebalance", 0},
         {"reservebalance", 1},
         {"setstakesplitthreshold", 0},

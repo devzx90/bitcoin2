@@ -88,7 +88,7 @@ HEADERS += src/activemasternode.h \
            src/keepass.h \
            src/key.h \
            src/keystore.h \
-           src/leveldbwrapper.h \
+           src/dbwrapper.h \
            src/limitedmap.h \
            src/main.h \
            src/masternode-budget.h \
@@ -386,7 +386,7 @@ SOURCES += src/activemasternode.cpp \
            src/keepass.cpp \
            src/key.cpp \
            src/keystore.cpp \
-           src/leveldbwrapper.cpp \
+           src/dbwrapper.cpp \
            src/main.cpp \
            src/masternode-budget.cpp \
            src/masternode-payments.cpp \

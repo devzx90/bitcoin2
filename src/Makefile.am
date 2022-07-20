@@ -93,6 +93,8 @@ BITCOIN_CORE_H = \
   activemasternode.h \
   accumulators.h \
   accumulatormap.h \
+  addressindex.h \
+  spentindex.h \
   addrman.h \
   alert.h \
   allocators.h \
@@ -131,7 +133,7 @@ BITCOIN_CORE_H = \
   swifttx.h \
   key.h \
   keystore.h \
-  leveldbwrapper.h \
+  dbwrapper.h \
   limitedmap.h \
   main.h \
   masternode.h \
@@ -146,6 +148,7 @@ BITCOIN_CORE_H = \
   net.h \
   noui.h \
   pow.h \
+  prevector.h \
   protocol.h \
   pubkey.h \
   random.h \
@@ -207,7 +210,7 @@ libbitcoin_server_a_SOURCES = \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \
-  leveldbwrapper.cpp \
+  dbwrapper.cpp \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \
