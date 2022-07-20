@@ -22,9 +22,9 @@ static const char DB_COIN = 'C';
 static const char DB_COINS = 'c';
 static const char DB_BLOCK_FILES = 'f';
 static const char DB_TXINDEX = 't';
-static const char DB_ADDRESSINDEX = 'a';
+static const char DB_ADDRESSINDEX = 'A';
 static const char DB_ADDRESSUNSPENTINDEX = 'u';
-static const char DB_TIMESTAMPINDEX = 's';
+static const char DB_TIMESTAMPINDEX = 'S';
 static const char DB_SPENTINDEX = 'p';
 static const char DB_BLOCK_INDEX = 'b';
 
@@ -476,16 +476,16 @@ bool CZerocoinDB::EraseCoinSpend(const CBigNum& bnSerial)
 bool CZerocoinDB::WriteAccumulatorValue(const uint32_t& nChecksum, const CBigNum& bnValue)
 {
     LogPrint("zero","%s : checksum:%d val:%s\n", __func__, nChecksum, bnValue.GetHex());
-    return Write(make_pair(DB_ADDRESSINDEX, nChecksum), bnValue);
+    return Write(make_pair('a', nChecksum), bnValue);
 }
 
 bool CZerocoinDB::ReadAccumulatorValue(const uint32_t& nChecksum, CBigNum& bnValue)
 {
-    return Read(make_pair(DB_ADDRESSINDEX, nChecksum), bnValue);
+    return Read(make_pair('a', nChecksum), bnValue);
 }
 
 bool CZerocoinDB::EraseAccumulatorValue(const uint32_t& nChecksum)
 {
     LogPrint("zero", "%s : checksum:%d\n", __func__, nChecksum);
-    return Erase(make_pair(DB_ADDRESSINDEX, nChecksum));
+    return Erase(make_pair('a', nChecksum));
 }
