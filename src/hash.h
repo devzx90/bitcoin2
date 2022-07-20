@@ -217,6 +217,14 @@ inline uint160 Hash160(const std::vector<unsigned char>& vch)
     return Hash160(vch.begin(), vch.end());
 }
 
+/** Compute the 160-bit hash of a vector. */
+template <unsigned int N>
+inline uint160 Hash160(const prevector<N, unsigned char>& vch)
+{
+    return Hash160(vch.begin(), vch.end());
+}
+
+
 /** A writer stream (for serialization) that computes a 256-bit hash. */
 class CHashWriter
 {

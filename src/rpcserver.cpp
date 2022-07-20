@@ -308,6 +308,16 @@ static const CRPCCommand vRPCCommands[] =
         {"blockchain", "getchaintips", &getchaintips, true, false, false},
         {"blockchain", "getdifficulty", &getdifficulty, true, false, false},
         {"blockchain", "getfeeinfo", &getfeeinfo, true, false, false},
+        {"blockchain", "getblockhashes", &getblockhashes, true},
+        /* Address index */
+        {"addressindex", "getaddresstxids", &getaddresstxids, false},     /* insight explorer */
+        {"addressindex", "getaddressbalance", &getaddressbalance, false}, /* insight explorer */
+        {"addressindex", "getaddressdeltas", &getaddressdeltas, false},   /* insight explorer */
+        {"addressindex", "getaddressutxos", &getaddressutxos, false},     /* insight explorer */
+        {"addressindex", "getaddressmempool", &getaddressmempool, true},  /* insight explorer */
+        {"blockchain", "getspentinfo", &getspentinfo, false},             /* insight explorer */
+
+
        // {"blockchain", "getinvalid", &getinvalid, true, true, false},
         {"blockchain", "getmempoolinfo", &getmempoolinfo, true, true, false},
         {"blockchain", "getrawmempool", &getrawmempool, true, false, false},
