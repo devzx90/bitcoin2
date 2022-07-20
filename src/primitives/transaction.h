@@ -94,6 +94,8 @@ public:
         return (nSequence == std::numeric_limits<uint32_t>::max());
     }
 
+    bool IsZerocoinSpend() const;
+
     friend bool operator==(const CTxIn& a, const CTxIn& b)
     {
         return (a.prevout   == b.prevout &&
@@ -172,10 +174,8 @@ public:
         return (nValue < 3*minRelayTxFee.GetFee(nSize));
     }
 
-    bool IsZerocoinMint() const
-    {
-        return !scriptPubKey.empty() && scriptPubKey.IsZerocoinMint();
-    }
+    bool IsZerocoinMint() const;
+    CAmount GetZerocoinMinted() const;
 
     friend bool operator==(const CTxOut& a, const CTxOut& b)
     {
@@ -258,23 +258,13 @@ public:
     // Compute modified tx size for priority calculation (optionally given tx size)
     unsigned int CalculateModifiedSize(unsigned int nTxSize=0) const;
 
-    bool IsZerocoinSpend() const
-    {
-        return (vin.size() > 0 && vin[0].prevout.IsNull() && vin[0].scriptSig[0] == OP_ZEROCOINSPEND);
-    }
+    bool HasZerocoinSpendInputs() const;
 
-    bool IsZerocoinMint() const
-    {
-        for(const CTxOut& txout : vout) {
-            if (txout.scriptPubKey.IsZerocoinMint())
-                return true;
-        }
-        return false;
-    }
+    bool HasZerocoinMintOutputs() const;
 
     bool ContainsZerocoins() const
     {
-        return IsZerocoinSpend() || IsZerocoinMint();
+        return HasZerocoinSpendInputs() || HasZerocoinMintOutputs();
     }
 
     CAmount GetZerocoinMinted() const;
@@ -289,11 +279,7 @@ public:
         return (vin.size() == 1 && vin[0].prevout.IsNull() && !ContainsZerocoins());
     }
 
-    bool IsCoinStake() const
-    {
-        // ppcoin: the coin stake transaction is marked with the first output empty
-        return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout.size() >= 2 && vout[0].IsEmpty());
-    }
+    bool IsCoinStake() const;
 
     friend bool operator==(const CTransaction& a, const CTransaction& b)
     {

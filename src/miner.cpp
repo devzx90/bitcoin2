@@ -196,9 +196,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             double dPriority = 0;
             CAmount nTotalIn = 0;
             bool fMissingInputs = false;
+            bool hasZerocoinSpends = tx.HasZerocoinSpendInputs();
+            if (hasZerocoinSpends)
+                nTotalIn = tx.GetZerocoinSpent();
             for (const CTxIn& txin : tx.vin) {
                 //zerocoinspend has special vin
-                if (tx.IsZerocoinSpend()) {
+                if (hasZerocoinSpends) {
                     nTotalIn += tx.GetZerocoinSpent();
 					break;
                 }
@@ -291,21 +294,21 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 continue;
 
             // Skip free and too low fee transactions
-            if (!tx.IsZerocoinSpend() && (feeRate < ActualMinRelayTxFee))
+            if (!tx.HasZerocoinSpendInputs() && (feeRate < ActualMinRelayTxFee))
                 continue;
 
             if (!view.HaveInputs(tx))
                 continue;
 
             // double check that there are no double spent zBTC2 spends in this block or tx
-            if (tx.IsZerocoinSpend()) {
+            if (tx.HasZerocoinSpendInputs()) {
                 int nHeightTx = 0;
                 if (IsTransactionInChain(tx.GetHash(), nHeightTx))
                     continue;
 
                 bool fDoubleSerial = false;
                 for (const CTxIn txIn : tx.vin) {
-                    if (txIn.scriptSig.IsZerocoinSpend()) {
+                    if (txIn.IsZerocoinSpend()) {
                         libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txIn);
                         if (!spend.HasValidSerial(Params().Zerocoin_Params()))
                             fDoubleSerial = true;
