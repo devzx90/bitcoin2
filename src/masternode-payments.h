@@ -81,7 +81,7 @@ public:
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion)
     {
-        READWRITE(scriptPubKey);
+        READWRITE(*(CScriptBase*)(&scriptPubKey));
         READWRITE(nVotes);
     }
 };
@@ -185,7 +185,7 @@ public:
     uint256 GetHash()
     {
         CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
-        ss << payee;
+        ss << *(CScriptBase*)(&payee);
         ss << nBlockHeight;
         ss << vinMasternode.prevout;
 
@@ -210,7 +210,7 @@ public:
     {
         READWRITE(vinMasternode);
         READWRITE(nBlockHeight);
-        READWRITE(payee);
+        READWRITE(*(CScriptBase*)(&payee));
         READWRITE(vchSig);
     }
 
